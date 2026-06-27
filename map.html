@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tooling Cards — Globe</title>
+<style>
+:root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--card:#fff;
+--Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.top{padding:12px 16px 6px}h1{font-size:18px;font-weight:600;margin:0 0 4px}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:12px}
+.btn{border:.5px solid var(--line);background:#fff;border-radius:13px;padding:4px 11px;cursor:pointer;color:var(--ink);font-size:12px}
+.btn:hover{background:#eceae4}.btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+input[type=range]{flex:1;min-width:160px;accent-color:var(--ink)}
+.ylab{font-weight:600;font-size:15px;min-width:48px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--mut);margin-top:4px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin-right:4px}
+#wrap{position:absolute;inset:96px 0 0 0}
+svg{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
+svg.drag{cursor:grabbing}
+.tip{position:fixed;pointer-events:none;background:var(--card);border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:50}
+.tip .t{font-weight:600}.tip .m{color:var(--mut);font-size:10.5px;margin:2px 0 4px}.tip .s{font-size:11px;line-height:1.4}
+.hint{position:absolute;left:16px;bottom:8px;font-size:11px;color:#b9b4ab}
+</style></head><body>
+<div class="top">
+<h1>Tooling Cards — The Globe</h1>
+<div class="bar">
+  <button class="btn" id="play">▶ play</button>
+  <span class="ylab" id="ylab">2030</span>
+  <input type="range" id="yr" min="1600" max="2030" value="2030">
+  <button class="btn" id="reset">reset view</button>
+</div>
+<div class="legend"><span><i style="background:var(--Measure)"></i>Measure</span><span><i style="background:var(--Model)"></i>Model</span><span><i style="background:var(--Make)"></i>Make</span><span><i style="background:var(--Manufacture)"></i>Manufacture</span><span>drag to spin · scroll to zoom · colour = M, opacity = recency, countries shaded by tool count</span></div>
+</div>
+<div id="wrap"><svg id="g"></svg></div>
+<div class="tip" id="tip"></div>
+<div class="hint" id="hint"></div>
+<script src="data/cards.js"></script>
+<script src="data/countries.js"></script>
+<script src="map.js"></script>
+</body></html>
