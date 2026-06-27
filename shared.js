@@ -37,6 +37,10 @@ window.showDetail=function(c){
 // URL state
 window.getState=function(){const o={};(location.hash||"").replace(/^#/,"").split("&").forEach(kv=>{if(!kv)return;const i=kv.indexOf("=");const k=i<0?kv:kv.slice(0,i);o[k]=i<0?"":decodeURIComponent(kv.slice(i+1));});return o;};
 window.setState=function(patch){const o=getState();Object.assign(o,patch);const s=Object.entries(o).filter(e=>e[1]!==""&&e[1]!=null).map(e=>e[0]+"="+encodeURIComponent(e[1])).join("&");try{history.replaceState(null,"",location.pathname+(s?"#"+s:""));}catch(e){try{location.hash=s;}catch(e2){}}buildNav();};
+// Unified thread selection (shared by Globe, Timeline, Table). `thread` hash param = comma-joined list.
+window.getThreads=function(){return ((getState().thread)||"").split(",").map(s=>s.trim()).filter(Boolean);};
+window.setThreads=function(arr){setState({thread:(arr||[]).join(",")});};
+window.threadMatch=function(card,arr){return !arr||!arr.length||arr.some(t=>(card.threads||[]).includes(t));};
 // dynamic nav
 const NAVITEMS=[["Home","index.html"],["Globe","map.html"],["Timeline","views/atlas.html"],["Tree","views/tree.html"],["Deck","views/deck.html"],["Table","table.html"],["Dashboard","dashboard.html"]];
 function buildNav(){const el=document.getElementById("appnav");if(!el)return;const views=location.pathname.indexOf("/views/")>=0;const cur=location.pathname.split("/").pop()||"index.html";

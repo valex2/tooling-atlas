@@ -9,7 +9,7 @@ const maxc=Math.max(1,...COUNTRIES.map(o=>o.c));
 // centroid of data for initial view
 let cLon=0,cLat=0;(function(){let x=0,y=0,z=0,n=0;for(const c of CARDS){if(c.lat==null)continue;const la=c.lat*D2R,lo=c.lon*D2R;x+=Math.cos(la)*Math.cos(lo);y+=Math.cos(la)*Math.sin(lo);z+=Math.sin(la);n++;}cLon=Math.atan2(y,x)/D2R;cLat=Math.atan2(z,Math.hypot(x,y))/D2R;})();
 let rotLon=cLon, rotLat=Math.min(55,cLat+6), scale=0, T=0, playing=false, timer=null, foundId=null;
-let selThreads=[];try{const st=getState();if(st.thread)selThreads=st.thread.split(",").filter(Boolean);}catch(e){}
+let selThreads=[];try{selThreads=getThreads();}catch(e){}
 const TPAL=["#c0392b","#1f77b4","#2ca02c","#9467bd","#e6862e","#16a3a3","#d6336c","#6b4f2a"];
 const threadColor=t=>TPAL[Math.max(0,selThreads.indexOf(t))%TPAL.length];
 const svg=document.getElementById('g'), tip=document.getElementById('tip');
@@ -117,8 +117,8 @@ document.getElementById('msearch').oninput=e=>{const q=e.target.value.toLowerCas
  function paint(){
   pan.innerHTML=ths.map(t=>{const on=selThreads.includes(t);const col=on?threadColor(t):'#ccc';return `<div class="trow" data-t="${encodeURIComponent(t)}" style="display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:6px;cursor:pointer;font-size:12px;${on?'background:#f3efe9':''}"><span style="width:10px;height:10px;border-radius:50%;background:${col};flex:0 0 auto;border:.5px solid rgba(0,0,0,.2)"></span><span style="flex:1">${t}</span><span style="color:#aaa;font-size:10.5px">${counts[t]}</span></div>`;}).join("")+(selThreads.length?`<div id="tclr" style="text-align:center;color:#9a6a3a;cursor:pointer;font-size:11.5px;padding:6px 0 2px;border-top:.5px solid #eee;margin-top:4px">clear all</div>`:"");
   btn.textContent=(selThreads.length?selThreads.length+(selThreads.length>1?' threads':' thread'):'threads')+' ▾';
-  pan.querySelectorAll('.trow').forEach(r=>r.onclick=()=>{const t=decodeURIComponent(r.dataset.t);const i=selThreads.indexOf(t);if(i>=0)selThreads.splice(i,1);else selThreads.push(t);try{setState({thread:selThreads.join(",")});}catch(e){}paint();render();});
-  const clr=document.getElementById('tclr');if(clr)clr.onclick=()=>{selThreads=[];try{setState({thread:""});}catch(e){}paint();render();};
+  pan.querySelectorAll('.trow').forEach(r=>r.onclick=()=>{const t=decodeURIComponent(r.dataset.t);const i=selThreads.indexOf(t);if(i>=0)selThreads.splice(i,1);else selThreads.push(t);try{setThreads(selThreads);}catch(e){}paint();render();});
+  const clr=document.getElementById('tclr');if(clr)clr.onclick=()=>{selThreads=[];try{setThreads([]);}catch(e){}paint();render();};
  }
  btn.onclick=ev=>{ev.stopPropagation();pan.style.display=pan.style.display==='none'?'block':'none';};
  pan.addEventListener('click',ev=>ev.stopPropagation());

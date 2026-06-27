@@ -93,7 +93,7 @@ DATA.forEach(c=>c.region=regionOf(c.place));
 const GEOGROUP={"US Northeast":"United States","US Midwest":"United States","Silicon Valley / California":"United States","US (other)":"United States"};
 const SUBLABEL={"US Northeast":"Northeast","US Midwest":"Midwest","Silicon Valley / California":"Silicon Valley","US (other)":"Other"};
 const groupOf=l=>GEOGROUP[l]||l;
-let axis="thread",size="overview",selThread=null,selCard=null,q="",zoom=1;try{const st=getState();if(st.thread)selThread=st.thread;}catch(e){}
+let axis="thread",size="overview",selThreads=[],selCard=null,q="",zoom=1;try{selThreads=getThreads();}catch(e){}
 const expanded=new Set();
 const DIM={overview:{w:13,h:14,gh:3,gv:5,dot:true},chip:{w:120,h:38,gh:12,gv:8},medium:{w:158,h:96,gh:14,gv:12},full:{w:158,h:150,gh:14,gv:12}};
 const x0=200,minY=1200,maxY=2030,SPAN=830,WIDTH=3400;
@@ -177,7 +177,7 @@ function render(){
  stage.style.width=layoutW+"px";stage.style.height=layoutH+"px";
  svg.setAttribute("width",layoutW);svg.setAttribute("height",layoutH);svg.setAttribute("viewBox",`0 0 ${layoutW} ${layoutH}`);
  let lit=null;if(selCard){lit=new Set([selCard]);anc(selCard,lit);desc(selCard,lit);}
- const inT=id=>selThread&&byId[id].threads.includes(selThread);
+ const inT=id=>selThreads.length&&threadMatch(byId[id],selThreads);
  let html="";
  lanes.forEach((l,i)=>{if(i<lanes.length-1)html+=`<div class="lanesep" style="top:${LSEP[i]}px;width:${layoutW}px"></div>`;});
  let gi=0;
@@ -195,7 +195,7 @@ lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute
  for(let y=1200;y<=2030;y+=10){const gx=xs(y),maj=(y%50===0);html+=`<div class="gl ${maj?'maj':''}" style="left:${gx}px;top:${26+ERABAND}px;height:${layoutH-32-ERABAND}px"></div>`;html+=`<div class="yr" style="left:${gx+2}px;top:${10+ERABAND}px;color:${maj?'#8f8f8f':'#c9c9c9'};${maj?'font-weight:600':''}">${maj?y:"’"+String(y).slice(2)}</div>`;}
  for(const l of lanes){const dotmode=DIM[laneMode(l)].dot;for(const it of laneItems[l]){const c=it.c;const matchq=q&&(c.name.toLowerCase().includes(q)||(c.person||'').toLowerCase().includes(q));
    let extra="";if(lit){if(!it.ghost&&!lit.has(c.id))extra=" dim";else if(!it.ghost&&lit.has(c.id)&&c.id!==selCard)extra=" hl";}
-   else if(selThread&&!inT(c.id))extra=" dim"; if(c.id===selCard&&!it.ghost)extra+=" sel"; if(matchq)extra+=" hl";
+   else if(selThreads.length&&!inT(c.id))extra=" dim"; if(c.id===selCard&&!it.ghost)extra+=" sel"; if(matchq)extra+=" hl";
    const op=it.ghost?(extra.includes("dim")?"":"opacity:.4;"):"";
    if(dotmode){const r=it.ghost?3:4.2;html+=`<div class="dot${extra}" data-id="${enc(c.id)}" style="left:${it.x}px;top:${it._y}px;width:${r*2}px;height:${r*2}px;background:${KC[c.kind]};${op}"></div>`;}
    else{const d=it.d;const body=laneMode(l)==="chip"?`<div class="ti" style="color:${KC[c.kind]}">${c.name}</div><div class="kx">${c.year}</div>`:`<div class="ti" style="color:${KC[c.kind]}">${c.name}</div><div class="pe">${c.person||""}</div><div class="kx">${c.kind} · ${c.year}</div><div class="sg">${c.sig||""}</div>`;
@@ -205,10 +205,10 @@ lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute
  stage.insertAdjacentHTML("beforeend",html);
  let e="";
  for(const c of DATA){const a=pos[c.id];if(!a)continue;for(const en of (c.en||[])){const b=pos[en];if(!b)continue;
-   const x1=a.x+a.w,y1=a.y+a.h/2,x2=b.x,y2=b.y+b.h/2;const on=lit?(lit.has(c.id)&&lit.has(en)):(selThread?(inT(c.id)&&inT(en)):true);
-   const op=lit?(on?.9:.04):(selThread?(on?.5:.05):.2);const sw=(lit&&on)?2:1;const mx=(x1+x2)/2;
+   const x1=a.x+a.w,y1=a.y+a.h/2,x2=b.x,y2=b.y+b.h/2;const on=lit?(lit.has(c.id)&&lit.has(en)):(selThreads.length?(inT(c.id)&&inT(en)):true);
+   const op=lit?(on?.9:.04):(selThreads.length?(on?.5:.05):.2);const sw=(lit&&on)?2:1;const mx=(x1+x2)/2;
    e+=`<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${sw}"/>`;}}
- if(selThread){const mem=DATA.filter(c=>c.threads.includes(selThread)&&pos[c.id]).sort((a,b)=>a.year-b.year);if(mem.length>1){let d="M"+(pos[mem[0].id].x+pos[mem[0].id].w/2)+" "+(pos[mem[0].id].y+pos[mem[0].id].h/2);for(let i=1;i<mem.length;i++){const p=pos[mem[i].id];d+=" L"+(p.x+p.w/2)+" "+(p.y+p.h/2);}e=`<path d="${d}" fill="none" stroke="#9a6a3a" stroke-width="7" stroke-opacity="0.16" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#9a6a3a" stroke-width="1.5" stroke-opacity="0.85"/>`+e;}}
+ if(selThreads.length){let ee="";selThreads.forEach(function(stt){const mem=DATA.filter(c=>c.threads.includes(stt)&&pos[c.id]).sort((a,b)=>a.year-b.year);if(mem.length>1){let d="M"+(pos[mem[0].id].x+pos[mem[0].id].w/2)+" "+(pos[mem[0].id].y+pos[mem[0].id].h/2);for(let i=1;i<mem.length;i++){const p=pos[mem[i].id];d+=" L"+(p.x+p.w/2)+" "+(p.y+p.h/2);}ee+=`<path d="${d}" fill="none" stroke="#9a6a3a" stroke-width="7" stroke-opacity="0.16" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#9a6a3a" stroke-width="1.5" stroke-opacity="0.85"/>`;}});e=ee+e;}
  svg.innerHTML=e;stage.appendChild(fc);
  stage.querySelectorAll('.c,.dot').forEach(el=>{el.onmouseenter=()=>showFull(dec(el.dataset.id),el);el.onmouseleave=hideFull;el.onclick=()=>{const id=dec(el.dataset.id);try{showDetail(byId[id]);}catch(e){}selCard=selCard===id?null:id;render();};});
  stage.querySelectorAll('.lanelab').forEach(el=>el.onclick=()=>{const l=dec(el.dataset.lane);expanded.has(l)?expanded.delete(l):expanded.add(l);render();});
@@ -225,13 +225,13 @@ function mk(el,opts,cur,fn){document.getElementById(el).innerHTML=opts.map(o=>`<
 const axisBtns=()=>mk("axisBtns",[["thread","Thread"],["geo","Geography"],["kind","Four Ms"]],axis,v=>{axis=v;selCard=null;expanded.clear();axisBtns();render();fitWidth();scroll.addEventListener('scroll',pinLabels);});
 const sizeBtns=()=>mk("sizeBtns",[["overview","Overview"],["chip","Chip"],["medium","Medium"],["full","Full"]],size,v=>{size=v;sizeBtns();render();});
 const timeBtns=()=>mk("timeBtns",[["even","Even"],["comp","Compressed"],["density","Density"]],timeScale,v=>{timeScale=v;timeBtns();render();fitWidth();});
-function threadbar(){const all=[...new Set(DATA.flatMap(c=>c.threads))].sort();document.getElementById("threadbar").innerHTML=all.map(t=>`<span class="tchip ${selThread===t?'on':''}" data-t="${enc(t)}">${t}</span>`).join("");document.querySelectorAll("#threadbar .tchip").forEach(b=>b.onclick=()=>{const t=dec(b.dataset.t);selThread=selThread===t?null:t;try{setState({thread:selThread});}catch(e){}threadbar();render();});}
+function threadbar(){const all=[...new Set(DATA.flatMap(c=>c.threads))].sort();document.getElementById("threadbar").innerHTML=all.map(t=>`<span class="tchip ${selThreads.includes(t)?'on':''}" data-t="${enc(t)}">${t}</span>`).join("");document.querySelectorAll("#threadbar .tchip").forEach(b=>b.onclick=()=>{const t=dec(b.dataset.t);const i=selThreads.indexOf(t);if(i>=0)selThreads.splice(i,1);else selThreads.push(t);try{setThreads(selThreads);}catch(e){}threadbar();render();});}
 function fitWidth(){if(axis==="map")return;zoom=Math.max(.2,Math.min(1.5,(scroll.clientWidth-16)/layoutW));applyZoom();}
 function fitAll(){if(axis==="map")return;zoom=Math.max(.12,Math.min(1.5,Math.min((scroll.clientWidth-16)/layoutW,(scroll.clientHeight-16)/layoutH)));applyZoom();}
 document.getElementById("zoom").oninput=e=>{zoom=e.target.value/100;applyZoom();};
 document.getElementById("fitw").onclick=fitWidth;document.getElementById("fitall").onclick=fitAll;
 document.getElementById("search").oninput=e=>{q=e.target.value.toLowerCase();render();};
-document.getElementById("reset").onclick=()=>{selThread=null;selCard=null;q="";expanded.clear();document.getElementById("search").value="";threadbar();render();fitWidth();};
+document.getElementById("reset").onclick=()=>{selThreads=[];selCard=null;q="";expanded.clear();document.getElementById("search").value="";threadbar();render();fitWidth();};
 (function(){const scr=document.getElementById("scrub");if(scr){scr.oninput=e=>{mstop();mapT=+e.target.value;document.getElementById("scrubyr").textContent=mapT;renderMap();};}
 const mp=document.getElementById("mplay");if(mp)mp.onclick=function(){if(mplaying){mstop();return;}mplaying=true;this.textContent="❚❚ pause";this.classList.add("on");if(mapT>=2030){mapT=1600;}mtimer=setInterval(()=>{if(mapT>=2030){mstop();return;}mapT=Math.min(2030,mapT+4);document.getElementById("scrub").value=mapT;document.getElementById("scrubyr").textContent=mapT;renderMap();},90);};})();
 function mstop(){mplaying=false;clearInterval(mtimer);const b=document.getElementById("mplay");if(b){b.textContent="▶ play migration";b.classList.remove("on");}}
