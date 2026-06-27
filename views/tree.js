@@ -1,9 +1,9 @@
 (function(){
 const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
 const byId=Object.fromEntries(CARDS.map(c=>[c.id,c]));
-const ERAS=[["Medieval / Renaissance",1400,1600],["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World War I",1914,1918],["Interwar",1918,1939],["World War II",1939,1945],["Cold War",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
+const ERAS=[["Medieval",1200,1400],["Renaissance",1400,1600],["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World War I",1914,1918],["Interwar",1918,1939],["World War II",1939,1945],["Cold War",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
 const EVENTS=[[1769,"Watt steam engine"],[1776,"American Revolution"],[1957,"Sputnik"],[1969,"Moon landing"],[1971,"Microprocessor"],[1989,"World Wide Web"],[2003,"Iraq War"],[2007,"iPhone"],[2012,"Deep learning"],[2020,"COVID-19"]];
-const minY=1400,maxY=2030,x0=170,PPY=5.2,W=118,H=34;
+const minY=1200,maxY=2030,x0=170,PPY=5.2,W=118,H=34;
 const xs=y=>x0+(Math.max(minY,Math.min(maxY,y))-minY)*PPY;
 // auto lanes by primary thread, ordered by earliest member
 const prim=c=>(c.threads&&c.threads.length?c.threads[0]:"—");
@@ -30,7 +30,7 @@ function render(){const meta=layout();
  meta.forEach((m,i)=>{if(i%2)h+=`<div style="position:absolute;left:0;top:${m[2]}px;width:${layoutW}px;height:${m[3]-m[2]}px;background:rgba(0,0,0,.03);z-index:0"></div>`;});
  ERAS.forEach((e,i)=>{const a=xs(e[1]),b=xs(e[2]);h+=`<div style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div><div style="position:absolute;left:${(a+b)/2}px;top:2px;transform:translateX(-50%);font-size:9px;font-weight:600;color:rgba(0,0,0,.32);z-index:4;white-space:nowrap;background:rgba(252,251,249,.85);padding:0 3px">${e[0]}</div>`;});
  EVENTS.forEach((ev,i)=>{const x=xs(ev[0]);h+=`<div style="position:absolute;left:${x}px;top:16px;height:${layoutH-16}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:16px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${x+3}px;top:${i%2?16:27}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;});
- for(let y=1400;y<=2030;y+=10){const gx=xs(y),mj=y%50===0;h+=`<div class="gl ${mj?'maj':''}" style="left:${gx}px;top:24px;height:${layoutH-30}px"></div>`;if(mj)h+=`<div class="yr" style="left:${gx+2}px;color:#999;font-weight:600">${y}</div>`;}
+ for(let y=1200;y<=2030;y+=10){const gx=xs(y),mj=y%50===0;h+=`<div class="gl ${mj?'maj':''}" style="left:${gx}px;top:24px;height:${layoutH-30}px"></div>`;if(mj)h+=`<div class="yr" style="left:${gx+2}px;color:#999;font-weight:600">${y}</div>`;}
  for(const m of meta)h+=`<div class="lanelab" style="top:${m[1]}px">${m[0]}</div>`;
  for(const c of CARDS){const dimd=lit&&!lit.has(c.id);const hl=(lit&&lit.has(c.id)&&c.id!==sel)||(q&&(c.name.toLowerCase().includes(q)));
   h+=`<div class="c${dimd?' dim':''}${c.id===sel?' sel':''}${hl?' hl':''}" data-id="${encodeURIComponent(c.id)}" style="left:${c._x}px;top:${c._y}px;border-left-color:${KC[c.kind]}"><div class="ti" style="color:${KC[c.kind]}">${c.name}</div><div class="yt">${c.kind} · ${c.year}</div></div>`;}
