@@ -52,7 +52,8 @@ input[type=range]{accent-color:var(--ink);width:90px;}
 .maplbl{position:absolute;transform:translate(-50%,-100%);font-size:10px;font-weight:600;color:var(--ink);white-space:nowrap;pointer-events:none;text-shadow:0 1px 2px #fcfbf9,0 -1px 2px #fcfbf9,1px 0 2px #fcfbf9,-1px 0 2px #fcfbf9;}
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 </head><body>
-<div style="position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif"><a href="../index.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Home</a><a href="../map.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Globe</a><a href="atlas.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#1c1c1c;color:#fff;font-size:11.5px">Timeline</a><a href="tree.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Tree</a><a href="deck.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Deck</a><a href="../table.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Table</a></div>
+<script src="../shared.js"></script>
+<div id="appnav" style="position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif"><a href="../index.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Home</a><a href="../map.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Globe</a><a href="atlas.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#1c1c1c;color:#fff;font-size:11.5px">Timeline</a><a href="tree.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Tree</a><a href="deck.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Deck</a><a href="../table.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Table</a></div>
 <div class="top">
 <h1>Tooling Cards — Atlas</h1>
 <div class="bar">
@@ -90,7 +91,7 @@ DATA.forEach(c=>c.region=regionOf(c.place));
 const GEOGROUP={"US Northeast":"United States","US Midwest":"United States","Silicon Valley / California":"United States","US (other)":"United States"};
 const SUBLABEL={"US Northeast":"Northeast","US Midwest":"Midwest","Silicon Valley / California":"Silicon Valley","US (other)":"Other"};
 const groupOf=l=>GEOGROUP[l]||l;
-let axis="thread",size="overview",selThread=null,selCard=null,q="",zoom=1;
+let axis="thread",size="overview",selThread=null,selCard=null,q="",zoom=1;try{const st=getState();if(st.thread)selThread=st.thread;}catch(e){}
 const expanded=new Set();
 const DIM={overview:{w:13,h:14,gh:3,gv:5,dot:true},chip:{w:120,h:38,gh:12,gv:8},medium:{w:158,h:96,gh:14,gv:12},full:{w:158,h:150,gh:14,gv:12}};
 const x0=200,minY=1600,maxY=2030,SPAN=430,WIDTH=3000;
@@ -195,7 +196,7 @@ lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute
    e+=`<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${sw}"/>`;}}
  if(selThread){const mem=DATA.filter(c=>c.threads.includes(selThread)&&pos[c.id]).sort((a,b)=>a.year-b.year);if(mem.length>1){let d="M"+(pos[mem[0].id].x+pos[mem[0].id].w/2)+" "+(pos[mem[0].id].y+pos[mem[0].id].h/2);for(let i=1;i<mem.length;i++){const p=pos[mem[i].id];d+=" L"+(p.x+p.w/2)+" "+(p.y+p.h/2);}e=`<path d="${d}" fill="none" stroke="#9a6a3a" stroke-width="7" stroke-opacity="0.16" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#9a6a3a" stroke-width="1.5" stroke-opacity="0.85"/>`+e;}}
  svg.innerHTML=e;stage.appendChild(fc);
- stage.querySelectorAll('.c,.dot').forEach(el=>{el.onmouseenter=()=>showFull(dec(el.dataset.id),el);el.onmouseleave=hideFull;el.onclick=()=>{const id=dec(el.dataset.id);selCard=selCard===id?null:id;render();};});
+ stage.querySelectorAll('.c,.dot').forEach(el=>{el.onmouseenter=()=>showFull(dec(el.dataset.id),el);el.onmouseleave=hideFull;el.onclick=()=>{const id=dec(el.dataset.id);try{showDetail(byId[id]);}catch(e){}selCard=selCard===id?null:id;render();};});
  stage.querySelectorAll('.lanelab').forEach(el=>el.onclick=()=>{const l=dec(el.dataset.lane);expanded.has(l)?expanded.delete(l):expanded.add(l);render();});
  applyZoom();
  document.getElementById("hint").textContent=`${DATA.length} cards · ${lanes.length} lanes · by ${axis} · click a lane name to expand`;
@@ -210,7 +211,7 @@ function mk(el,opts,cur,fn){document.getElementById(el).innerHTML=opts.map(o=>`<
 const axisBtns=()=>mk("axisBtns",[["thread","Thread"],["geo","Geography"],["kind","Four Ms"]],axis,v=>{axis=v;selCard=null;expanded.clear();axisBtns();render();fitWidth();});
 const sizeBtns=()=>mk("sizeBtns",[["overview","Overview"],["chip","Chip"],["medium","Medium"],["full","Full"]],size,v=>{size=v;sizeBtns();render();});
 const timeBtns=()=>mk("timeBtns",[["even","Even"],["comp","Compressed"],["density","Density"]],timeScale,v=>{timeScale=v;timeBtns();render();fitWidth();});
-function threadbar(){const all=[...new Set(DATA.flatMap(c=>c.threads))].sort();document.getElementById("threadbar").innerHTML=all.map(t=>`<span class="tchip ${selThread===t?'on':''}" data-t="${enc(t)}">${t}</span>`).join("");document.querySelectorAll("#threadbar .tchip").forEach(b=>b.onclick=()=>{const t=dec(b.dataset.t);selThread=selThread===t?null:t;threadbar();render();});}
+function threadbar(){const all=[...new Set(DATA.flatMap(c=>c.threads))].sort();document.getElementById("threadbar").innerHTML=all.map(t=>`<span class="tchip ${selThread===t?'on':''}" data-t="${enc(t)}">${t}</span>`).join("");document.querySelectorAll("#threadbar .tchip").forEach(b=>b.onclick=()=>{const t=dec(b.dataset.t);selThread=selThread===t?null:t;try{setState({thread:selThread});}catch(e){}threadbar();render();});}
 function fitWidth(){if(axis==="map")return;zoom=Math.max(.2,Math.min(1.5,(scroll.clientWidth-16)/layoutW));applyZoom();}
 function fitAll(){if(axis==="map")return;zoom=Math.max(.12,Math.min(1.5,Math.min((scroll.clientWidth-16)/layoutW,(scroll.clientHeight-16)/layoutH)));applyZoom();}
 document.getElementById("zoom").oninput=e=>{zoom=e.target.value/100;applyZoom();};

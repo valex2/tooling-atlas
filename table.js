@@ -3,6 +3,7 @@ const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"
 const KINDS=["Measure","Model","Make","Manufacture"];
 const COLS=[["name","Tool"],["kind","Kind"],["year","Year"],["place","Place"],["threads","Threads"],["links","Links"],["sig","Significance"]];
 let q="",kind=null,thread="",sortK="year",sortDir=1;
+try{const st=getState();if(st.kind)kind=st.kind;if(st.thread)thread=st.thread;if(st.q)q=st.q;}catch(e){}
 const allThreads=[...new Set(CARDS.flatMap(c=>c.threads))].sort();
 document.getElementById("thread").innerHTML='<option value="">all threads</option>'+allThreads.map(t=>`<option>${t}</option>`).join("");
 document.getElementById("kinds").innerHTML=KINDS.map(k=>`<button class="chip" data-k="${k}" style="border-color:${KC[k]}">${k}</button>`).join("");
@@ -29,11 +30,14 @@ function render(){
   <td title="builds on ${c.bo.length}, enables ${c.en.length}">${c.bo.length}→${c.en.length}</td>
   <td class="sig">${c.sig||""}</td></tr>`).join("");
  document.getElementById("count").textContent=`${r.length} of ${CARDS.length} tools`;
+ document.querySelectorAll('#body tr').forEach((tr,ix)=>{tr.style.cursor='pointer';tr.onclick=()=>showDetail(r[ix]);});
+ try{setState({kind:kind||'',thread:thread||'',q:q||''});}catch(e){}
  document.querySelectorAll("#kinds .chip").forEach(b=>b.classList.toggle("on",b.dataset.k===kind));
 }
 document.getElementById("q").oninput=e=>{q=e.target.value.toLowerCase();render();};
 document.getElementById("thread").onchange=e=>{thread=e.target.value;render();};
 document.querySelectorAll("#kinds .chip").forEach(b=>b.onclick=()=>{kind=kind===b.dataset.k?null:b.dataset.k;render();});
 document.getElementById("reset").onclick=()=>{q="";kind=null;thread="";document.getElementById("q").value="";document.getElementById("thread").value="";render();};
+try{if(q){document.getElementById('q').value=q;}if(thread){document.getElementById('thread').value=thread;}}catch(e){}
 render();
 })();

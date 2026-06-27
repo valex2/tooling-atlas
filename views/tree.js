@@ -9,7 +9,7 @@ const xs=y=>x0+(Math.max(minY,Math.min(maxY,y))-minY)*PPY;
 const prim=c=>(c.threads&&c.threads.length?c.threads[0]:"—");
 const tmin={};CARDS.forEach(c=>{const t=prim(c);tmin[t]=Math.min(tmin[t]??9999,c.year||9999);});
 const lanes=[...new Set(CARDS.map(prim))].sort((a,b)=>(tmin[a]-tmin[b]));
-let sel=null,q="",pos={},layoutH=0,layoutW=0;
+let sel=null,q="",pos={},layoutH=0,layoutW=0;try{const st=getState();if(st.q)q=st.q;}catch(e){}
 const scroll=document.getElementById("scroll"),stage=document.getElementById("stage"),svg=document.getElementById("edges"),tip=document.getElementById("tip");
 function layout(){pos={};let curY=40;const LM={},items={};lanes.forEach(l=>items[l]=[]);
  CARDS.forEach(c=>items[prim(c)].push(c));
@@ -37,11 +37,12 @@ function render(){const meta=layout();
  stage.insertAdjacentHTML("beforeend",h);
  let e="";for(const c of CARDS){const a=pos[c.id];if(!a)continue;for(const en of (c.en||[])){const b=pos[en];if(!b)continue;const on=lit?(lit.has(c.id)&&lit.has(en)):true;const op=lit?(on?.9:.05):.25;const x1=a.x+W,y1=a.y+H/2,x2=b.x,y2=b.y+H/2,mx=(x1+x2)/2;e+=`<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${(lit&&on)?2:1}"/>`;}}
  svg.innerHTML=e;
- stage.querySelectorAll('.c').forEach(el=>{const id=decodeURIComponent(el.dataset.id);el.onclick=()=>{sel=sel===id?null:id;render();};el.onmousemove=ev=>showTip(id,ev);el.onmouseleave=()=>tip.style.display='none';});
+ stage.querySelectorAll('.c').forEach(el=>{const id=decodeURIComponent(el.dataset.id);el.onclick=()=>{sel=sel===id?null:id;try{showDetail(byId[id]);}catch(e){}render();};el.onmousemove=ev=>showTip(id,ev);el.onmouseleave=()=>tip.style.display='none';});
  document.getElementById("hint")&&(document.getElementById("hint").textContent="");
 }
 function showTip(id,e){const c=byId[id];tip.style.borderLeftColor=KC[c.kind];tip.innerHTML=`<div class="t" style="color:${KC[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig||''}</div>`;tip.style.display='block';tip.style.left=Math.min(e.clientX+14,window.innerWidth-270)+'px';tip.style.top=(e.clientY+14)+'px';}
-document.getElementById("q").oninput=e=>{q=e.target.value.toLowerCase();render();};
+document.getElementById("q").oninput=e=>{q=e.target.value.toLowerCase();try{setState({q:q});}catch(e){}render();};
+try{if(q)document.getElementById("q").value=q;}catch(e){}
 document.getElementById("reset").onclick=()=>{sel=null;q="";document.getElementById("q").value="";render();};
 render();
 })();
