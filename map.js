@@ -3,10 +3,12 @@ const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"
 const D2R=Math.PI/180, YR0=1600,YR1=2025;
 const tfrac=y=>Math.max(0,Math.min(1,(y-YR0)/(YR1-YR0)));
 const byId=Object.fromEntries(CARDS.map(c=>[c.id,c]));
+const YS=CARDS.map(c=>c.year).filter(y=>y).sort((a,b)=>a-b);
+function qYear(frac){const i=Math.min(YS.length-1,Math.max(0,Math.round(frac*(YS.length-1))));return YS[i];}
 const maxc=Math.max(1,...COUNTRIES.map(o=>o.c));
 // centroid of data for initial view
 let cLon=0,cLat=0;(function(){let x=0,y=0,z=0,n=0;for(const c of CARDS){if(c.lat==null)continue;const la=c.lat*D2R,lo=c.lon*D2R;x+=Math.cos(la)*Math.cos(lo);y+=Math.cos(la)*Math.sin(lo);z+=Math.sin(la);n++;}cLon=Math.atan2(y,x)/D2R;cLat=Math.atan2(z,Math.hypot(x,y))/D2R;})();
-let rotLon=cLon, rotLat=Math.min(55,cLat+6), scale=0, T=2030, playing=false, timer=null;
+let rotLon=cLon, rotLat=Math.min(55,cLat+6), scale=0, T=0, playing=false, timer=null;
 const svg=document.getElementById('g'), tip=document.getElementById('tip');
 let W=0,H=0,cx=0,cy=0;
 function size(){const r=svg.getBoundingClientRect();W=r.width;H=r.height;cx=W/2;cy=H/2;if(!scale)scale=Math.min(W,H)*0.46;}
@@ -29,7 +31,7 @@ function render(){
  const rsc=Math.max(.6,Math.min(3,scale/(Math.min(W,H)*0.46)));
  for(const c of CARDS){if(c.lat==null||c.year>T)continue;const p=proj(c.lon,c.lat);if(p[2]<0)continue;const r=(3+Math.min(4,(c.en?c.en.length:0)*0.8))*rsc;s+=`<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${(0.3+0.65*tfrac(c.year)).toFixed(2)}" stroke="#fff" stroke-width=".8"/>`;}
  // hub labels (top cities by count)
- for(const h of HUBS){if(!vis(h.lon,h.lat))continue;const p=proj(h.lon,h.lat);s+=`<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="600" fill="#1c1c1c" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2.6px">${h.city}</text>`;}
+ for(const h of HUBS){if(!vis(h.lon,h.lat))continue;const p=proj(h.lon,h.lat);s+=`<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2px">${h.city}</text>`;}
  svg.innerHTML=s;
  svg.querySelectorAll('.dot').forEach(el=>{el.style.cursor='pointer';el.onmousemove=e=>showTip(decodeURIComponent(el.dataset.id),e);el.onmouseleave=()=>tip.style.display='none';});
  document.getElementById('hint').textContent=`${CARDS.filter(c=>c.lat!=null&&c.year<=T).length} of ${CARDS.length} tools through ${T}`;
@@ -45,10 +47,10 @@ window.addEventListener('mousemove',e=>{if(!dn)return;const k=0.25*(300/scale);r
 window.addEventListener('mouseup',()=>{dn=false;svg.classList.remove('drag');});
 svg.addEventListener('wheel',e=>{e.preventDefault();scale*=(e.deltaY<0?1.15:0.87);scale=Math.max(80,Math.min(6000,scale));render();},{passive:false});
 const yr=document.getElementById('yr'),ylab=document.getElementById('ylab');
-yr.oninput=e=>{stop();T=+e.target.value;ylab.textContent=T;render();};
+yr.oninput=e=>{stop();T=qYear(+e.target.value/1000);ylab.textContent=T;render();};
 function stop(){playing=false;clearInterval(timer);const b=document.getElementById('play');b.textContent='▶ play';b.classList.remove('on');}
-document.getElementById('play').onclick=function(){if(playing){stop();return;}playing=true;this.textContent='❚❚ pause';this.classList.add('on');if(T>=2030)T=1600;timer=setInterval(()=>{if(T>=2030){stop();return;}T=Math.min(2030,T+4);yr.value=T;ylab.textContent=T;render();},90);};
+document.getElementById('play').onclick=function(){if(playing){stop();return;}playing=true;this.textContent='❚❚ pause';this.classList.add('on');let v=(+yr.value>=1000)?0:+yr.value;timer=setInterval(()=>{v+=14;if(v>=1000){v=1000;T=qYear(1);yr.value=1000;ylab.textContent=T;render();stop();return;}T=qYear(v/1000);yr.value=v;ylab.textContent=T;render();},90);};
 document.getElementById('reset').onclick=()=>{rotLon=cLon;rotLat=Math.min(55,cLat+6);scale=Math.min(W,H)*0.46;render();};
 window.addEventListener('resize',render);
-render();
+T=qYear(1);document.getElementById('ylab').textContent=T;render();
 })();
