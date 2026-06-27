@@ -1,0 +1,32 @@
+---
+Tags: tooling-card
+Name: CATIA
+Kind: Model
+Tool: 3D digital model of a whole machine
+Person: Dassault engineers
+Place: Paris, France
+Lat: 48.86
+Lon: 2.35
+City: Paris
+Era: 1970s
+Year: 1977
+Goal: Both
+Mechanism: Pace-layers
+Confidence: Direct
+Unlocked: a whole aircraft checked as a model before any part is cut
+Significance: "CATIA turned Sutherland's American design idea into the standard tool of world aerospace, a lead that crossed the Atlantic and stayed in French hands."
+BuildsOn:
+  - "[[Tooling Card - Sketchpad]]"
+Enables:
+  - "[[Tooling Card - The Falcon 9]]"
+Threads:
+  - "[[Thread - Prototyping & CAD]]"
+---
+*Model · Paris, France · 1970s*
+**Dassault engineers** · a whole machine modeled in 3D
+
+**Front.** In 1977 the French planemaker [Dassault](https://en.wikipedia.org/wiki/CATIA) was designing fighter jets whose curved surfaces were hard to pin down on flat paper drawings. Working from the same idea Sutherland had shown, its engineers built their own program to shape a plane's surfaces as a [three-dimensional model held inside the computer](https://en.wikipedia.org/wiki/CATIA). They called it CATIA, and in 1981 spun the team into a company, [Dassault Systèmes](https://en.wikipedia.org/wiki/Dassault_Syst%C3%A8mes), with [IBM selling the tool around the world](https://en.wikipedia.org/wiki/CATIA). Now a whole aircraft could be drawn, fitted, and checked as a model before a single part was cut.
+
+**Back.** When Boeing designed the [777 in the early 1990s with no paper drawings at all, every part shaped and fitted in CATIA](https://en.wikipedia.org/wiki/Boeing_777), the all-digital aircraft became the way planes get made. Today [CATIA is a standard tool of the world's aerospace and car makers](https://en.wikipedia.org/wiki/CATIA), and Dassault Systèmes grew into one of Europe's largest software firms. The design idea was born in an American lab; the tool that carried it became, and stayed, French.
+
+*Curator's note:* Placement: Model; Goal Both; Pace-layers (a design standard, once everyone's parts and suppliers are modeled in it, is slow and costly to leave, so the lead sticks). Confidence Direct. Analysis: this is the standard-holding end of [[Thread - Prototyping & CAD]] and the pair to [[Tooling Card - Sketchpad]]: an American seed that became a European-held standard. That makes it a migration card, not a moat card. The lesson is leadership following the tool: the idea was free and traveled, but the durable position went to whoever turned it into the sold, supported, locked-in tool, and that was Dassault, not MIT. A clean counterweight to the cards where the moat is tacit craft that never moves; here the moat is a standard plus switching cost, and it crossed an ocean to form. Nuance: CATIA began inside Avions Marcel Dassault for the Mirage program in 1977 and was spun into Dassault Systèmes in 1981; the Boeing 777 is the usual "first fully digital" milestone but earlier programs used CATIA in part.

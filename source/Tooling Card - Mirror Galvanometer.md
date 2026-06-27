@@ -1,0 +1,32 @@
+---
+Tags: tooling-card
+Name: Mirror Galvanometer
+Kind: Measure
+Tool: precise electrical measurement
+Person: William Thomson (Lord Kelvin)
+Place: Glasgow, Scotland
+Lat: 55.86
+Lon: -4.25
+City: Atlantic
+Era: 1860s
+Year: 1866
+Goal: Both
+Mechanism: Convergence
+Confidence: Direct
+Unlocked: instant news across the ocean
+Significance: "Reading a faint electrical current rather than boosting a loud one made the transatlantic cable work and established precise electrical measurement as the craft every later wire and radio leaned on."
+Enables:
+  - "[[Tooling Card - The Triode]]"
+BuildsOn:
+  - "[[Tooling Card - The Electric Telegraph]]"
+Threads:
+  - "[[Thread - Long-Distance Comms]]"
+---
+*Measure · Atlantic, UK and US · 1860s*
+**William Thomson (Lord Kelvin)** · reading a faint, smeared signal
+
+**Front.** In 1858 [Cyrus Field](https://www.sciencemuseum.org.uk/objects-and-stories/how-perseverance-laid-first-transatlantic-telegraph-cable) finally laid a telegraph wire along the sea floor from Ireland to Newfoundland, [about 2,000 miles of it](https://en.wikipedia.org/wiki/Transatlantic_telegraph_cable). A tap that was sharp on a short wire arrived at the far end faint and [smeared](https://en.wikipedia.org/wiki/Transatlantic_telegraph_cable), each pulse bleeding into the next, because over that much cable the current spreads out and lags, an effect Thomson named retardation. The cable's own engineer tried to punch through the fade with brute force, [up to 2,000 volts](https://en.wikipedia.org/wiki/Transatlantic_telegraph_cable), and burned the insulation away, so the line died in weeks. [William Thomson](https://www.lindahall.org/about/news/scientist-of-the-day/william-thomson-lord-kelvin-2/) went the other way and built a tool to read the whisper instead of shouting it: a [mirror galvanometer](https://collection.sciencemuseumgroup.org.uk/objects/co32961/thomsons-mirror-galvanometer-1858) with a tiny mirror on a light magnet that threw a spot of light across the room, so a current too small to feel could swing that spot far enough to read, [a thousand times](https://grokipedia.com/page/Mirror_galvanometer) more sensitive than anything before it.
+
+**Back.** When the [Great Eastern](https://ethw.org/Milestones:Landing_of_the_Transatlantic_Cable,_1866) laid the lasting cable in 1866, Thomson's faint-current method won, and a message that had taken ten days by ship now crossed in minutes. That same skill of reading a tiny current was also a ruler: a fault could sit anywhere along thousands of miles, and its resistance, set against the cable's known resistance per mile, gave its distance, so a repair ship aimed its grapnels at the right stretch of seabed instead of dragging the whole line blind ([Varley's loop test, from 1858](https://www.gracesguide.co.uk/Cromwell_Fleetwood_Varley)). The difference between the dead cable of 1858 and the [working cables of 1866](https://en.wikipedia.org/wiki/Transatlantic_telegraph_cable) was not the cable so much as the power to measure every foot of it, from the copper on the factory floor to a fault on the ocean bottom — the craft of precise electrical measurement that every later wire, telephone, and radio leaned on.
+
+*Curator's note:* **Placement.** Measure cell, the Atlantic line, 1860s. Serves Goal 1 (sending a signal across an ocean rode on the tool, not the wire) and Goal 2 (the lead in submarine telegraphy and electrical standards pooled in Britain, which then ran the world's cable network). Mechanism marked Convergence: the cable forced detection, theory (retardation), and metrology (the ohm) to converge into one new craft, precise electrical measurement. Confidence: direct on the galvanometer and the ohm committee; the broader "all later electronics leaned on it" line is a real but loose lineage, kept as "leaned on," not "caused." **Analysis.** This is the opening beat of [[Thread - Long-Distance Comms]], the first time distance is beaten over a wire before the tube and transistor take the thread into telephony, radio, and computing. It earns a distinct beat as the *measurement* card of that thread: later cards are about rebuilding a fading signal (amplifiers); this one is about *reading* a fading signal, the problem before amplification existed. It rhymes with [[Tooling Card - The EUV Machine]] as another case where the headline thing (the cable, the chip) is public and ordinary while the moat is the measurement craft underneath, though that card's sharper rhyme is Leeuwenhoek. No existing card occupies this Measure-of-electricity ground, so it fills a genuinely empty cell rather than echoing one. **Mechanism strain (for the framework).** Convergence fits but is not airtight: the three strands (galvanometer, retardation theory, the ohm) converge over a decade, not on one bench in one moment, so it is convergence-across-a-project more than the single-machine convergence of the EUV card. If more cards show a tool pulling detection plus theory plus a unit together, that "metrology convergence" may deserve its own name. **Nuance.** The 1858 cable was ordered as about 2,500 nautical miles; the working span Ireland-to-Newfoundland is roughly 1,700 nautical miles, so "about 2,000 miles" is a rounded statute-mile figure for the card face. The mirror galvanometer was patented in 1858 and used at Valentia that year; the 1,000x sensitivity is a museum/secondary figure against prior needle instruments, not a measured constant. The 1858 failure is usually pinned on Wildman Whitehouse driving up to 2,000 volts through high-tension induction coils against Thomson's advice; some accounts note the cable was already degrading before that, so the over-voltage hastened a death rather than being the sole cause. "Eight words a minute" for 1866 versus about 0.1 for 1858 is a secondary source; orders of magnitude are firm, the exact rates vary by account. Thomson became Lord Kelvin in 1892, after these events; the card uses the name he held in the 1860s. A second measurement-as-moat strand is kept off the face for room: the British Association standardized the ohm (Thomson, Maxwell, Jenkin, 1861-67) so cable men could measure against an agreed unit, from factory-floor copper to a fault at sea. Honesty: the 1866 line was also a better-built cable (heavier, better insulated), so "not the cable so much as" is a deliberate emphasis, not a denial; and the loop test only pointed the grappling, it never spared it.

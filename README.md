@@ -25,12 +25,14 @@ Click any card/row/dot/country → a **detail panel** with significance, threads
 - `data/ne/` — bundled Natural Earth low-res shapefile.
 - `shared.js` — nav, detail panel, Obsidian links, help overlay, URL state (shared by all views).
 
-## Regenerate after editing cards in the vault
+## Sync after editing cards in the vault
+One command does everything — regenerate the data **and** bundle the markdown source into `source/`:
 ```
-pip install pyshp            # one-time
-python3 regenerate.py        # rewrites data/cards.js + data/countries.js from the vault
+./sync.sh                    # then: git commit -m 'sync' && git push
 ```
-Vault path defaults to `/Users/Vassilis/Documents/Obsidian Vault`; override with `VAULT=/path python3 regenerate.py`.
+`sync.sh` installs `pyshp` if needed, runs `regenerate.py` (vault → `data/cards.js` + `data/countries.js`), copies every `Tooling Card - *.md` and `Thread - *.md` into `source/` so the repo carries the cards (not just the derived JS), and stages the result. Vault path defaults to `/Users/Vassilis/Documents/Obsidian Vault`; override with `VAULT=/path ./sync.sh`.
+
+Just the data, no bundling: `python3 regenerate.py` (same `VAULT` override).
 
 ## Deploy & update (GitHub Pages)
 Static site, no build step — GitHub Pages serves it as-is. Live URL is a project page: `https://<username>.github.io/tooling-atlas/`.

@@ -1,0 +1,36 @@
+---
+Tags: tooling-card
+Name: The Nuclear Pile
+Kind: Make
+Tool: Graphite-uranium pile with cadmium control rods
+Person: Enrico Fermi
+Place: Chicago, USA
+City: Chicago
+Lat: 41.7918
+Lon: -87.6011
+Era: 1940s
+Year: 1942
+Goal: Both
+Mechanism: Convergence
+Confidence: Direct
+Unlocked: a fission chain reaction you could start, hold, and stop
+Significance: "It was the first machine to hold a nuclear chain reaction steady instead of letting it run away, so fission could be used for power and for weapons."
+BuildsOn:
+  - "[[Tooling Card - The Mass Spectrograph]]"
+Enables:
+  - "[[Tooling Card - Plutonium Chemical Separation]]"
+  - "[[Tooling Card - The Gas Centrifuge]]"
+Threads:
+  - "[[Thread - Energy]]"
+---
+*Make · Chicago, USA · 1940s*
+**Enrico Fermi** · graphite-uranium pile with cadmium rods
+
+**Front.** On 2 December 1942, [Enrico Fermi](https://www.aps.org/apsnews/2011/12/self-sustained-nuclear-chain-reaction) and about 49 people crowded onto a squash court under the west stands of the University of Chicago's Stagg Field. The problem was simple to state and hard to prove: when a uranium nucleus splits it throws off neutrons, and if enough of those neutrons split more nuclei, the reaction feeds itself, but no one had ever made that happen in a way they could hold steady. Fermi's answer was a [20-foot stack](https://news.uchicago.edu/explainer/first-nuclear-reactor-explained) of [400 tons of graphite and about 50 tons of uranium](https://ahf.nuclearmuseum.org/chicago-pile-1-ushering-atomic-age/), laid in 57 layers, with wooden rods coated in cadmium pushed through it. The graphite slowed the stray neutrons so they would split the next nucleus; the cadmium rods soaked them up; and pulling a rod out a little at a time let the count of neutrons climb until the pile sustained itself, the first time anyone had run a fission chain reaction and kept their hand on the dial.
+
+**Back.** The pile went [critical](https://www.ans.org/news/article-1901/anniversary-of-first-man-made-criticality-december-2-1942/) with a reproduction factor of just 1.0006 and ran at about half a watt, less than a flashlight bulb, before Fermi ordered the rods back in after a few minutes. That tiny output was beside the point; the design itself, slow neutrons in graphite held in check by an absorber rod, became the pattern for every reactor that followed and for the plutonium-breeding piles at Hanford. The lead Chicago took here opened the way both to nuclear power and, through the Manhattan Project, to the bomb.
+
+*Curator's note:*
+(1) Placement: Make cell; Goal Both (civilian power and the weapon program ran off the same machine); Convergence (it pulls together neutron physics, ultra-pure graphite, and refined uranium into one controllable rig); Confidence Direct.
+(2) Analysis: This is the canonical "build and test one" card, a single working prototype that proved a principle. It pairs naturally with later Manufacture cards on enrichment and reactor scale-up, and it sits squarely on both threads: an engine for power and a tool forced into being by wartime urgency. BuildsOn/Enables left empty pending sibling cards (cyclotron, enrichment, plutonium piles); wire later.
+(3) Nuclear figures are well-attested: 400 tons graphite and ~50 tons uranium, 57 layers, k=1.0006, ~0.5 W at the demonstration (the pile later ran up to 200 W). Headcount is usually given as 49; some accounts say "about 50." The famous 3:25 p.m. criticality / 3:53 p.m. shutdown times vary slightly by source.

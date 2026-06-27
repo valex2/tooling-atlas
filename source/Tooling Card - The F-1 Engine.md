@@ -1,0 +1,31 @@
+---
+Tags: tooling-card
+Name: The F-1 Engine
+Kind: Make
+Tool: the F-1 rocket engine
+Person: the F-1 engine team
+Place: Canoga Park, California, USA
+Lat: 34.2
+Lon: -118.6
+City:
+Era: 1960s
+Year: 1967
+Goal: 1
+Mechanism: Convergence
+Confidence: Direct
+Unlocked: a rocket big enough to reach the Moon
+Significance: "Combustion instability in large engines cannot be solved on paper, only on the test stand, so the Moon mission required about 2,000 firings to produce knowledge that lived in the people who watched enough engines fail."
+BuildsOn:
+  - "[[Tooling Card - The R-7 Rocket]]"
+Enables:
+Threads:
+  - "[[Thread - Reaching Orbit]]"
+---
+*Make · United States · 1960s*
+**the F-1 engine team** · the biggest single-chamber rocket engine ever flown
+
+**Front.** In the early 1960s, to put men on the Moon, America had to light a bigger fire than anyone ever had. So [Rocketdyne](https://en.wikipedia.org/wiki/Rocketdyne_F-1) built the [F-1](https://airandspace.si.edu/stories/editorial/new-view-rocketdyne-f-1-engine), one engine that burned fuel and oxygen in a single chamber and pushed with [1.5 million pounds of force](https://en.wikipedia.org/wiki/Rocketdyne_F-1), still the most powerful one-chamber engine ever flown. But it kept tearing itself apart. The burning gas inside would [start to slosh and pound](https://www.nasa.gov/history/solving-combustion-instability-and-saving-americas-first-trips-to-the-moon/), and in the worst runs it burned a hole clean through the engine in the time it takes to blink. No theory could say why or how to stop it. So the team did the only thing that worked: they fired engine after engine, [reshaped the metal plate that sprays the fuel by hand and by guess](https://historynet.com/rocketdyne-f-1-engines-powered-saturn-v-rockets-into-space/), and even [set off small bombs inside a running engine](https://www.nasa.gov/history/solving-combustion-instability-and-saving-americas-first-trips-to-the-moon/) to shake the fire on purpose and see if it would settle. What was new was not a formula. It was the knowing, earned on the test stand, that you cannot calculate this engine. You can only fire it.
+
+**Back.** It took about [2,000 firings, across some 210 different fuel plates](https://www.enginehistory.org/Rockets/RPE08.11/RPE08.11.shtml), to find the shape that worked. The winner was walled off into little pockets with copper dividers, and in it the fire would settle itself in [under half a second](https://www.enginehistory.org/Rockets/RPE08.11/RPE08.11.shtml), even right after a bomb went off. On [November 9, 1967](https://www.nasa.gov/history/50-years-ago-the-first-flight-of-the-saturn-v/), five F-1s lit at once under the first [Saturn V](https://airandspace.si.edu/explore/stories/apollo-missions/apollo-4) and lifted it off the pad; two years later that same rocket carried [Apollo 11](https://en.wikipedia.org/wiki/Saturn_V) to the Moon. Across [thirteen Saturn V flights, all sixty-five engines worked](https://www.nasa.gov/history/solving-combustion-instability-and-saving-americas-first-trips-to-the-moon/). The lead did not live in a drawing or an equation. It lived in the test stands and in the people who had blown up enough engines to know.
+
+*Curator's note:* **Placement.** Make cell, United States, 1967, the founding card of [[Thread - Reaching Orbit]]. Serves Goal 1: you cannot lead in spaceflight without leading in the engine, and the engine could not be designed on paper, only fired into existence. Mechanism tagged Convergence and it fits cleanly here, the wartime-and-postwar reservoir of liquid-rocket work (von Braun's people, Rocketdyne's earlier engines) converging on one chamber too big to compute, where the craft pools in the test stand rather than the textbook. This is a true moat case, not a migration: the knowledge is tacit and stays with whoever fires engines at scale. Confidence: Direct on the thrust figure, the single-chamber record, the combustion-instability story, the bomb tests, the test counts, the Nov 9 1967 first flight, and the 65-for-65 record, all cross-checked across NASA, Smithsonian Air & Space, EngineHistory, and HistoryNet. **Analysis.** This is the deepest-tool card of the thread and the line it exists to make: a rocket engine is not calculated, it is fired, and the craft lives in the people who have watched enough of them fail. It is the Make-cell anchor that [[Thread - Reaching Orbit]] is built around, the moat the rest of the thread (the V-2 carrier story, the Russia-rides-rented years, the land-and-reuse era) will move toward and away from. It pairs naturally against the coming V-2 / von Braun carrier card (the *craft carried in heads* that seeded this very team) and against any future "rented rides from Russia" card (the same tacit engine craft, pooled in a rival's test stands when America let its own go cold). Hero, not parade: one named physical fight (the shaking fire), one tool (the injector), one earned lesson. **Nuance.** The "who" is a collective on purpose, like the Zeiss and EUV cards, because the point is that the knowledge was distributed across a test program, not held by one mind. If a single name is ever wanted on the face, the cleanest is **Jerry Thomson** of NASA Marshall, who chaired the "Project Go" ad-hoc committee that ran the instability fix (with Paul Castenholz and others at Rocketdyne); the card keeps it collective to match the thread's tacit-craft thesis. Two figure caveats: the damping criterion is cited as "under 400 milliseconds" (the test pass/fail bar) in the engineering histories and as "self-damps within one-tenth of a second" (~100 ms, the achieved performance) in NASA's popular account, so the face says "under half a second" to stay inside the conservative, multiply-sourced figure; and the "burns through in the time it takes to blink" is a plain-language rendering of NASA's "burn through the chamber in milliseconds," not a precise interval. The instability work is usually dated ~1962–1965; the 1967 Year is pinned to first flight, the moment the solved engine flew. Moral complexity belongs to the *next* card, not this one: the F-1 team grew directly out of von Braun's V-2 program, and the V-2 was built by concentration-camp slave labor at Mittelwerk, a debt this Moon-rocket card inherits and the carrier card should carry openly.
