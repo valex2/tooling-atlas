@@ -25,7 +25,7 @@ function render(){
  for(let lat=-60;lat<=60;lat+=30){const co=[];for(let lon=-180;lon<=180;lon+=4)co.push([lon,lat]);g+=`<path d="${gline(co)}" fill="none" stroke="rgba(0,0,0,.06)" stroke-width=".6"/>`;}
  s+=g;
  // countries
- for(const o of COUNTRIES){const fill=o.c>0?`rgba(176,106,30,${(0.12+0.6*o.c/maxc).toFixed(3)})`:"#e7e3db";for(const ring of o.r){const d=ringPath(ring);if(d)s+=`<path d="${d}" fill="${fill}" stroke="rgba(0,0,0,.14)" stroke-width=".4"/>`;}}
+ COUNTRIES.forEach((o,ci)=>{const fill=o.c>0?`rgba(176,106,30,${(0.12+0.6*o.c/maxc).toFixed(3)})`:"#e7e3db";for(const ring of o.r){const d=ringPath(ring);if(d)s+=`<path class="cty" data-ci="${ci}" d="${d}" fill="${fill}" stroke="rgba(0,0,0,.14)" stroke-width=".4"/>`;}});
  // arcs
  for(const c of CARDS){if(c.lat==null)continue;for(const en of (c.en||[])){const b=byId[en];if(!b||b.lat==null||b.year>T)continue;if(Math.abs(c.lat-b.lat)<0.2&&Math.abs(c.lon-b.lon)<0.2)continue;if(!vis(c.lon,c.lat)||!vis(b.lon,b.lat))continue;if(selThread&&(!c.threads.includes(selThread)||!b.threads.includes(selThread)))continue;const A=proj(c.lon,c.lat),B=proj(b.lon,b.lat);const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2-Math.hypot(B[0]-A[0],B[1]-A[1])*0.18;s+=`<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${KC[b.kind]}" stroke-opacity="${(0.1+0.3*tfrac(b.year)).toFixed(2)}" stroke-width="1"/>`;}}
  // dots
@@ -35,16 +35,30 @@ function render(){
  for(const h of HUBS){if(!vis(h.lon,h.lat))continue;const p=proj(h.lon,h.lat);s+=`<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2px">${h.city}</text>`;}
  svg.innerHTML=s;
  svg.querySelectorAll('.dot').forEach(el=>{el.style.cursor='pointer';el.onmousemove=e=>showTip(decodeURIComponent(el.dataset.id),e);el.onmouseleave=()=>tip.style.display='none';el.onclick=()=>{try{showDetail(byId[decodeURIComponent(el.dataset.id)]);}catch(e){}};});
+ svg.querySelectorAll('.cty').forEach(el=>{el.style.cursor='pointer';el.onclick=()=>{if(!moved)showCountry(+el.dataset.ci);};});
  document.getElementById('hint').textContent=`${CARDS.filter(c=>c.lat!=null&&c.year<=T).length} of ${CARDS.length} tools through ${T}`;
+ renderChips();
 }
 // hubs
 const hg={};CARDS.forEach(c=>{if(c.lat==null)return;const k=c.lat.toFixed(1)+","+c.lon.toFixed(1);(hg[k]=hg[k]||[]).push(c);});
 const HUBS=Object.values(hg).map(g=>({n:g.length,city:(g[0].place||'').split(',')[0],lat:g[0].lat,lon:g[0].lon})).filter(h=>h.n>=3).sort((a,b)=>b.n-a.n).slice(0,12);
+const PANELCSS="position:fixed;top:0;right:0;width:330px;max-width:92vw;height:100%;background:#fff;border-left:.5px solid rgba(0,0,0,.15);box-shadow:-8px 0 30px rgba(0,0,0,.12);z-index:2000;overflow:auto;padding:18px 18px 50px;font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#1c1c1c";
+function showCountry(ci){const o=COUNTRIES[ci];if(!o)return;const name=o.n||"(area)";const inC=CARDS.filter(c=>c.country===name).sort((a,b)=>a.year-b.year);
+ let p=document.getElementById('appdetail');if(!p){p=document.createElement('div');p.id='appdetail';p.style.cssText=PANELCSS;document.body.appendChild(p);}
+ const bk={};inC.forEach(c=>bk[c.kind]=(bk[c.kind]||0)+1);
+ const bars=["Measure","Model","Make","Manufacture"].filter(k=>bk[k]).map(k=>'<span style="display:inline-block;background:'+KC[k]+'22;color:'+KC[k]+';border-radius:8px;padding:1px 7px;margin:2px 3px 0 0;font-size:11px">'+k+' '+bk[k]+'</span>').join("");
+ const list=inC.map(c=>'<div class="ctool" data-id="'+encodeURIComponent(c.id)+'" style="cursor:pointer;padding:3px 0;border-bottom:.5px solid #eee;font-size:12px"><span style="color:'+KC[c.kind]+'">●</span> '+c.name+' <span style="color:#aaa">'+c.year+'</span></div>').join("")||"<div style='color:#bbb'>No tools recorded here.</div>";
+ p.innerHTML='<div style="display:flex;justify-content:space-between"><div style="font-size:16px;font-weight:600">'+name+'</div><span id="appdx" style="cursor:pointer;color:#999;font-size:18px">✕</span></div><div style="color:#6f6f6f;font-size:12px;margin:2px 0 8px">'+inC.length+' tool'+(inC.length!=1?'s':'')+'</div>'+bars+'<div style="margin-top:10px">'+list+'</div>';
+ p.style.display='block';document.getElementById('appdx').onclick=()=>p.style.display='none';
+ p.querySelectorAll('.ctool').forEach(el=>el.onclick=()=>{try{showDetail(byId[decodeURIComponent(el.dataset.id)]);}catch(e){}});}
+function renderChips(){const el=document.getElementById('chips');if(!el)return;const list=CARDS.filter(c=>c.year<=T).sort((a,b)=>b.year-a.year);
+ el.innerHTML='<div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:6px">Innovations through '+T+' ('+list.length+')</div>'+list.map(c=>'<div class="chip2" data-id="'+encodeURIComponent(c.id)+'" style="cursor:pointer;display:flex;gap:6px;align-items:baseline;padding:3px 4px;border-radius:6px"><span style="color:#aaa;font-size:10px;min-width:30px">'+c.year+'</span><span style="color:'+KC[c.kind]+';font-size:7px">●</span><span style="font-size:11.5px">'+c.name+'</span></div>').join("");
+ el.querySelectorAll('.chip2').forEach(d=>{d.onmouseenter=()=>d.style.background='#efece6';d.onmouseleave=()=>d.style.background='';d.onclick=()=>{const c=byId[decodeURIComponent(d.dataset.id)];if(!c)return;foundId=c.id;rotLon=c.lon;rotLat=Math.max(-80,Math.min(80,c.lat));render();try{showDetail(c);}catch(e){}};});}
 function showTip(id,e){const c=byId[id];tip.style.borderLeftColor=KC[c.kind];tip.innerHTML=`<div class="t" style="color:${KC[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig||''}</div>`;tip.style.display='block';tip.style.left=Math.min(e.clientX+14,window.innerWidth-270)+'px';tip.style.top=(e.clientY+14)+'px';}
 // interaction
-let dn=false,lx,ly;
-svg.addEventListener('mousedown',e=>{if(e.target.classList.contains('dot'))return;dn=true;lx=e.clientX;ly=e.clientY;svg.classList.add('drag');e.preventDefault();});
-window.addEventListener('mousemove',e=>{if(!dn)return;const k=0.25*(300/scale);rotLon-=(e.clientX-lx)*k;rotLat+=(e.clientY-ly)*k;rotLat=Math.max(-90,Math.min(90,rotLat));lx=e.clientX;ly=e.clientY;render();});
+let dn=false,lx,ly,moved=false;
+svg.addEventListener('mousedown',e=>{if(e.target.classList.contains('dot'))return;dn=true;moved=false;lx=e.clientX;ly=e.clientY;svg.classList.add('drag');e.preventDefault();});
+window.addEventListener('mousemove',e=>{if(!dn)return;moved=true;const k=0.25*(300/scale);rotLon-=(e.clientX-lx)*k;rotLat+=(e.clientY-ly)*k;rotLat=Math.max(-90,Math.min(90,rotLat));lx=e.clientX;ly=e.clientY;render();});
 window.addEventListener('mouseup',()=>{dn=false;svg.classList.remove('drag');});
 svg.addEventListener('wheel',e=>{e.preventDefault();scale*=(e.deltaY<0?1.15:0.87);scale=Math.max(80,Math.min(6000,scale));render();},{passive:false});
 const yr=document.getElementById('yr'),ylab=document.getElementById('ylab');

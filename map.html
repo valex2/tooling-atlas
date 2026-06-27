@@ -13,7 +13,8 @@ input[type=range]{flex:1;min-width:160px;accent-color:var(--ink)}
 .ylab{font-weight:600;font-size:15px;min-width:48px}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--mut);margin-top:4px}
 .legend i{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin-right:4px}
-#wrap{position:absolute;inset:96px 0 0 0}
+#wrap{position:absolute;inset:96px 292px 0 0}
+#chips{position:absolute;top:96px;right:0;width:292px;bottom:0;overflow:auto;border-left:.5px solid var(--line);background:#fbfaf8;padding:8px 10px}
 svg{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
 svg.drag{cursor:grabbing}
 .tip{position:fixed;pointer-events:none;background:var(--card);border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:50}
@@ -32,7 +33,7 @@ svg.drag{cursor:grabbing}
 </div>
 <div class="legend"><span><i style="background:var(--Measure)"></i>Measure</span><span><i style="background:var(--Model)"></i>Model</span><span><i style="background:var(--Make)"></i>Make</span><span><i style="background:var(--Manufacture)"></i>Manufacture</span><span>drag to spin · scroll to zoom · colour = M, opacity = recency, countries shaded by tool count</span></div>
 </div>
-<div id="wrap"><svg id="g"></svg></div>
+<div id="wrap"><svg id="g"></svg></div><div id="chips"></div>
 <div class="tip" id="tip"></div>
 <div class="hint" id="hint"></div>
 <script src="data/cards.js"></script>
