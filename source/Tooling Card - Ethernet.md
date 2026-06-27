@@ -29,7 +29,3 @@ Threads:
 
 **Back.** In 1980 Xerox, [Intel, and Digital](https://spectrum.ieee.org/ethernet-ieee-milestone) published a faster 10-megabit version, and the IEEE made it the 802.3 standard in 1983. On that thick-cable version, devices clipped onto the wire with [vampire taps](https://spectrum.ieee.org/ethernet-ieee-milestone), small probes that pierced the insulation so you could add a machine without cutting the cable. The take-turns-on-one-wire idea spread to nearly every office and home network, and the lead compounded.
 
-*Curator's note:*
-(1) Placement: Make cell, Goal Both, Convergence mechanism, Direct confidence. A built-and-tested working system, not a discovery or a company.
-(2) Analysis: This is the local end of The Network thread. It pairs with the wide-area protocols (the ARPANET / TCP side): one solves how machines in a building share a cable, the other how distant networks pass packets across the world. The card holds to the one rule by naming the listen-and-back-off scheme, not "the internet" or "Xerox."
-(3) Nuance: The May 22, 1973 date is the memo in which Metcalfe named it; the prototype came together over 1973 with Boggs. The original 2.94 Mbps figure is well sourced (IEEE, Wikipedia). BuildsOn/Enables left blank for now since no safe existing deck cards were named; the wide-area-network and later switching cards are candidate cross-links for the curator to wire later.
