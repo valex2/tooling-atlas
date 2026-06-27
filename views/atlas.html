@@ -50,6 +50,7 @@ input[type=range]{accent-color:var(--ink);width:90px;}
 .ylab{font-weight:600;font-size:15px;min-width:48px;}
 #mtip{position:fixed;pointer-events:none;background:var(--card);border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:60;}
 .maplbl{position:absolute;transform:translate(-50%,-100%);font-size:10px;font-weight:600;color:var(--ink);white-space:nowrap;pointer-events:none;text-shadow:0 1px 2px #fcfbf9,0 -1px 2px #fcfbf9,1px 0 2px #fcfbf9,-1px 0 2px #fcfbf9;}
+#stage .lanelab{background:rgba(252,251,249,.93);z-index:7;padding:1px 6px 1px 3px;border-radius:0 5px 5px 0}
 </style><script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 </head><body>
 <script src="../shared.js"></script>
@@ -127,7 +128,8 @@ function layout(){
 function anc(id,s){for(const p of (byId[id].bo||[]))if(byId[p]&&!s.has(p)){s.add(p);anc(p,s);}return s;}
 function desc(id,s){for(const e of (byId[id].en||[]))if(byId[e]&&!s.has(e)){s.add(e);desc(e,s);}return s;}
 const scroll=document.getElementById("scroll"),zoomwrap=document.getElementById("zoomwrap"),stage=document.getElementById("stage"),svg=document.getElementById("edges"),fc=document.getElementById("fc");
-function applyZoom(){if(axis==="map")return;stage.style.transform="scale("+zoom+")";zoomwrap.style.width=(layoutW*zoom)+"px";zoomwrap.style.height=(layoutH*zoom)+"px";document.getElementById("zoom").value=Math.round(zoom*100);}
+function pinLabels(){if(axis==='map')return;const z=zoom||1;document.querySelectorAll('#stage .lanelab').forEach(e=>{if(e.dataset.bl==null)e.dataset.bl=parseFloat(e.style.left)||0;e.style.left=(((+e.dataset.bl)+scroll.scrollLeft)/z)+'px';});}
+function applyZoom(){if(axis==="map")return;stage.style.transform="scale("+zoom+")";zoomwrap.style.width=(layoutW*zoom)+"px";zoomwrap.style.height=(layoutH*zoom)+"px";document.getElementById("zoom").value=Math.round(zoom*100);pinLabels();}
 function syncCtrl(){const m=axis==="map";const sw=document.getElementById("scrubwrap");if(sw)sw.style.display=m?"flex":"none";const tb=document.getElementById("threadbar");if(tb)tb.style.display=m?"none":"flex";}
 function placeLabels(){const ov=document.getElementById('maplabels');if(!ov||axis!=='map'||!gProj)return;const ctr=[-gRot[0],-gRot[1]];const placed=[];let h='';for(const hb of HUBS){if(d3.geoDistance([hb.lon,hb.lat],ctr)>=Math.PI/2)continue;const p=gProj([hb.lon,hb.lat]);if(!p)continue;const sx=p[0],sy=p[1];if(placed.some(q=>Math.abs(q.x-sx)<58&&Math.abs(q.y-sy)<13))continue;placed.push({x:sx,y:sy});h+='<div class="maplbl" style="left:'+sx+'px;top:'+(sy-9)+'px">'+hb.city+'</div>';}ov.innerHTML=h;}
 function renderMap(){
@@ -208,7 +210,7 @@ function showFull(id,el){const c=byId[id];fc.style.borderLeftColor=KC[c.kind];
 function hideFull(){fc.style.display="none";}
 const enc=s=>encodeURIComponent(s),dec=s=>decodeURIComponent(s);
 function mk(el,opts,cur,fn){document.getElementById(el).innerHTML=opts.map(o=>`<button class="btn ${o[0]===cur?'on':''}" data-v="${o[0]}">${o[1]}</button>`).join("");document.querySelectorAll(`#${el} .btn`).forEach(b=>b.onclick=()=>fn(b.dataset.v));}
-const axisBtns=()=>mk("axisBtns",[["thread","Thread"],["geo","Geography"],["kind","Four Ms"]],axis,v=>{axis=v;selCard=null;expanded.clear();axisBtns();render();fitWidth();});
+const axisBtns=()=>mk("axisBtns",[["thread","Thread"],["geo","Geography"],["kind","Four Ms"]],axis,v=>{axis=v;selCard=null;expanded.clear();axisBtns();render();fitWidth();scroll.addEventListener('scroll',pinLabels);});
 const sizeBtns=()=>mk("sizeBtns",[["overview","Overview"],["chip","Chip"],["medium","Medium"],["full","Full"]],size,v=>{size=v;sizeBtns();render();});
 const timeBtns=()=>mk("timeBtns",[["even","Even"],["comp","Compressed"],["density","Density"]],timeScale,v=>{timeScale=v;timeBtns();render();fitWidth();});
 function threadbar(){const all=[...new Set(DATA.flatMap(c=>c.threads))].sort();document.getElementById("threadbar").innerHTML=all.map(t=>`<span class="tchip ${selThread===t?'on':''}" data-t="${enc(t)}">${t}</span>`).join("");document.querySelectorAll("#threadbar .tchip").forEach(b=>b.onclick=()=>{const t=dec(b.dataset.t);selThread=selThread===t?null:t;try{setState({thread:selThread});}catch(e){}threadbar();render();});}
