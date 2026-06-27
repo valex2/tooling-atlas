@@ -1,6 +1,8 @@
 window.onerror=function(msg,src,ln,col){try{let b=document.getElementById("apperr");if(!b){b=document.createElement("div");b.id="apperr";b.style.cssText="position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#b0261e;color:#fff;font:12px/1.4 monospace;padding:8px 12px;white-space:pre-wrap";document.body&&document.body.appendChild(b);}b.textContent="JS error: "+msg+"  ("+(src||"").split("/").pop()+":"+ln+":"+col+")";}catch(e){}return false;};
 window.VAULT="Obsidian Vault";
 window.KCOL={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
+// Single source of truth for historical era bands (used by every view). Edit here only.
+window.ERAS=[["Medieval",1200,1400],["Renaissance",1400,1600],["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World War I",1914,1918],["Interwar",1918,1939],["World War II",1939,1945],["Cold War",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
 window.obsidianURL=function(id){return "obsidian://open?vault="+encodeURIComponent(VAULT)+"&file="+encodeURIComponent("Tooling Card - "+id);};
 window.rebuildById=function(){window.__byId=(window.CARDS?Object.fromEntries(CARDS.map(c=>[c.id,c])):{});return window.__byId;};
 window.__byId=window.rebuildById();
@@ -12,7 +14,7 @@ window.showDetail=function(c){
  const nav=a=>(a&&a.length)?a.map(x=>'<span class="xnav" data-id="'+encodeURIComponent(x)+'" style="cursor:pointer;display:inline-block;background:#efe7dd;border:.5px solid #e0d3c2;border-radius:8px;padding:1px 7px;margin:2px 3px 0 0;font-size:11px;color:#7a5a30">'+(__byId[x]?__byId[x].name:x)+'</span>').join(""):"<span style='color:#bbb'>—</span>";
  let p=document.getElementById("appdetail");
  if(!p){p=document.createElement("div");p.id="appdetail";p.style.cssText="position:fixed;top:0;right:0;width:330px;max-width:92vw;height:100%;background:#fff;border-left:.5px solid rgba(0,0,0,.15);box-shadow:-8px 0 30px rgba(0,0,0,.12);z-index:2000;overflow:auto;padding:18px 18px 50px;font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#1c1c1c";document.body.appendChild(p);}
- p.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style="font-size:16px;font-weight:600;color:'+col+'">'+(c.name||"")+'</div><span id="appdx" style="cursor:pointer;color:#999;font-size:18px;line-height:1">✕</span></div>'
+ p.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style="font-family:Charter,\'Iowan Old Style\',Georgia,serif;font-size:18px;font-weight:600;line-height:1.15;color:'+col+'">'+(c.name||"")+'</div><span id="appdx" style="cursor:pointer;color:#999;font-size:18px;line-height:1">✕</span></div>'
  +'<div style="color:#6f6f6f;font-size:12px;margin:3px 0 2px">'+(c.kind||"")+' · '+(c.place||"")+' · '+(c.year||"")+(c.goal?' · Goal '+c.goal:"")+(c.mech?' · '+c.mech:"")+'</div>'
  +'<div style="color:#6f6f6f;font-size:12px">'+(c.person||"")+'</div>'
  +(c.tool?'<div style="font-size:12px;margin-top:6px;font-style:italic;color:#555">'+c.tool+'</div>':"")
@@ -36,7 +38,7 @@ function buildNav(){const el=document.getElementById("appnav");if(!el)return;con
 function helpHTML(){const KC=KCOL;const ms=[["Measure","seeing what's there: a microscope, an X-ray, a way to read DNA"],["Model","a way to think about it: an equation or rule that lets you predict without touching the real thing"],["Make","building one working copy: a single transistor, engine, or molecule"],["Manufacture","building a billion of them, cheap and identical, on a factory floor"]];
  return '<div style="background:#fff;max-width:560px;margin:10vh auto;border-radius:14px;padding:24px 26px;font:14px/1.6 -apple-system,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative">'
  +'<span id="helpx" style="position:absolute;top:14px;right:18px;cursor:pointer;color:#999;font-size:20px">✕</span>'
- +'<div style="font-size:18px;font-weight:600;margin-bottom:8px">The four jobs a tool does</div>'
+ +'<div style="font-family:Charter,\'Iowan Old Style\',Georgia,serif;font-size:20px;font-weight:600;margin-bottom:8px">The four jobs a tool does</div>'
  +'<p style="margin:0 0 12px">Every tool here does one of four jobs, and they fall in order.</p>'
  +ms.map(m=>'<div style="border-left:4px solid '+KC[m[0]]+';padding:4px 10px;margin:6px 0;background:#faf9f6;border-radius:0 8px 8px 0"><b style="color:'+KC[m[0]]+'">'+m[0]+'</b> — '+m[1]+'.</div>').join("")
  +'<p style="margin:12px 0 0;font-weight:600">See it, understand it, build one, build a million.</p>'

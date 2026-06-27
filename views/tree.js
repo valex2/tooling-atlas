@@ -1,7 +1,7 @@
 (function(){
 const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
 const byId=Object.fromEntries(CARDS.map(c=>[c.id,c]));
-const ERAS=[["Medieval",1200,1400],["Renaissance",1400,1600],["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World War I",1914,1918],["Interwar",1918,1939],["World War II",1939,1945],["Cold War",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
+const ERAS=window.ERAS;
 const EVENTS=[[1769,"Watt steam engine"],[1776,"American Revolution"],[1957,"Sputnik"],[1969,"Moon landing"],[1971,"Microprocessor"],[1989,"World Wide Web"],[2003,"Iraq War"],[2007,"iPhone"],[2012,"Deep learning"],[2020,"COVID-19"]];
 const minY=1200,maxY=2030,x0=170,PPY=5.2,W=118,H=34;
 const xs=y=>x0+(Math.max(minY,Math.min(maxY,y))-minY)*PPY;

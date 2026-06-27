@@ -89,7 +89,7 @@ function renderChips(){const el=document.getElementById('chips');if(!el)return;c
 function showTip(id,e){const c=byId[id];tip.style.borderLeftColor=KC[c.kind];tip.innerHTML=`<div class="t" style="color:${KC[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig||''}</div>`;tip.style.display='block';tip.style.left=Math.min(e.clientX+14,window.innerWidth-270)+'px';tip.style.top=(e.clientY+14)+'px';}
 // interaction
 let dn=false,lx,ly,moved=false,chipsOpen=true;
-const ERAS=[['Medieval',1200,1400],['Renaissance',1400,1600],['Scientific Revolution',1600,1687],['Enlightenment',1687,1760],['Industrial Revolution',1760,1840],['2nd Industrial Rev.',1840,1914],['World War I',1914,1918],['Interwar',1918,1939],['World War II',1939,1945],['Cold War',1945,1991],['Information Age',1991,2008],['AI Age',2008,2031]];
+const ERAS=window.ERAS;
 svg.addEventListener('mousedown',e=>{if(e.target.classList.contains('dot'))return;dn=true;moved=false;lx=e.clientX;ly=e.clientY;svg.classList.add('drag');e.preventDefault();});
 window.addEventListener('mousemove',e=>{if(!dn)return;moved=true;const k=0.25*(300/scale);rotLon-=(e.clientX-lx)*k;rotLat+=(e.clientY-ly)*k;rotLat=Math.max(-90,Math.min(90,rotLat));lx=e.clientX;ly=e.clientY;render();});
 window.addEventListener('mouseup',()=>{dn=false;svg.classList.remove('drag');});
