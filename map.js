@@ -43,12 +43,18 @@ function render(){
 const hg={};CARDS.forEach(c=>{if(c.lat==null)return;const k=c.lat.toFixed(1)+","+c.lon.toFixed(1);(hg[k]=hg[k]||[]).push(c);});
 const HUBS=Object.values(hg).map(g=>({n:g.length,city:(g[0].place||'').split(',')[0],lat:g[0].lat,lon:g[0].lon})).filter(h=>h.n>=3).sort((a,b)=>b.n-a.n).slice(0,12);
 const PANELCSS="position:fixed;top:0;right:0;width:330px;max-width:92vw;height:100%;background:#fff;border-left:.5px solid rgba(0,0,0,.15);box-shadow:-8px 0 30px rgba(0,0,0,.12);z-index:2000;overflow:auto;padding:18px 18px 50px;font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#1c1c1c";
+function countryChart(inC){const w=294,h=96,x0=6,x1=w-6,y0=6,yb=h-15,mn=1600,mx=2030;const sx=y=>x0+(Math.max(mn,Math.min(mx,y))-mn)/(mx-mn)*(x1-x0);
+ let s='<svg width="'+w+'" height="'+h+'" style="display:block;margin:10px 0">';
+ for(let y=1700;y<=2000;y+=100){const x=sx(y);s+='<line x1="'+x+'" y1="'+y0+'" x2="'+x+'" y2="'+yb+'" stroke="#eee"/><text x="'+x+'" y="'+(h-3)+'" font-size="8" fill="#bbb" text-anchor="middle">'+y+'</text>';}
+ const by={};inC.forEach(c=>{(by[c.year]=by[c.year]||[]).push(c);});
+ Object.values(by).forEach(g=>g.sort((a,b)=>a.kind<b.kind?-1:1).forEach((c,i)=>{const x=sx(c.year),yy=yb-5-i*7;s+='<circle cx="'+x.toFixed(1)+'" cy="'+yy+'" r="3.2" fill="'+KC[c.kind]+'" fill-opacity=".9" stroke="#fff" stroke-width=".6"><title>'+c.name+' ('+c.year+')</title></circle>';}));
+ s+='<line x1="'+x0+'" y1="'+yb+'" x2="'+x1+'" y2="'+yb+'" stroke="#ccc"/></svg>';return s;}
 function showCountry(ci){const o=COUNTRIES[ci];if(!o)return;const name=o.n||"(area)";const inC=CARDS.filter(c=>c.country===name).sort((a,b)=>a.year-b.year);
  let p=document.getElementById('appdetail');if(!p){p=document.createElement('div');p.id='appdetail';p.style.cssText=PANELCSS;document.body.appendChild(p);}
  const bk={};inC.forEach(c=>bk[c.kind]=(bk[c.kind]||0)+1);
  const bars=["Measure","Model","Make","Manufacture"].filter(k=>bk[k]).map(k=>'<span style="display:inline-block;background:'+KC[k]+'22;color:'+KC[k]+';border-radius:8px;padding:1px 7px;margin:2px 3px 0 0;font-size:11px">'+k+' '+bk[k]+'</span>').join("");
  const list=inC.map(c=>'<div class="ctool" data-id="'+encodeURIComponent(c.id)+'" style="cursor:pointer;padding:3px 0;border-bottom:.5px solid #eee;font-size:12px"><span style="color:'+KC[c.kind]+'">●</span> '+c.name+' <span style="color:#aaa">'+c.year+'</span></div>').join("")||"<div style='color:#bbb'>No tools recorded here.</div>";
- p.innerHTML='<div style="display:flex;justify-content:space-between"><div style="font-size:16px;font-weight:600">'+name+'</div><span id="appdx" style="cursor:pointer;color:#999;font-size:18px">✕</span></div><div style="color:#6f6f6f;font-size:12px;margin:2px 0 8px">'+inC.length+' tool'+(inC.length!=1?'s':'')+'</div>'+bars+'<div style="margin-top:10px">'+list+'</div>';
+ p.innerHTML='<div style="display:flex;justify-content:space-between"><div style="font-size:16px;font-weight:600">'+name+'</div><span id="appdx" style="cursor:pointer;color:#999;font-size:18px">✕</span></div><div style="color:#6f6f6f;font-size:12px;margin:2px 0 8px">'+inC.length+' tool'+(inC.length!=1?'s':'')+'</div>'+bars+countryChart(inC)+'<div style="margin-top:6px">'+list+'</div>';
  p.style.display='block';document.getElementById('appdx').onclick=()=>p.style.display='none';
  p.querySelectorAll('.ctool').forEach(el=>el.onclick=()=>{try{showDetail(byId[decodeURIComponent(el.dataset.id)]);}catch(e){}});}
 function renderChips(){const el=document.getElementById('chips');if(!el)return;const list=CARDS.filter(c=>c.year<=T).sort((a,b)=>b.year-a.year);
