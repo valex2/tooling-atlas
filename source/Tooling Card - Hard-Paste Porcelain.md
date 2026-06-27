@@ -16,6 +16,7 @@ Confidence: Direct
 Unlocked: the white, ringing porcelain only China could make, now fired in Europe
 Significance: "China guarded the kaolin-and-stone recipe for true porcelain for centuries, until it was cracked at Meissen in 1708; Meissen then swore its own workers to secrecy and lost the secret the same way within a decade, when an arcanist carried it to Vienna."
 BuildsOn:
+  - "[[Tooling Card - Venetian Mirror Glass]]"
 Threads:
   - "[[Thread - Critical Materials]]"
 ---

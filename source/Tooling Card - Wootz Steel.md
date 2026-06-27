@@ -15,6 +15,8 @@ Mechanism: Fragility
 Confidence: Plausible
 Unlocked: patterned high-carbon blade steel
 Significance: "The wootz recipe was never written down, so when the right ore ran out and the masters died the watered-steel craft was simply lost, and centuries of chemists could not read it back."
+BuildsOn:
+  - "[[Tooling Card - The Blast Furnace]]"
 Threads:
   - "[[Thread - Machine Tools]]"
 ---

@@ -17,6 +17,8 @@ Unlocked: machine-spun cotton warp thread
 Significance: "The frame spun cotton thread strong enough to warp a loom, and Britain guarded it with bans on shipping the machines and on letting skilled hands leave, yet the secret was stolen when one apprentice carried the whole design out in his head."
 Enables:
   - "[[Tooling Card - The Screw-Cutting Lathe]]"
+BuildsOn:
+  - "[[Tooling Card - Silk Reeling and Sericulture]]"
 Threads:
   - "[[Thread - Machine Tools]]"
 ---

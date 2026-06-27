@@ -19,6 +19,8 @@ Enables:
   - "[[Tooling Card - FORTRAN]]"
   - "[[Tooling Card - Unix and C]]"
   - "[[Tooling Card - The Relational Model]]"
+BuildsOn:
+  - "[[Tooling Card - The Bombe]]"
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---

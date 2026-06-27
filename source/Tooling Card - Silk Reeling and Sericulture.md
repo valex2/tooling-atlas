@@ -16,6 +16,8 @@ Confidence: Plausible
 Unlocked: silk thread made outside China for the first time
 Significance: "China guarded the making of silk for roughly two thousand years under penalty of death, and the secret held until two monks carried live silkworm eggs out in a hollow cane."
 BuildsOn: []
+Enables:
+  - "[[Tooling Card - Arkwright's Water Frame]]"
 Threads:
   - "[[Thread - Machine Tools]]"
 ---

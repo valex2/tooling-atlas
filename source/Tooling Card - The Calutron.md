@@ -17,6 +17,8 @@ Unlocked: separating bomb-grade uranium one atom-stream at a time
 Significance: "The calutron was Aston's atom-weighing instrument scaled into a building, and the guarded secret was never the method but the industrial scale; once that was declassified as obsolete, Iraq quietly rebuilt it for its own bomb."
 BuildsOn:
   - "[[Tooling Card - The Mass Spectrograph]]"
+Enables:
+  - "[[Tooling Card - The Gaseous Diffusion Barrier]]"
 Threads:
   - "[[Thread - Materials Characterization]]"
 ---

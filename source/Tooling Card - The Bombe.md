@@ -16,6 +16,8 @@ Confidence: Direct
 Unlocked: ruling out millions of Enigma settings by machine
 Significance: "The Bombe could be shown to anyone, but the guarded secret was the capability itself, that German traffic was being read, and that secret held for about thirty years even as Britain let other nations keep using Enigmas it could break."
 BuildsOn:
+Enables:
+  - "[[Tooling Card - The Punch Card]]"
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---

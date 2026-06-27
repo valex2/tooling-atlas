@@ -15,6 +15,9 @@ Mechanism: Fragility
 Confidence: Direct
 Unlocked: a true flat mirror
 Significance: "Venice guarded clear glass and the tin-mercury mirror behind walls and a death-penalty ban, and the secret was stolen anyway when France lured the men who carried it in their hands."
+Enables:
+  - "[[Tooling Card - Guinand's Stirring Process]]"
+  - "[[Tooling Card - Hard-Paste Porcelain]]"
 Threads:
   - "[[Thread - Precision Optics]]"
 ---

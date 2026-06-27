@@ -17,6 +17,8 @@ Unlocked: large, streak-free optical glass blanks
 Significance: "Guinand's fireclay stirrer blended molten flint glass until it came out homogeneous and free of streaks, the guarded Swiss craft that finally made large, flawless lens blanks possible."
 Enables:
   - "[[Tooling Card - Fraunhofer's Spectral-Line Glass]]"
+BuildsOn:
+  - "[[Tooling Card - Venetian Mirror Glass]]"
 Threads:
   - "[[Thread - Precision Optics]]"
 ---

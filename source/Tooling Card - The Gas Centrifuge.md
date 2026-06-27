@@ -18,6 +18,7 @@ Significance: "Zippe's centrifuge spins uranium gas so fast the slightly heavier
 BuildsOn:
   - "[[Tooling Card - The Mass Spectrograph]]"
   - "[[Tooling Card - The Nuclear Pile]]"
+  - "[[Tooling Card - The Gaseous Diffusion Barrier]]"
 Enables:
 Threads:
   - "[[Thread - Critical Materials]]"

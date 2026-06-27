@@ -18,6 +18,7 @@ Significance: "A tall furnace with a water-driven blast burns hot enough to melt
 BuildsOn:
 Enables:
   - "[[Tooling Card - Watt's Steam Engine]]"
+  - "[[Tooling Card - Wootz Steel]]"
 Threads:
   - "[[Thread - Machine Tools]]"
 ---

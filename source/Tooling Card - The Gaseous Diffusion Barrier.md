@@ -15,6 +15,10 @@ Mechanism: Pace-layers
 Confidence: Direct
 Unlocked: enriching uranium one tiny step at a time
 Significance: "The recipe for making the porous nickel barrier was tacit process knowledge, never published and classified for decades, and that secret held while gaseous diffusion stayed the dominant Western enrichment route into the 1980s."
+BuildsOn:
+  - "[[Tooling Card - The Calutron]]"
+Enables:
+  - "[[Tooling Card - The Gas Centrifuge]]"
 Threads:
   - "[[Thread - Critical Materials]]"
 ---
