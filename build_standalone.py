@@ -21,23 +21,26 @@ MS = [("Measure","#3266ad","see what is there — a microscope, an X-ray, a way 
       ("Make","#b06a1e","build one working copy — a single transistor, engine, or molecule"),
       ("Manufacture","#2f8f6b","build a billion, cheap and identical, on a factory floor")]
 
-def inline(relpath):
+# Front/Back text is only needed by the Deck; slim it out of the other views' data to keep the bundle small.
+cards = json.loads(open(os.path.join(HERE,"data/cards.js"),encoding="utf-8").read().split("=",1)[1].rstrip().rstrip(";"))
+SLIM_JS = "window.CARDS=" + json.dumps([{k:v for k,v in c.items() if k not in ("front","back")} for c in cards], ensure_ascii=False) + ";"
+
+def inline(relpath, slim=False):
     path = os.path.join(HERE, relpath); base = os.path.dirname(path)
     txt = open(path, encoding="utf-8").read()
     def rep(m):
         src = m.group(1)
         if src.startswith("http"): return ""
+        if slim and os.path.basename(src) == "cards.js":
+            return "<script>\n" + SLIM_JS + "\n</script>"
         return "<script>\n" + open(os.path.normpath(os.path.join(base, src)), encoding="utf-8").read() + "\n</script>"
     txt = re.sub(r'<script src="([^"]+)"></script>', rep, txt)
     txt = re.sub(r'<div id="appnav"[^>]*>.*?</div>', '', txt, flags=re.S)
     return txt
 
-views = {label: inline(p) for label, p in VIEWS}
+views = {label: inline(p, slim=(label != "Deck")) for label, p in VIEWS}
 order = [label for label, _ in VIEWS]
 data = json.dumps(views).replace("</", "<\\/")
-
-# stats for the Home panel
-cards = json.loads(open(os.path.join(HERE,"data/cards.js"),encoding="utf-8").read().split("=",1)[1].rstrip().rstrip(";"))
 n_cards = len(cards)
 n_threads = len({t for c in cards for t in c.get("threads",[])})
 n_countries = len({c.get("country") for c in cards if c.get("country")})
