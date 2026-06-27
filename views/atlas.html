@@ -112,12 +112,23 @@ function laneOrder(){
 const laneKey=c=>axis==="kind"?c.kind:axis==="geo"?c.region:c.primary;
 const laneMode=l=>expanded.has(l)?"medium":size;
 let pos={},layoutW=0,layoutH=0,lanes=[],LM={},LSEP=[],LCOUNT={},LTOP={},LBOT={};
+const ERABAND=28; // dedicated top band for era labels (pushes everything below down)
+// lay era labels left-to-right, bumping to a lower sub-row when one would overlap the previous on its row
+function eraBandHtml(){const SUB=[1,10,19];const rightEdge=[-1e9,-1e9,-1e9];let h="";
+ ERAS.forEach(e=>{const a=xs(e[1]),b=xs(e[2]);
+  h+=`<div style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div>`;
+  const cx=(a+b)/2,w=e[0].length*5.6+12;let left=cx-w/2;
+  let r=0;for(;r<SUB.length;r++){if(left>=rightEdge[r]+4)break;}
+  if(r>=SUB.length){r=0;for(let i=1;i<SUB.length;i++)if(rightEdge[i]<rightEdge[r])r=i;}
+  rightEdge[r]=Math.max(rightEdge[r],left+w);
+  h+=`<div style="position:absolute;left:${cx}px;top:${SUB[r]}px;transform:translateX(-50%);font-size:9px;font-weight:600;color:rgba(0,0,0,.32);z-index:4;white-space:nowrap;background:rgba(252,251,249,.9);padding:0 3px;border-radius:3px">${e[0]}</div>`;});
+ return h;}
 function layout(){
  pos={};lanes=laneOrder();LM={};LSEP=[];LCOUNT={};LTOP={};LBOT={};
  const laneItems={};lanes.forEach(l=>laneItems[l]=[]);
  for(const c of DATA){const lk=laneKey(c);if(laneItems[lk])laneItems[lk].push({c,ghost:false});}
  if(axis==="thread")for(const c of DATA)for(const t of c.threads)if(t!==c.primary&&laneItems[t])laneItems[t].push({c,ghost:true});
- let curY=36;
+ let curY=36+ERABAND;
  for(const l of lanes){LTOP[l]=curY;const d=DIM[laneMode(l)];const items=laneItems[l].sort((a,b)=>a.c.year-b.c.year);LCOUNT[l]=items.filter(i=>!i.ghost).length;
    const rr=[];for(const it of items){const x=xs(it.c.year);let r=-1;for(let i=0;i<rr.length;i++)if(x-rr[i]>=d.gh){r=i;break;}if(r<0){r=rr.length;rr.push(0);}rr[r]=x+d.w;it.row=r;it.x=x;it.d=d;}
    const nr=Math.max(1,rr.length);
@@ -179,9 +190,9 @@ function render(){
    } else {const l=lanes[gi];html+=`<div class="lanelab" data-lane="${enc(l)}" style="top:${LM[l]}px">${l} <span class="car">${LCOUNT[l]}${expanded.has(l)?" ▾":""}</span></div>`;}
    gi=gj+1;}
 lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute;left:0;top:${LTOP[l]}px;width:${layoutW}px;height:${(LBOT[l]-LTOP[l])}px;background:rgba(0,0,0,.03);z-index:0"></div>`;});
- ERAS.forEach((e,i)=>{const a=xs(e[1]),b=xs(e[2]);html+=`<div style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div><div style="position:absolute;left:${(a+b)/2}px;top:2px;transform:translateX(-50%);font-size:9px;font-weight:600;color:rgba(0,0,0,.32);z-index:4;white-space:nowrap;background:rgba(252,251,249,.85);padding:0 3px">${e[0]}</div>`;});
- EVENTS.forEach((ev,i)=>{const x=xs(ev[0]);html+=`<div style="position:absolute;left:${x}px;top:16px;height:${layoutH-16}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:16px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${x+3}px;top:${i%2?16:27}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;});
- for(let y=1200;y<=2030;y+=10){const gx=xs(y),maj=(y%50===0);html+=`<div class="gl ${maj?'maj':''}" style="left:${gx}px;top:26px;height:${layoutH-32}px"></div>`;html+=`<div class="yr" style="left:${gx+2}px;top:10px;color:${maj?'#8f8f8f':'#c9c9c9'};${maj?'font-weight:600':''}">${maj?y:"’"+String(y).slice(2)}</div>`;}
+ html+=eraBandHtml();
+ EVENTS.forEach((ev,i)=>{const x=xs(ev[0]);html+=`<div style="position:absolute;left:${x}px;top:${16+ERABAND}px;height:${layoutH-16-ERABAND}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:${16+ERABAND}px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${x+3}px;top:${(i%2?16:27)+ERABAND}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;});
+ for(let y=1200;y<=2030;y+=10){const gx=xs(y),maj=(y%50===0);html+=`<div class="gl ${maj?'maj':''}" style="left:${gx}px;top:${26+ERABAND}px;height:${layoutH-32-ERABAND}px"></div>`;html+=`<div class="yr" style="left:${gx+2}px;top:${10+ERABAND}px;color:${maj?'#8f8f8f':'#c9c9c9'};${maj?'font-weight:600':''}">${maj?y:"’"+String(y).slice(2)}</div>`;}
  for(const l of lanes){const dotmode=DIM[laneMode(l)].dot;for(const it of laneItems[l]){const c=it.c;const matchq=q&&(c.name.toLowerCase().includes(q)||(c.person||'').toLowerCase().includes(q));
    let extra="";if(lit){if(!it.ghost&&!lit.has(c.id))extra=" dim";else if(!it.ghost&&lit.has(c.id)&&c.id!==selCard)extra=" hl";}
    else if(selThread&&!inT(c.id))extra=" dim"; if(c.id===selCard&&!it.ghost)extra+=" sel"; if(matchq)extra+=" hl";

@@ -10,8 +10,19 @@ const prim=c=>(c.threads&&c.threads.length?c.threads[0]:"—");
 const tmin={};CARDS.forEach(c=>{const t=prim(c);tmin[t]=Math.min(tmin[t]??9999,c.year||9999);});
 const lanes=[...new Set(CARDS.map(prim))].sort((a,b)=>(tmin[a]-tmin[b]));
 let sel=null,q="",pos={},layoutH=0,layoutW=0;try{const st=getState();if(st.q)q=st.q;}catch(e){}
+const ERABAND=28; // dedicated top band for era labels (pushes everything below down)
+// lay era labels left-to-right, bumping to a lower sub-row when one would overlap the previous on its row
+function eraBandHtml(){const SUB=[1,10,19];const rightEdge=[-1e9,-1e9,-1e9];let h="";
+ ERAS.forEach(e=>{const a=xs(e[1]),b=xs(e[2]);
+  h+=`<div style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div>`;
+  const cx=(a+b)/2,w=e[0].length*5.6+12;let left=cx-w/2;
+  let r=0;for(;r<SUB.length;r++){if(left>=rightEdge[r]+4)break;}
+  if(r>=SUB.length){r=0;for(let i=1;i<SUB.length;i++)if(rightEdge[i]<rightEdge[r])r=i;}
+  rightEdge[r]=Math.max(rightEdge[r],left+w);
+  h+=`<div style="position:absolute;left:${cx}px;top:${SUB[r]}px;transform:translateX(-50%);font-size:9px;font-weight:600;color:rgba(0,0,0,.32);z-index:4;white-space:nowrap;background:rgba(252,251,249,.9);padding:0 3px;border-radius:3px">${e[0]}</div>`;});
+ return h;}
 const scroll=document.getElementById("scroll"),stage=document.getElementById("stage"),svg=document.getElementById("edges"),tip=document.getElementById("tip");
-function layout(){pos={};let curY=40;const LM={},items={};lanes.forEach(l=>items[l]=[]);
+function layout(){pos={};let curY=40+ERABAND;const LM={},items={};lanes.forEach(l=>items[l]=[]);
  CARDS.forEach(c=>items[prim(c)].push(c));
  const meta=[];
  for(const l of lanes){const arr=items[l].sort((a,b)=>a.year-b.year);const rr=[];
@@ -28,9 +39,9 @@ function render(){const meta=layout();
  let lit=null;if(sel){lit=new Set([sel]);anc(sel,lit);desc(sel,lit);}
  let h="";
  meta.forEach((m,i)=>{if(i%2)h+=`<div style="position:absolute;left:0;top:${m[2]}px;width:${layoutW}px;height:${m[3]-m[2]}px;background:rgba(0,0,0,.03);z-index:0"></div>`;});
- ERAS.forEach((e,i)=>{const a=xs(e[1]),b=xs(e[2]);h+=`<div style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div><div style="position:absolute;left:${(a+b)/2}px;top:2px;transform:translateX(-50%);font-size:9px;font-weight:600;color:rgba(0,0,0,.32);z-index:4;white-space:nowrap;background:rgba(252,251,249,.85);padding:0 3px">${e[0]}</div>`;});
- EVENTS.forEach((ev,i)=>{const x=xs(ev[0]);h+=`<div style="position:absolute;left:${x}px;top:16px;height:${layoutH-16}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:16px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${x+3}px;top:${i%2?16:27}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;});
- for(let y=1200;y<=2030;y+=10){const gx=xs(y),mj=y%50===0;h+=`<div class="gl ${mj?'maj':''}" style="left:${gx}px;top:24px;height:${layoutH-30}px"></div>`;if(mj)h+=`<div class="yr" style="left:${gx+2}px;color:#999;font-weight:600">${y}</div>`;}
+ h+=eraBandHtml();
+ EVENTS.forEach((ev,i)=>{const x=xs(ev[0]);h+=`<div style="position:absolute;left:${x}px;top:${16+ERABAND}px;height:${layoutH-16-ERABAND}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:${16+ERABAND}px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${x+3}px;top:${(i%2?16:27)+ERABAND}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;});
+ for(let y=1200;y<=2030;y+=10){const gx=xs(y),mj=y%50===0;h+=`<div class="gl ${mj?'maj':''}" style="left:${gx}px;top:${24+ERABAND}px;height:${layoutH-30-ERABAND}px"></div>`;if(mj)h+=`<div class="yr" style="left:${gx+2}px;top:${8+ERABAND}px;color:#999;font-weight:600">${y}</div>`;}
  for(const m of meta)h+=`<div class="lanelab" style="top:${m[1]}px">${m[0]}</div>`;
  for(const c of CARDS){const dimd=lit&&!lit.has(c.id);const hl=(lit&&lit.has(c.id)&&c.id!==sel)||(q&&(c.name.toLowerCase().includes(q)));
   h+=`<div class="c${dimd?' dim':''}${c.id===sel?' sel':''}${hl?' hl':''}" data-id="${encodeURIComponent(c.id)}" style="left:${c._x}px;top:${c._y}px;border-left-color:${KC[c.kind]}"><div class="ti" style="color:${KC[c.kind]}">${c.name}</div><div class="yt">${c.kind} · ${c.year}</div></div>`;}

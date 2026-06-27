@@ -22,7 +22,7 @@ window.showDetail=function(c){
  +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-top:14px">Threads</div>'+chips(c.threads)
  +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-top:10px">Builds on</div>'+nav(c.bo)
  +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-top:6px">Enables</div>'+nav(c.en)
- +'<a href="'+obsidianURL(id)+'" style="display:inline-block;margin-top:16px;background:'+col+';color:#fff;text-decoration:none;padding:7px 13px;border-radius:9px;font-size:12.5px">Open note in Obsidian ↗</a>';
+ +(location.protocol==='file:'?'<a href="'+obsidianURL(id)+'" style="display:inline-block;margin-top:16px;background:'+col+';color:#fff;text-decoration:none;padding:7px 13px;border-radius:9px;font-size:12.5px">Open note in Obsidian ↗</a>':'');
  p.style.display="block";
  document.getElementById("appdx").onclick=()=>p.style.display="none";
  p.querySelectorAll(".xnav").forEach(el=>el.onclick=()=>{const c2=__byId[decodeURIComponent(el.dataset.id)];if(c2)showDetail(c2);});

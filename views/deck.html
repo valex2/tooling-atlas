@@ -99,7 +99,7 @@ function cardHTML(c){
   </div>
   <div class="face back"><div class="stripe" style="background:${KC[c.kind]}"></div>
     <div class="pad"><div class="label">Aftermath</div><div class="txt">${c.back}</div>
-      <div class="xlinks"><div class="h">Why it matters</div><div style="font-size:12.5px;line-height:1.5;margin-bottom:4px">${c.sig||""}</div></div><div class="xlinks"><div class="h">Cross-links</div>${others}<div style="margin-top:8px"><a href="obsidian://open?vault=Obsidian%20Vault&file=${encodeURIComponent('Tooling Card - '+c.name.replace(/\//g,'-'))}" style="color:#9a6a3a;font-size:11px;text-decoration:none">Open note in Obsidian ↗</a></div></div></div>
+      <div class="xlinks"><div class="h">Why it matters</div><div style="font-size:12.5px;line-height:1.5;margin-bottom:4px">${c.sig||""}</div></div><div class="xlinks"><div class="h">Cross-links</div>${others}${location.protocol==='file:'?('<div style="margin-top:8px"><a href="obsidian://open?vault=Obsidian%20Vault&file='+encodeURIComponent('Tooling Card - '+c.name.replace(/\//g,'-'))+'" style="color:#9a6a3a;font-size:11px;text-decoration:none">Open note in Obsidian ↗</a></div>'):''}</div></div>
     <div class="foot"><span class="tag">Goal ${c.goal}</span><span class="tag">${c.conf}</span><span class="tag" style="margin-left:auto;color:#b9b4ab">flip ⟲</span></div>
   </div></div></div>`;
 }
