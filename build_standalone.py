@@ -135,6 +135,9 @@ shell = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <script>
 const VIEWS=__DATA__, ORDER=__ORDER__, TABS=["Home"].concat(ORDER);
 const tabs=document.getElementById('tabs'),frame=document.getElementById('frame'),home=document.getElementById('home');
+let pendingCard=null;
+frame.onload=function(){if(pendingCard){try{frame.contentWindow.postMessage({type:'focuscard',id:pendingCard},'*');}catch(e){}pendingCard=null;}};
+window.addEventListener('message',function(e){if(e.data&&e.data.type==='opencard'){pendingCard=e.data.id;show('Deck');}});
 function show(k){
  if(!TABS.includes(k))k="Home";
  const isHome=k==="Home";

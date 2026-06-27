@@ -118,4 +118,7 @@ function render(){
 }
 function scrollTo2(name,flip){const el=document.getElementById("card-"+cssid(name));if(!el)return;el.scrollIntoView({behavior:"smooth",block:"center"});el.style.transition="box-shadow .3s";const f=el.querySelector(".front");if(flip)el.classList.add("flip");el.parentElement.style.outline="2px solid var(--accent)";setTimeout(()=>el.parentElement.style.outline="",1600);}
 render();
+
+window.addEventListener("message",function(e){if(e.data&&e.data.type==="focuscard")try{scrollTo2(e.data.id,true);}catch(x){}});
+(function(){function fh(){var m=(location.hash||"").match(/card=([^&]+)/);if(m)setTimeout(function(){try{scrollTo2(decodeURIComponent(m[1]),true);}catch(x){}},80);}window.addEventListener("hashchange",fh);fh();})();
 </script></body></html>

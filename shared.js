@@ -4,6 +4,11 @@ window.KCOL={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f
 // Single source of truth for historical era bands (used by every view). Edit here only.
 window.ERAS=[["Medieval",1200,1400],["Renaissance",1400,1600],["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World War I",1914,1918],["Interwar",1918,1939],["World War II",1939,1945],["Cold War",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
 window.obsidianURL=function(id){return "obsidian://open?vault="+encodeURIComponent(VAULT)+"&file="+encodeURIComponent("Tooling Card - "+id);};
+// Open a card in the Deck (card) view. In the single-file shell (iframes) ask the parent to switch tabs; otherwise deep-link to the deck.
+window.openCard=function(name){name=name||"";
+ try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:"opencard",id:name},"*");return;}}catch(e){}
+ var views=location.pathname.indexOf("/views/")>=0;var deck=views?"deck.html":"views/deck.html";
+ location.href=deck+"#card="+encodeURIComponent(name);};
 window.rebuildById=function(){window.__byId=(window.CARDS?Object.fromEntries(CARDS.map(c=>[c.id,c])):{});return window.__byId;};
 window.__byId=window.rebuildById();
 window.showDetail=function(c){
@@ -22,9 +27,11 @@ window.showDetail=function(c){
  +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-top:14px">Threads</div>'+chips(c.threads)
  +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-top:10px">Builds on</div>'+nav(c.bo)
  +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-top:6px">Enables</div>'+nav(c.en)
- +(location.protocol==='file:'?'<a href="'+obsidianURL(id)+'" style="display:inline-block;margin-top:16px;background:'+col+';color:#fff;text-decoration:none;padding:7px 13px;border-radius:9px;font-size:12.5px">Open note in Obsidian ↗</a>':'');
+ +'<div id="appcard" style="cursor:pointer;display:inline-block;margin:16px 8px 0 0;background:'+col+';color:#fff;padding:7px 13px;border-radius:9px;font-size:12.5px">Open as card ↗</div>'
+ +(location.protocol==='file:'?'<a href="'+obsidianURL(id)+'" style="display:inline-block;margin-top:16px;background:#5a5a5a;color:#fff;text-decoration:none;padding:7px 13px;border-radius:9px;font-size:12.5px">Open note in Obsidian ↗</a>':'');
  p.style.display="block";
  document.getElementById("appdx").onclick=()=>p.style.display="none";
+ var _oc=document.getElementById("appcard");if(_oc)_oc.onclick=function(){openCard(c.name||c.id);};
  p.querySelectorAll(".xnav").forEach(el=>el.onclick=()=>{const c2=__byId[decodeURIComponent(el.dataset.id)];if(c2)showDetail(c2);});
 };
 // URL state
