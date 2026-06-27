@@ -9,7 +9,9 @@ const maxc=Math.max(1,...COUNTRIES.map(o=>o.c));
 // centroid of data for initial view
 let cLon=0,cLat=0;(function(){let x=0,y=0,z=0,n=0;for(const c of CARDS){if(c.lat==null)continue;const la=c.lat*D2R,lo=c.lon*D2R;x+=Math.cos(la)*Math.cos(lo);y+=Math.cos(la)*Math.sin(lo);z+=Math.sin(la);n++;}cLon=Math.atan2(y,x)/D2R;cLat=Math.atan2(z,Math.hypot(x,y))/D2R;})();
 let rotLon=cLon, rotLat=Math.min(55,cLat+6), scale=0, T=0, playing=false, timer=null, foundId=null;
-let selThread="";try{const st=getState();if(st.thread)selThread=st.thread;}catch(e){}
+let selThreads=[];try{const st=getState();if(st.thread)selThreads=st.thread.split(",").filter(Boolean);}catch(e){}
+const TPAL=["#c0392b","#1f77b4","#2ca02c","#9467bd","#e6862e","#16a3a3","#d6336c","#6b4f2a"];
+const threadColor=t=>TPAL[Math.max(0,selThreads.indexOf(t))%TPAL.length];
 const svg=document.getElementById('g'), tip=document.getElementById('tip');
 let W=0,H=0,cx=0,cy=0;
 function size(){const r=svg.getBoundingClientRect();W=r.width;H=r.height;cx=W/2;cy=H/2;if(!scale)scale=Math.min(W,H)*0.46;}
@@ -26,11 +28,28 @@ function render(){
  s+=g;
  // countries
  COUNTRIES.forEach((o,ci)=>{const fill=o.c>0?`rgba(176,106,30,${(0.12+0.6*o.c/maxc).toFixed(3)})`:"#e7e3db";for(const ring of o.r){const d=ringPath(ring);if(d)s+=`<path class="cty" data-ci="${ci}" d="${d}" fill="${fill}" stroke="rgba(0,0,0,.14)" stroke-width=".4"/>`;}});
- // arcs
- for(const c of CARDS){if(c.lat==null)continue;for(const en of (c.en||[])){const b=byId[en];if(!b||b.lat==null||b.year>T)continue;if(Math.abs(c.lat-b.lat)<0.2&&Math.abs(c.lon-b.lon)<0.2)continue;if(!vis(c.lon,c.lat)||!vis(b.lon,b.lat))continue;if(selThread&&(!c.threads.includes(selThread)||!b.threads.includes(selThread)))continue;const A=proj(c.lon,c.lat),B=proj(b.lon,b.lat);const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2-Math.hypot(B[0]-A[0],B[1]-A[1])*0.18;s+=`<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${KC[b.kind]}" stroke-opacity="${(0.1+0.3*tfrac(b.year)).toFixed(2)}" stroke-width="1"/>`;}}
- // dots
  const rsc=Math.max(.6,Math.min(3,scale/(Math.min(W,H)*0.46)));
- for(const c of CARDS){if(c.lat==null)continue;const fnd=c.id===foundId;if(c.year>T&&!fnd)continue;const p=proj(c.lon,c.lat);if(p[2]<0)continue;const r=(3+Math.min(4,(c.en?c.en.length:0)*0.8))*rsc*(fnd?1.6:1);const off=selThread&&!c.threads.includes(selThread);const fo=fnd?1:(off?0.07:(0.3+0.65*tfrac(c.year)));s+=`<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fo}" stroke="${fnd?'#111':'#fff'}" stroke-width="${fnd?'2.2':'.8'}"/>`;}
+ if(!selThreads.length){
+  // genealogy arcs (builds-on -> enables), only when no thread is selected
+  for(const c of CARDS){if(c.lat==null)continue;for(const en of (c.en||[])){const b=byId[en];if(!b||b.lat==null||b.year>T)continue;if(Math.abs(c.lat-b.lat)<0.2&&Math.abs(c.lon-b.lon)<0.2)continue;if(!vis(c.lon,c.lat)||!vis(b.lon,b.lat))continue;const A=proj(c.lon,c.lat),B=proj(b.lon,b.lat);const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2-Math.hypot(B[0]-A[0],B[1]-A[1])*0.18;s+=`<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${KC[b.kind]}" stroke-opacity="${(0.1+0.3*tfrac(b.year)).toFixed(2)}" stroke-width="1"/>`;}}
+ } else {
+  // thread migration paths: each selected thread's cards joined in chronological order
+  selThreads.forEach(t=>{const col=threadColor(t);
+   const mem=CARDS.filter(c=>c.threads.includes(t)&&c.lat!=null&&c.year<=T).sort((a,b)=>a.year-b.year||a.id.localeCompare(b.id));
+   for(let i=0;i<mem.length-1;i++){const a=mem[i],b=mem[i+1];
+    if(!vis(a.lon,a.lat)||!vis(b.lon,b.lat))continue;
+    const A=proj(a.lon,a.lat),B=proj(b.lon,b.lat);
+    const same=Math.abs(a.lat-b.lat)<0.2&&Math.abs(a.lon-b.lon)<0.2;
+    if(same){const rr=5*rsc;s+=`<circle cx="${A[0].toFixed(1)}" cy="${(A[1]-rr).toFixed(1)}" r="${rr.toFixed(1)}" fill="none" stroke="${col}" stroke-opacity=".55" stroke-width="1.4"/>`;continue;}
+    const dx=B[0]-A[0],dy=B[1]-A[1];const mx=(A[0]+B[0])/2-dy*0.18,my=(A[1]+B[1])/2+dx*0.18;
+    s+=`<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${col}" stroke-opacity=".85" stroke-width="${(2*Math.min(1.6,rsc)).toFixed(1)}" stroke-linecap="round"/>`;
+    const tx=B[0]-mx,ty=B[1]-my,tl=Math.hypot(tx,ty)||1,ux=tx/tl,uy=ty/tl,ah=6*rsc;
+    s+=`<path d="M${B[0].toFixed(1)} ${B[1].toFixed(1)} L${(B[0]-ux*ah-uy*ah*0.55).toFixed(1)} ${(B[1]-uy*ah+ux*ah*0.55).toFixed(1)} L${(B[0]-ux*ah+uy*ah*0.55).toFixed(1)} ${(B[1]-uy*ah-ux*ah*0.55).toFixed(1)} Z" fill="${col}" fill-opacity=".9"/>`;
+   }
+  });
+ }
+ // dots
+ for(const c of CARDS){if(c.lat==null)continue;const fnd=c.id===foundId;if(c.year>T&&!fnd)continue;const p=proj(c.lon,c.lat);if(p[2]<0)continue;const r=(3+Math.min(4,(c.en?c.en.length:0)*0.8))*rsc*(fnd?1.6:1);const onT=selThreads.length?selThreads.find(t=>c.threads.includes(t)):null;const off=selThreads.length&&!onT;const fo=fnd?1:(off?0.07:(0.3+0.65*tfrac(c.year)));const ring=fnd?'#111':(onT?threadColor(onT):'#fff');const rw=fnd?'2.2':(onT?'2':'.8');s+=`<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fo}" stroke="${ring}" stroke-width="${rw}"/>`;}
  // hub labels (top cities by count)
  for(const h of HUBS){if(!vis(h.lon,h.lat))continue;const p=proj(h.lon,h.lat);s+=`<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2px">${h.city}</text>`;}
  svg.innerHTML=s;
@@ -80,10 +99,21 @@ yr.oninput=e=>{stop();T=qYear(+e.target.value/1000);ylab.textContent=T;render();
 function stop(){playing=false;clearInterval(timer);const b=document.getElementById('play');b.textContent='▶ play';b.classList.remove('on');}
 document.getElementById('play').onclick=function(){if(playing){stop();return;}playing=true;this.textContent='❚❚ pause';this.classList.add('on');let v=(+yr.value>=1000)?0:+yr.value;timer=setInterval(()=>{v+=14;if(v>=1000){v=1000;T=qYear(1);yr.value=1000;ylab.textContent=T;render();stop();return;}T=qYear(v/1000);yr.value=v;ylab.textContent=T;render();},90);};
 document.getElementById('reset').onclick=()=>{rotLon=cLon;rotLat=Math.min(55,cLat+6);scale=Math.min(W,H)*0.46;render();};
-document.getElementById('msearch').oninput=e=>{const q=e.target.value.toLowerCase();if(!q){foundId=null;
-let selThread="";try{const st=getState();if(st.thread)selThread=st.thread;}catch(e){}render();return;}const c=CARDS.find(c=>c.lat!=null&&c.name.toLowerCase().includes(q));if(c){foundId=c.id;rotLon=c.lon;rotLat=Math.max(-80,Math.min(80,c.lat));if(scale<320)scale=420;render();}};
-(function(){const sel=document.getElementById('mthread');if(!sel)return;const ths=[...new Set(CARDS.flatMap(c=>c.threads))].sort();sel.innerHTML='<option value="">all threads</option>'+ths.map(t=>`<option>${t}</option>`).join('');sel.onchange=e=>{selThread=e.target.value;try{setState({thread:selThread});}catch(e){}render();};
- try{if(selThread)sel.value=selThread;}catch(e){}})();
+document.getElementById('msearch').oninput=e=>{const q=e.target.value.toLowerCase();if(!q){foundId=null;render();return;}const c=CARDS.find(c=>c.lat!=null&&c.name.toLowerCase().includes(q));if(c){foundId=c.id;rotLon=c.lon;rotLat=Math.max(-80,Math.min(80,c.lat));if(scale<320)scale=420;render();}};
+// multi-select thread picker — each selected thread traces its migration path in its own colour
+(function(){const btn=document.getElementById('threadbtn'),pan=document.getElementById('threadpanel');if(!btn||!pan)return;
+ const counts={};CARDS.forEach(c=>c.threads.forEach(t=>counts[t]=(counts[t]||0)+1));
+ const ths=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+ function paint(){
+  pan.innerHTML=ths.map(t=>{const on=selThreads.includes(t);const col=on?threadColor(t):'#ccc';return `<div class="trow" data-t="${encodeURIComponent(t)}" style="display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:6px;cursor:pointer;font-size:12px;${on?'background:#f3efe9':''}"><span style="width:10px;height:10px;border-radius:50%;background:${col};flex:0 0 auto;border:.5px solid rgba(0,0,0,.2)"></span><span style="flex:1">${t}</span><span style="color:#aaa;font-size:10.5px">${counts[t]}</span></div>`;}).join("")+(selThreads.length?`<div id="tclr" style="text-align:center;color:#9a6a3a;cursor:pointer;font-size:11.5px;padding:6px 0 2px;border-top:.5px solid #eee;margin-top:4px">clear all</div>`:"");
+  btn.textContent=(selThreads.length?selThreads.length+(selThreads.length>1?' threads':' thread'):'threads')+' ▾';
+  pan.querySelectorAll('.trow').forEach(r=>r.onclick=()=>{const t=decodeURIComponent(r.dataset.t);const i=selThreads.indexOf(t);if(i>=0)selThreads.splice(i,1);else selThreads.push(t);try{setState({thread:selThreads.join(",")});}catch(e){}paint();render();});
+  const clr=document.getElementById('tclr');if(clr)clr.onclick=()=>{selThreads=[];try{setState({thread:""});}catch(e){}paint();render();};
+ }
+ btn.onclick=ev=>{ev.stopPropagation();pan.style.display=pan.style.display==='none'?'block':'none';};
+ pan.addEventListener('click',ev=>ev.stopPropagation());
+ document.addEventListener('click',()=>{pan.style.display='none';});
+ paint();})();
 window.addEventListener('resize',render);
 T=qYear(1);document.getElementById('ylab').textContent=T;render();
 })();

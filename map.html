@@ -29,9 +29,9 @@ svg.drag{cursor:grabbing}
   <button class="btn" id="play">▶ play</button>
   <span class="ylab" id="ylab">2030</span>
   <input type="range" id="yr" min="0" max="1000" value="1000">
-  <button class="btn" id="reset">reset view</button><input id="msearch" placeholder="find a tool…" style="border:.5px solid var(--line);border-radius:13px;padding:4px 11px;font-size:12px;width:150px"><select id="mthread" style="border:.5px solid var(--line);border-radius:13px;padding:4px 10px;font-size:12px;background:#fff"><option value="">all threads</option></select>
+  <button class="btn" id="reset">reset view</button><input id="msearch" placeholder="find a tool…" style="border:.5px solid var(--line);border-radius:13px;padding:4px 11px;font-size:12px;width:150px"><span style="position:relative;display:inline-block"><button class="btn" id="threadbtn">threads ▾</button><div id="threadpanel" style="display:none;position:absolute;top:34px;right:0;z-index:60;background:#fff;border:.5px solid var(--line);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.16);width:236px;max-height:360px;overflow:auto;padding:6px"></div></span>
 </div>
-<div class="legend"><span><i style="background:var(--Measure)"></i>Measure</span><span><i style="background:var(--Model)"></i>Model</span><span><i style="background:var(--Make)"></i>Make</span><span><i style="background:var(--Manufacture)"></i>Manufacture</span><span>drag to spin · scroll to zoom · colour = M, opacity = recency, countries shaded by tool count</span></div>
+<div class="legend"><span><i style="background:var(--Measure)"></i>Measure</span><span><i style="background:var(--Model)"></i>Model</span><span><i style="background:var(--Make)"></i>Make</span><span><i style="background:var(--Manufacture)"></i>Manufacture</span><span>drag to spin · scroll to zoom · colour = M, opacity = recency · pick threads to trace their migration over time (press play)</span></div>
 </div>
 <div id="wrap"><svg id="g"></svg></div><div id="chips"></div>
 <div class="tip" id="tip"></div>
