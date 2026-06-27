@@ -65,7 +65,7 @@ function render(){
 }
 // hubs
 const hg={};CARDS.forEach(c=>{if(c.lat==null)return;const k=c.lat.toFixed(1)+","+c.lon.toFixed(1);(hg[k]=hg[k]||[]).push(c);});
-const HUBS=Object.values(hg).map(g=>({n:g.length,city:(g[0].place||'').split(',')[0],lat:g[0].lat,lon:g[0].lon})).filter(h=>h.n>=3).sort((a,b)=>b.n-a.n).slice(0,12);
+const HUBS=Object.values(hg).map(g=>({n:g.length,city:(g[0].place||'').split(',')[0],lat:g[0].lat,lon:g[0].lon})).filter(h=>h.n>=2).sort((a,b)=>b.n-a.n).slice(0,30);
 const PANELCSS="position:fixed;top:0;right:0;width:330px;max-width:92vw;height:100%;background:#fff;border-left:.5px solid rgba(0,0,0,.15);box-shadow:-8px 0 30px rgba(0,0,0,.12);z-index:2000;overflow:auto;padding:18px 18px 50px;font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#1c1c1c";
 function countryChart(inC){const w=294,h=112,x0=6,x1=w-6,y0=10,yb=h-15,mn=1600,mx=2030;const sx=y=>x0+(Math.max(mn,Math.min(mx,y))-mn)/(mx-mn)*(x1-x0);
  function cum(cards,norm){if(!cards.length)return"";const ys=cards.map(c=>c.year).filter(Boolean).sort((a,b)=>a-b);let d="M"+x0+" "+yb;let n=0;for(const y of ys){n++;d+=" L"+sx(y).toFixed(1)+" "+yb+" L"+sx(y).toFixed(1)+" "+(yb-(n/norm)*(yb-y0)).toFixed(1);}d+=" L"+x1+" "+(yb-(n/norm)*(yb-y0)).toFixed(1);return d;}
