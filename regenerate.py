@@ -15,15 +15,30 @@ def clist(fm, k):
 def threads(fm):
     b = re.search(r'^Threads:\n((?:\s*-\s*.*\n?)*)', fm, re.M)
     return re.findall(r'\[\[Thread - ([^\]|]+?)(?:\|[^\]]*)?\]\]', b.group(1)) if b else []
+def mdlite(s):
+    # minimal markdown -> HTML for the deck's Front/Back faces (links, bold, italic)
+    s = re.sub(r'\[([^\]]+)\]\((https?://[^)\s]+)\)', r'<a href="\2" target="_blank" rel="noopener">\1</a>', s)
+    s = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', s)
+    s = re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)', r'<i>\1</i>', s)
+    return re.sub(r'\s+', ' ', s).strip()
 
 cards = []
 for p in sorted(glob.glob(os.path.join(VAULT, "Tooling Card - *.md"))):
     cid = os.path.basename(p)[len("Tooling Card - "):-3]
-    fm = re.match(r'^---\n(.*?)\n---\n', open(p, encoding="utf-8").read(), re.S).group(1)
+    raw = open(p, encoding="utf-8").read()
+    mfm = re.match(r'^---\n(.*?)\n---\n', raw, re.S)
+    fm, body = mfm.group(1), raw[mfm.end():]
+    # Front/Back faces from the body; stop before the off-card *Curator's note:* (kept private)
+    fb = re.search(r'\*\*Front\.\*\*(.*?)\*\*Back\.\*\*(.*?)(?:\n\*Curator|\Z)', body, re.S)
+    front = mdlite(fb.group(1)) if fb else ""
+    back  = mdlite(fb.group(2)) if fb else ""
     y, lat, lon, th = field(fm,"Year"), field(fm,"Lat"), field(fm,"Lon"), threads(fm)
     cards.append(dict(id=cid, name=field(fm,"Name"), kind=field(fm,"Kind"),
         year=int(y) if y.isdigit() else 0, place=field(fm,"Place"), person=field(fm,"Person"),
-        sig=field(fm,"Significance"), goal=field(fm,"Goal"), mech=field(fm,"Mechanism"), threads=th, primary=th[0] if th else "—",
+        sig=field(fm,"Significance"), goal=field(fm,"Goal"), mech=field(fm,"Mechanism"),
+        tool=field(fm,"Tool"), era=field(fm,"Era"), conf=field(fm,"Confidence"),
+        front=front, back=back,
+        threads=th, primary=th[0] if th else "—",
         lat=float(lat) if lat else None, lon=float(lon) if lon else None,
         bo=clist(fm,"BuildsOn"), en=clist(fm,"Enables"), country=""))
 # NOTE: cards.js is written below, AFTER the point-in-polygon pass fills c["country"].
