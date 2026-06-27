@@ -50,8 +50,13 @@ function render(){
  }
  // dots
  for(const c of CARDS){if(c.lat==null)continue;const fnd=c.id===foundId;if(c.year>T&&!fnd)continue;const p=proj(c.lon,c.lat);if(p[2]<0)continue;const r=(3+Math.min(4,(c.en?c.en.length:0)*0.8))*rsc*(fnd?1.6:1);const onT=selThreads.length?selThreads.find(t=>c.threads.includes(t)):null;const off=selThreads.length&&!onT;const fo=fnd?1:(off?0.07:(0.3+0.65*tfrac(c.year)));const ring=fnd?'#111':(onT?threadColor(onT):'#fff');const rw=fnd?'2.2':(onT?'2':'.8');s+=`<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fo}" stroke="${ring}" stroke-width="${rw}"/>`;}
- // hub labels (top cities by count)
- for(const h of HUBS){if(!vis(h.lon,h.lat))continue;const p=proj(h.lon,h.lat);s+=`<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2px">${h.city}</text>`;}
+ // hub labels (top cities by count), collision-pruned so clustered cities don't overprint
+ const _lab=[];
+ for(const h of HUBS){if(!vis(h.lon,h.lat))continue;const p=proj(h.lon,h.lat);if(p[2]<0)continue;
+  const lx=p[0],ly=p[1]-9,w=h.city.length*4.2+6;
+  if(_lab.some(q=>Math.abs(q.x-lx)<(q.w+w)/2+2&&Math.abs(q.y-ly)<11))continue;
+  _lab.push({x:lx,y:ly,w});
+  s+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2px">${h.city}</text>`;}
  svg.innerHTML=s;
  svg.querySelectorAll('.dot').forEach(el=>{el.style.cursor='pointer';el.onmousemove=e=>showTip(decodeURIComponent(el.dataset.id),e);el.onmouseleave=()=>tip.style.display='none';el.onclick=()=>{try{showDetail(byId[decodeURIComponent(el.dataset.id)]);}catch(e){}};});
  svg.querySelectorAll('.cty').forEach(el=>{el.style.cursor='pointer';el.onclick=()=>{if(!moved)showCountry(+el.dataset.ci);};});
