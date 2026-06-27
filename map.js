@@ -50,13 +50,13 @@ function render(){
  }
  // dots
  for(const c of CARDS){if(c.lat==null)continue;const fnd=c.id===foundId;if(c.year>T&&!fnd)continue;const p=proj(c.lon,c.lat);if(p[2]<0)continue;const r=(3+Math.min(4,(c.en?c.en.length:0)*0.8))*rsc*(fnd?1.6:1);const onT=selThreads.length?selThreads.find(t=>c.threads.includes(t)):null;const off=selThreads.length&&!onT;const fo=fnd?1:(off?0.07:(0.3+0.65*tfrac(c.year)));const ring=fnd?'#111':(onT?threadColor(onT):'#fff');const rw=fnd?'2.2':(onT?'2':'.8');s+=`<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fo}" stroke="${ring}" stroke-width="${rw}"/>`;}
- // hub labels (top cities by count), collision-pruned so clustered cities don't overprint
+ // region labels (density clusters), sized by card count, collision-pruned (densest placed first)
  const _lab=[];
  for(const h of HUBS){if(!vis(h.lon,h.lat))continue;const p=proj(h.lon,h.lat);if(p[2]<0)continue;
-  const lx=p[0],ly=p[1]-9,w=h.city.length*4.2+6;
-  if(_lab.some(q=>Math.abs(q.x-lx)<(q.w+w)/2+2&&Math.abs(q.y-ly)<11))continue;
+  const fs=6.5+Math.min(7,Math.sqrt(h.n)*1.7),ly=p[1]-9,lx=p[0],w=h.city.length*fs*0.56+6;
+  if(_lab.some(q=>Math.abs(q.x-lx)<(q.w+w)/2+2&&Math.abs(q.y-ly)<fs+3))continue;
   _lab.push({x:lx,y:ly,w});
-  s+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2px">${h.city}</text>`;}
+  s+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2.5px">${h.city}</text>`;}
  svg.innerHTML=s;
  svg.querySelectorAll('.dot').forEach(el=>{el.style.cursor='pointer';el.onmousemove=e=>showTip(decodeURIComponent(el.dataset.id),e);el.onmouseleave=()=>tip.style.display='none';el.onclick=()=>{try{showDetail(byId[decodeURIComponent(el.dataset.id)]);}catch(e){}};});
  svg.querySelectorAll('.cty').forEach(el=>{el.style.cursor='pointer';el.onclick=()=>{if(!moved)showCountry(+el.dataset.ci);};});
@@ -65,7 +65,12 @@ function render(){
 }
 // hubs
 const hg={};CARDS.forEach(c=>{if(c.lat==null)return;const k=c.lat.toFixed(1)+","+c.lon.toFixed(1);(hg[k]=hg[k]||[]).push(c);});
-const HUBS=Object.values(hg).map(g=>({n:g.length,city:(g[0].place||'').split(',')[0],lat:g[0].lat,lon:g[0].lon})).filter(h=>h.n>=2).sort((a,b)=>b.n-a.n).slice(0,30);
+// Key regions by card density: cluster nearby cities (~5°), name each by its densest city, size by total cards.
+const _pts=Object.values(hg).map(g=>({n:g.length,city:(g[0].place||'').split(',')[0],lat:g[0].lat,lon:g[0].lon})).sort((a,b)=>b.n-a.n);
+const _CL=[];
+for(const p of _pts){let m=null;for(const c of _CL){const dla=c.lat-p.lat,dlo=c.lon-p.lon;if(dla*dla+dlo*dlo<25){m=c;break;}}
+ if(m){const t=m.n+p.n;m.lat=(m.lat*m.n+p.lat*p.n)/t;m.lon=(m.lon*m.n+p.lon*p.n)/t;m.n=t;}else _CL.push({n:p.n,city:p.city,lat:p.lat,lon:p.lon});}
+const HUBS=_CL.sort((a,b)=>b.n-a.n).slice(0,26);
 const PANELCSS="position:fixed;top:0;right:0;width:330px;max-width:92vw;height:100%;background:#fff;border-left:.5px solid rgba(0,0,0,.15);box-shadow:-8px 0 30px rgba(0,0,0,.12);z-index:2000;overflow:auto;padding:18px 18px 50px;font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#1c1c1c";
 function countryChart(inC){const w=294,h=112,x0=6,x1=w-6,y0=10,yb=h-15,mn=1600,mx=2030;const sx=y=>x0+(Math.max(mn,Math.min(mx,y))-mn)/(mx-mn)*(x1-x0);
  function cum(cards,norm){if(!cards.length)return"";const ys=cards.map(c=>c.year).filter(Boolean).sort((a,b)=>a-b);let d="M"+x0+" "+yb;let n=0;for(const y of ys){n++;d+=" L"+sx(y).toFixed(1)+" "+yb+" L"+sx(y).toFixed(1)+" "+(yb-(n/norm)*(yb-y0)).toFixed(1);}d+=" L"+x1+" "+(yb-(n/norm)*(yb-y0)).toFixed(1);return d;}
