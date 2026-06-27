@@ -100,7 +100,7 @@ const x0=200,minY=1600,maxY=2030,SPAN=430,WIDTH=3000;
 const YEARS=DATA.map(c=>c.year).filter(y=>y).sort((a,b)=>a-b);
 function densFrac(y){let lo=0,hi=YEARS.length;while(lo<hi){const m=(lo+hi)>>1;if(YEARS[m]<=y)lo=m+1;else hi=m;}return lo/YEARS.length;}
 let timeScale="comp";
-const ERAS=[["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World Wars",1914,1945],["Cold War / Space Age",1945,1991],["Information Age",1991,2008],["AI Age",2008,2030]];
+const ERAS=[["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World War I",1914,1918],["Interwar",1918,1939],["World War II",1939,1945],["Cold War",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
 const EVENTS=[[1769,"Watt steam engine"],[1776,"American Revolution"],[1957,"Sputnik"],[1969,"Moon landing"],[1971,"Microprocessor"],[1989,"World Wide Web"],[2003,"Iraq War"],[2007,"iPhone"],[2012,"Deep learning"],[2020,"COVID-19"]];
 function xs(y){y=Math.max(minY,Math.min(maxY,y));const n=(y-minY)/SPAN;return timeScale==="even"?x0+WIDTH*n:timeScale==="comp"?x0+WIDTH*Math.pow(n,1.8):x0+WIDTH*densFrac(y);}
 function laneOrder(){

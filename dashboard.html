@@ -30,7 +30,7 @@ td.gap{background:#fbe7e7;color:#c0392b;font-weight:600}td.era{text-align:left;c
 <script>
 const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
 const KINDS=["Measure","Model","Make","Manufacture"];
-const ERAS=[["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World Wars",1914,1945],["Cold War / Space Age",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
+const ERAS=[["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World War I",1914,1918],["Interwar",1918,1939],["World War II",1939,1945],["Cold War",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
 const threads=[...new Set(CARDS.flatMap(c=>c.threads))];
 document.getElementById("sub").textContent=CARDS.length+" tools · "+threads.length+" threads · "+new Set(CARDS.map(c=>c.country).filter(Boolean)).size+" countries";
 function bars(el,data,max,colorfn){el.innerHTML=data.map(d=>`<div class="row"><span class="lab">${d.k}</span><div class="bar" style="width:${Math.max(2,d.v/max*260)}px;background:${colorfn(d.k)}"></div><span class="n">${d.v}</span></div>`).join("");}
