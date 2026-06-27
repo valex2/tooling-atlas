@@ -97,8 +97,8 @@ const x0=200,minY=1600,maxY=2030,SPAN=430,WIDTH=3000;
 const YEARS=DATA.map(c=>c.year).filter(y=>y).sort((a,b)=>a-b);
 function densFrac(y){let lo=0,hi=YEARS.length;while(lo<hi){const m=(lo+hi)>>1;if(YEARS[m]<=y)lo=m+1;else hi=m;}return lo/YEARS.length;}
 let timeScale="comp";
-const EVBANDS=[["American Revolution",1775,1783,"rgba(120,90,40,0.07)"],["World War II",1939,1945,"rgba(176,60,40,0.07)"],["Cold War",1947,1991,"rgba(60,90,170,0.06)"],["Iraq War",2003,2011,"rgba(150,70,40,0.07)"],["COVID",2020,2022,"rgba(120,40,120,0.09)"]];
-const EVLINES=[[1769,"Steam age"],[1914,"WWI"],[1957,"Sputnik"],[1969,"Moon"],[1971,"Microprocessor"],[1989,"The Web"],[2007,"iPhone"],[2012,"Deep learning"]];
+const ERAS=[["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World Wars",1914,1945],["Cold War / Space Age",1945,1991],["Information Age",1991,2008],["AI Age",2008,2030]];
+const EVENTS=[[1769,"Watt steam engine"],[1776,"American Revolution"],[1957,"Sputnik"],[1969,"Moon landing"],[1971,"Microprocessor"],[1989,"World Wide Web"],[2003,"Iraq War"],[2007,"iPhone"],[2012,"Deep learning"],[2020,"COVID-19"]];
 function xs(y){y=Math.max(minY,Math.min(maxY,y));const n=(y-minY)/SPAN;return timeScale==="even"?x0+WIDTH*n:timeScale==="comp"?x0+WIDTH*Math.pow(n,1.8):x0+WIDTH*densFrac(y);}
 function laneOrder(){
  if(axis==="kind")return ["Measure","Model","Make","Manufacture"].filter(k=>DATA.some(c=>c.kind===k));
@@ -174,9 +174,10 @@ function render(){
      for(let k=gi;k<=gj;k++){const l=lanes[k];html+=`<div class="lanelab" data-lane="${enc(l)}" style="top:${LM[l]}px;left:92px;width:110px">${SUBLABEL[l]||l} <span class="car">${LCOUNT[l]}${expanded.has(l)?" ▾":""}</span></div>`;}
    } else {const l=lanes[gi];html+=`<div class="lanelab" data-lane="${enc(l)}" style="top:${LM[l]}px">${l} <span class="car">${LCOUNT[l]}${expanded.has(l)?" ▾":""}</span></div>`;}
    gi=gj+1;}
-for(const ev of EVBANDS){const x1=xs(ev[1]),x2=xs(ev[2]);html+=`<div style="position:absolute;left:${x1}px;top:24px;width:${x2-x1}px;height:${layoutH-30}px;background:${ev[3]};z-index:0"></div><div style="position:absolute;left:${(x1+x2)/2}px;top:24px;transform:translateX(-50%);font-size:9px;font-weight:600;color:var(--mut);z-index:0;white-space:nowrap;background:rgba(252,251,249,.72);padding:0 3px">${ev[0]}</div>`;}
- for(const ev of EVLINES){const gx2=xs(ev[0]);html+=`<div style="position:absolute;left:${gx2}px;top:24px;height:${layoutH-30}px;border-left:1px dashed rgba(0,0,0,.2);z-index:0"></div><div style="position:absolute;left:${gx2+2}px;top:${layoutH-24}px;font-size:8.5px;color:#9a6a3a;z-index:0;white-space:nowrap">${ev[1]}</div>`;}
-  for(let y=1600;y<=2030;y+=10){const gx=xs(y),maj=(y%50===0);html+=`<div class="gl ${maj?'maj':''}" style="left:${gx}px;top:26px;height:${layoutH-32}px"></div>`;html+=`<div class="yr" style="left:${gx+2}px;top:10px;color:${maj?'#8f8f8f':'#c9c9c9'};${maj?'font-weight:600':''}">${maj?y:"’"+String(y).slice(2)}</div>`;}
+lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute;left:0;top:${LTOP[l]}px;width:${layoutW}px;height:${(LBOT[l]-LTOP[l])}px;background:rgba(0,0,0,.03);z-index:0"></div>`;});
+ ERAS.forEach((e,i)=>{const a=xs(e[1]),b=xs(e[2]);html+=`<div style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div><div style="position:absolute;left:${(a+b)/2}px;top:2px;transform:translateX(-50%);font-size:9px;font-weight:600;color:rgba(0,0,0,.32);z-index:4;white-space:nowrap;background:rgba(252,251,249,.85);padding:0 3px">${e[0]}</div>`;});
+ EVENTS.forEach((ev,i)=>{const x=xs(ev[0]);html+=`<div style="position:absolute;left:${x}px;top:16px;height:${layoutH-16}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:16px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${x+3}px;top:${i%2?16:27}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;});
+ for(let y=1600;y<=2030;y+=10){const gx=xs(y),maj=(y%50===0);html+=`<div class="gl ${maj?'maj':''}" style="left:${gx}px;top:26px;height:${layoutH-32}px"></div>`;html+=`<div class="yr" style="left:${gx+2}px;top:10px;color:${maj?'#8f8f8f':'#c9c9c9'};${maj?'font-weight:600':''}">${maj?y:"’"+String(y).slice(2)}</div>`;}
  for(const l of lanes){const dotmode=DIM[laneMode(l)].dot;for(const it of laneItems[l]){const c=it.c;const matchq=q&&(c.name.toLowerCase().includes(q)||(c.person||'').toLowerCase().includes(q));
    let extra="";if(lit){if(!it.ghost&&!lit.has(c.id))extra=" dim";else if(!it.ghost&&lit.has(c.id)&&c.id!==selCard)extra=" hl";}
    else if(selThread&&!inT(c.id))extra=" dim"; if(c.id===selCard&&!it.ghost)extra+=" sel"; if(matchq)extra+=" hl";
