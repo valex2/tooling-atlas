@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tooling Cards — Table</title>
+<style>
+:root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--card:#fff;
+--Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:46px 18px 60px}
+h1{font-size:20px;font-weight:600;margin:0 0 8px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+input.search{border:.5px solid var(--line);border-radius:14px;padding:5px 12px;font-size:13px;width:230px;background:#fff;color:var(--ink)}
+.chip{border:.5px solid var(--line);background:#fff;border-radius:13px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+select{border:.5px solid var(--line);border-radius:13px;padding:5px 10px;font-size:12.5px;background:#fff}
+table{border-collapse:collapse;width:100%;background:#fff;border:.5px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:7px 10px;border-bottom:.5px solid var(--line);font-size:12.5px;vertical-align:top}
+th{position:sticky;top:0;background:#efece6;cursor:pointer;user-select:none;white-space:nowrap;font-weight:600}
+th:hover{background:#e6e2db}tr:hover td{background:#faf9f6}
+.kpill{display:inline-block;padding:1px 8px;border-radius:9px;font-size:11px}
+.thr{color:var(--mut);font-size:11px}.sig{color:#333;max-width:380px}
+.count{color:var(--mut);font-size:12px;margin:8px 0}
+a{color:#9a6a3a}
+</style></head><body>
+<div style="position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif"><a href="index.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Home</a><a href="map.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Globe</a><a href="views/atlas.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Timeline</a><a href="views/tree.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Tree</a><a href="views/deck.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Deck</a><a href="table.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#1c1c1c;color:#fff;font-size:11.5px">Table</a></div>
+<div class="wrap">
+<h1>Tooling Cards — Table</h1>
+<div class="bar">
+  <input class="search" id="q" placeholder="search name, person, place, thread…">
+  <span id="kinds"></span>
+  <select id="thread"><option value="">all threads</option></select>
+  <button class="chip" id="reset">reset</button>
+</div>
+<div class="count" id="count"></div>
+<table><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table>
+</div>
+<script src="data/cards.js"></script>
+<script src="table.js"></script>
+</body></html>

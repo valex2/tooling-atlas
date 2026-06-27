@@ -20,13 +20,14 @@ svg.drag{cursor:grabbing}
 .tip .t{font-weight:600}.tip .m{color:var(--mut);font-size:10.5px;margin:2px 0 4px}.tip .s{font-size:11px;line-height:1.4}
 .hint{position:absolute;left:16px;bottom:8px;font-size:11px;color:#b9b4ab}
 </style></head><body>
+<div style="position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif"><a href="index.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Home</a><a href="map.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#1c1c1c;color:#fff;font-size:11.5px">Globe</a><a href="views/atlas.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Timeline</a><a href="views/tree.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Tree</a><a href="views/deck.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Deck</a><a href="table.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Table</a></div>
 <div class="top">
 <h1>Tooling Cards — The Globe</h1>
 <div class="bar">
   <button class="btn" id="play">▶ play</button>
   <span class="ylab" id="ylab">2030</span>
   <input type="range" id="yr" min="0" max="1000" value="1000">
-  <button class="btn" id="reset">reset view</button>
+  <button class="btn" id="reset">reset view</button><input id="msearch" placeholder="find a tool…" style="border:.5px solid var(--line);border-radius:13px;padding:4px 11px;font-size:12px;width:150px">
 </div>
 <div class="legend"><span><i style="background:var(--Measure)"></i>Measure</span><span><i style="background:var(--Model)"></i>Model</span><span><i style="background:var(--Make)"></i>Make</span><span><i style="background:var(--Manufacture)"></i>Manufacture</span><span>drag to spin · scroll to zoom · colour = M, opacity = recency, countries shaded by tool count</span></div>
 </div>
