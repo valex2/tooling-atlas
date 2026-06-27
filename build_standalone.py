@@ -69,7 +69,6 @@ HOME = f"""<section id="home"><div class="hwrap">
  <p class="tagline">See it, understand it, build one, build a million.</p>
  <h2>Six ways to read it</h2>
  <div class="views">{view_cards}</div>
- <p class="foot">Built offline from a personal research vault. Colour marks the job a tool does; opacity and position mark time.</p>
 </div></section>"""
 
 shell = """<!doctype html><html lang="en"><head><meta charset="utf-8">
