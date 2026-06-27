@@ -1,8 +1,11 @@
+window.onerror=function(msg,src,ln,col){try{let b=document.getElementById("apperr");if(!b){b=document.createElement("div");b.id="apperr";b.style.cssText="position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#b0261e;color:#fff;font:12px/1.4 monospace;padding:8px 12px;white-space:pre-wrap";document.body&&document.body.appendChild(b);}b.textContent="JS error: "+msg+"  ("+(src||"").split("/").pop()+":"+ln+":"+col+")";}catch(e){}return false;};
 window.VAULT="Obsidian Vault";
 window.KCOL={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
 window.obsidianURL=function(id){return "obsidian://open?vault="+encodeURIComponent(VAULT)+"&file="+encodeURIComponent("Tooling Card - "+id);};
-window.__byId=(window.CARDS?Object.fromEntries(CARDS.map(c=>[c.id,c])):{});
+window.rebuildById=function(){window.__byId=(window.CARDS?Object.fromEntries(CARDS.map(c=>[c.id,c])):{});return window.__byId;};
+window.__byId=window.rebuildById();
 window.showDetail=function(c){
+ if(!Object.keys(__byId).length&&window.CARDS)rebuildById();
  if(typeof c==="string")c=__byId[c]||{name:c};
  const KC=KCOL, col=KC[c.kind]||"#999", id=c.id||(c.name||"").replace(/\//g,"-");
  const chips=a=>(a&&a.length)?a.map(x=>'<span style="display:inline-block;background:#f0ede7;border-radius:8px;padding:1px 7px;margin:2px 3px 0 0;font-size:11px">'+x+'</span>').join(""):"<span style='color:#bbb'>—</span>";
@@ -24,7 +27,7 @@ window.showDetail=function(c){
 };
 // URL state
 window.getState=function(){const o={};(location.hash||"").replace(/^#/,"").split("&").forEach(kv=>{if(!kv)return;const i=kv.indexOf("=");const k=i<0?kv:kv.slice(0,i);o[k]=i<0?"":decodeURIComponent(kv.slice(i+1));});return o;};
-window.setState=function(patch){const o=getState();Object.assign(o,patch);const s=Object.entries(o).filter(e=>e[1]!==""&&e[1]!=null).map(e=>e[0]+"="+encodeURIComponent(e[1])).join("&");history.replaceState(null,"",location.pathname+(s?"#"+s:""));buildNav();};
+window.setState=function(patch){const o=getState();Object.assign(o,patch);const s=Object.entries(o).filter(e=>e[1]!==""&&e[1]!=null).map(e=>e[0]+"="+encodeURIComponent(e[1])).join("&");try{history.replaceState(null,"",location.pathname+(s?"#"+s:""));}catch(e){try{location.hash=s;}catch(e2){}}buildNav();};
 // dynamic nav
 const NAVITEMS=[["Home","index.html"],["Globe","map.html"],["Timeline","views/atlas.html"],["Tree","views/tree.html"],["Deck","views/deck.html"],["Table","table.html"],["Dashboard","dashboard.html"]];
 function buildNav(){const el=document.getElementById("appnav");if(!el)return;const views=location.pathname.indexOf("/views/")>=0;const cur=location.pathname.split("/").pop()||"index.html";
@@ -46,4 +49,4 @@ function mountHelp(){if(document.getElementById("helpbtn"))return;
  document.body.appendChild(b);document.body.appendChild(ov);
  b.onclick=()=>{ov.style.display="block";};
  ov.onclick=e=>{if(e.target===ov||e.target.id==="helpx")ov.style.display="none";};}
-window.addEventListener("DOMContentLoaded",()=>{buildNav();mountHelp();});
+window.addEventListener("DOMContentLoaded",()=>{window.rebuildById();buildNav();mountHelp();});
