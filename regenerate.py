@@ -23,7 +23,7 @@ for p in sorted(glob.glob(os.path.join(VAULT, "Tooling Card - *.md"))):
     y, lat, lon, th = field(fm,"Year"), field(fm,"Lat"), field(fm,"Lon"), threads(fm)
     cards.append(dict(id=cid, name=field(fm,"Name"), kind=field(fm,"Kind"),
         year=int(y) if y.isdigit() else 0, place=field(fm,"Place"), person=field(fm,"Person"),
-        sig=field(fm,"Significance"), threads=th, primary=th[0] if th else "—",
+        sig=field(fm,"Significance"), goal=field(fm,"Goal"), mech=field(fm,"Mechanism"), threads=th, primary=th[0] if th else "—",
         lat=float(lat) if lat else None, lon=float(lon) if lon else None,
         bo=clist(fm,"BuildsOn"), en=clist(fm,"Enables"), country=""))
 open(os.path.join(HERE,"data/cards.js"),"w").write("window.CARDS="+json.dumps(cards,ensure_ascii=False)+";")

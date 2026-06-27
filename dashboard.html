@@ -1,0 +1,54 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tooling Cards — Dashboard</title>
+<style>
+:root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:46px 18px 60px}
+h1{font-size:21px;font-weight:600;margin:0 0 2px}.sub{color:var(--mut);margin:0 0 22px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h2{font-size:14px;font-weight:600;margin:0 0 12px}
+.row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12px}
+.row .lab{width:150px;text-align:right;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:13px;border-radius:3px}
+.row .n{font-size:11px;color:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th,td{border:.5px solid var(--line);padding:5px 7px;text-align:center}th{background:#efece6}
+td.gap{background:#fbe7e7;color:#c0392b;font-weight:600}td.era{text-align:left;color:var(--mut);background:#faf9f6}
+.full{grid-column:1/3}
+</style></head><body>
+<div class="wrap">
+<h1>Tooling Cards — Dashboard</h1>
+<p class="sub" id="sub"></p>
+<div class="grid">
+ <div class="card"><h2>By kind</h2><div id="bykind"></div></div>
+ <div class="card"><h2>By decade</h2><div id="bydecade"></div></div>
+ <div class="card full"><h2>Threads by size</h2><div id="bythread"></div></div>
+ <div class="card full"><h2>Coverage — era × kind <span style="font-weight:400;color:var(--mut)">(red = gap, nothing written yet)</span></h2><div id="matrix"></div></div>
+</div></div>
+<script src="data/cards.js"></script><script src="shared.js"></script>
+<script>
+const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
+const KINDS=["Measure","Model","Make","Manufacture"];
+const ERAS=[["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World Wars",1914,1945],["Cold War / Space Age",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
+const threads=[...new Set(CARDS.flatMap(c=>c.threads))];
+document.getElementById("sub").textContent=CARDS.length+" tools · "+threads.length+" threads · "+new Set(CARDS.map(c=>c.country).filter(Boolean)).size+" countries";
+function bars(el,data,max,colorfn){el.innerHTML=data.map(d=>`<div class="row"><span class="lab">${d.k}</span><div class="bar" style="width:${Math.max(2,d.v/max*260)}px;background:${colorfn(d.k)}"></div><span class="n">${d.v}</span></div>`).join("");}
+// by kind
+const kc=KINDS.map(k=>({k,v:CARDS.filter(c=>c.kind===k).length}));
+bars(document.getElementById("bykind"),kc,Math.max(...kc.map(d=>d.v)),k=>KC[k]||"#999");
+// by decade
+const dec={};CARDS.forEach(c=>{if(!c.year)return;const d=Math.floor(c.year/10)*10;dec[d]=(dec[d]||0)+1;});
+const decs=Object.keys(dec).map(Number).sort((a,b)=>a-b);
+const dmax=Math.max(...decs.map(d=>dec[d]));
+document.getElementById("bydecade").innerHTML=decs.map(d=>`<div class="row"><span class="lab" style="width:46px">${d}s</span><div class="bar" style="width:${Math.max(2,dec[d]/dmax*240)}px;background:#b06a1e"></div><span class="n">${dec[d]}</span></div>`).join("");
+// threads by size
+const ts=threads.map(t=>({k:t,v:CARDS.filter(c=>c.threads.includes(t)).length})).sort((a,b)=>b.v-a.v);
+bars(document.getElementById("bythread"),ts,Math.max(...ts.map(d=>d.v)),()=> "#666");
+// era x kind matrix
+let h='<table><tr><th>Era</th>'+KINDS.map(k=>`<th style="color:${KC[k]}">${k}</th>`).join("")+'<th>Σ</th></tr>';
+for(const [name,a,b] of ERAS){let rsum=0;let cells="";for(const k of KINDS){const n=CARDS.filter(c=>c.kind===k&&c.year>=a&&c.year<b).length;rsum+=n;cells+=`<td class="${n===0?'gap':''}">${n||"·"}</td>`;}h+=`<tr><td class="era">${name} <span style="color:#bbb">${a}–${b-1}</span></td>${cells}<td>${rsum}</td></tr>`;}
+h+='</table>';document.getElementById("matrix").innerHTML=h;
+</script>
+<div id="appnav"></div>
+</body></html>
