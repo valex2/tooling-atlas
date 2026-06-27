@@ -9,6 +9,7 @@ const maxc=Math.max(1,...COUNTRIES.map(o=>o.c));
 // centroid of data for initial view
 let cLon=0,cLat=0;(function(){let x=0,y=0,z=0,n=0;for(const c of CARDS){if(c.lat==null)continue;const la=c.lat*D2R,lo=c.lon*D2R;x+=Math.cos(la)*Math.cos(lo);y+=Math.cos(la)*Math.sin(lo);z+=Math.sin(la);n++;}cLon=Math.atan2(y,x)/D2R;cLat=Math.atan2(z,Math.hypot(x,y))/D2R;})();
 let rotLon=cLon, rotLat=Math.min(55,cLat+6), scale=0, T=0, playing=false, timer=null, foundId=null;
+let selThread="";
 const svg=document.getElementById('g'), tip=document.getElementById('tip');
 let W=0,H=0,cx=0,cy=0;
 function size(){const r=svg.getBoundingClientRect();W=r.width;H=r.height;cx=W/2;cy=H/2;if(!scale)scale=Math.min(W,H)*0.46;}
@@ -26,10 +27,10 @@ function render(){
  // countries
  for(const o of COUNTRIES){const fill=o.c>0?`rgba(176,106,30,${(0.12+0.6*o.c/maxc).toFixed(3)})`:"#e7e3db";for(const ring of o.r){const d=ringPath(ring);if(d)s+=`<path d="${d}" fill="${fill}" stroke="rgba(0,0,0,.14)" stroke-width=".4"/>`;}}
  // arcs
- for(const c of CARDS){if(c.lat==null)continue;for(const en of (c.en||[])){const b=byId[en];if(!b||b.lat==null||b.year>T)continue;if(Math.abs(c.lat-b.lat)<0.2&&Math.abs(c.lon-b.lon)<0.2)continue;if(!vis(c.lon,c.lat)||!vis(b.lon,b.lat))continue;const A=proj(c.lon,c.lat),B=proj(b.lon,b.lat);const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2-Math.hypot(B[0]-A[0],B[1]-A[1])*0.18;s+=`<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${KC[b.kind]}" stroke-opacity="${(0.1+0.3*tfrac(b.year)).toFixed(2)}" stroke-width="1"/>`;}}
+ for(const c of CARDS){if(c.lat==null)continue;for(const en of (c.en||[])){const b=byId[en];if(!b||b.lat==null||b.year>T)continue;if(Math.abs(c.lat-b.lat)<0.2&&Math.abs(c.lon-b.lon)<0.2)continue;if(!vis(c.lon,c.lat)||!vis(b.lon,b.lat))continue;if(selThread&&(!c.threads.includes(selThread)||!b.threads.includes(selThread)))continue;const A=proj(c.lon,c.lat),B=proj(b.lon,b.lat);const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2-Math.hypot(B[0]-A[0],B[1]-A[1])*0.18;s+=`<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${KC[b.kind]}" stroke-opacity="${(0.1+0.3*tfrac(b.year)).toFixed(2)}" stroke-width="1"/>`;}}
  // dots
  const rsc=Math.max(.6,Math.min(3,scale/(Math.min(W,H)*0.46)));
- for(const c of CARDS){if(c.lat==null)continue;const fnd=c.id===foundId;if(c.year>T&&!fnd)continue;const p=proj(c.lon,c.lat);if(p[2]<0)continue;const r=(3+Math.min(4,(c.en?c.en.length:0)*0.8))*rsc*(fnd?1.6:1);s+=`<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fnd?1:(0.3+0.65*tfrac(c.year)).toFixed(2)}" stroke="${fnd?'#111':'#fff'}" stroke-width="${fnd?'2.2':'.8'}"/>`;}
+ for(const c of CARDS){if(c.lat==null)continue;const fnd=c.id===foundId;if(c.year>T&&!fnd)continue;const p=proj(c.lon,c.lat);if(p[2]<0)continue;const r=(3+Math.min(4,(c.en?c.en.length:0)*0.8))*rsc*(fnd?1.6:1);const off=selThread&&!c.threads.includes(selThread);const fo=fnd?1:(off?0.07:(0.3+0.65*tfrac(c.year)));s+=`<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fo}" stroke="${fnd?'#111':'#fff'}" stroke-width="${fnd?'2.2':'.8'}"/>`;}
  // hub labels (top cities by count)
  for(const h of HUBS){if(!vis(h.lon,h.lat))continue;const p=proj(h.lon,h.lat);s+=`<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2px">${h.city}</text>`;}
  svg.innerHTML=s;
@@ -51,7 +52,9 @@ yr.oninput=e=>{stop();T=qYear(+e.target.value/1000);ylab.textContent=T;render();
 function stop(){playing=false;clearInterval(timer);const b=document.getElementById('play');b.textContent='▶ play';b.classList.remove('on');}
 document.getElementById('play').onclick=function(){if(playing){stop();return;}playing=true;this.textContent='❚❚ pause';this.classList.add('on');let v=(+yr.value>=1000)?0:+yr.value;timer=setInterval(()=>{v+=14;if(v>=1000){v=1000;T=qYear(1);yr.value=1000;ylab.textContent=T;render();stop();return;}T=qYear(v/1000);yr.value=v;ylab.textContent=T;render();},90);};
 document.getElementById('reset').onclick=()=>{rotLon=cLon;rotLat=Math.min(55,cLat+6);scale=Math.min(W,H)*0.46;render();};
-document.getElementById('msearch').oninput=e=>{const q=e.target.value.toLowerCase();if(!q){foundId=null;render();return;}const c=CARDS.find(c=>c.lat!=null&&c.name.toLowerCase().includes(q));if(c){foundId=c.id;rotLon=c.lon;rotLat=Math.max(-80,Math.min(80,c.lat));if(scale<320)scale=420;render();}};
+document.getElementById('msearch').oninput=e=>{const q=e.target.value.toLowerCase();if(!q){foundId=null;
+let selThread="";render();return;}const c=CARDS.find(c=>c.lat!=null&&c.name.toLowerCase().includes(q));if(c){foundId=c.id;rotLon=c.lon;rotLat=Math.max(-80,Math.min(80,c.lat));if(scale<320)scale=420;render();}};
+(function(){const sel=document.getElementById('mthread');if(!sel)return;const ths=[...new Set(CARDS.flatMap(c=>c.threads))].sort();sel.innerHTML='<option value="">all threads</option>'+ths.map(t=>`<option>${t}</option>`).join('');sel.onchange=e=>{selThread=e.target.value;render();};})();
 window.addEventListener('resize',render);
 T=qYear(1);document.getElementById('ylab').textContent=T;render();
 })();
