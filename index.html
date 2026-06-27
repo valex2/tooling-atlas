@@ -9,11 +9,27 @@ a.card{display:block;text-decoration:none;color:inherit;background:#fff;border:.
 a.card:hover{box-shadow:0 6px 20px rgba(0,0,0,.1)}
 a.card h2{font-size:16px;font-weight:600;margin:0 0 4px}a.card p{font-size:12.5px;color:#6f6f6f;margin:0}
 .foot{color:#b9b4ab;font-size:12px;margin-top:26px}
+.about{background:#fff;border:.5px solid rgba(0,0,0,.12);border-radius:12px;padding:18px 20px;margin:0 0 22px;font-size:13.5px;line-height:1.6}
+.about p{margin:0 0 10px}.about .lead{font-weight:600;font-size:15px}
+.ms{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.ms div{border-left:4px solid #999;padding:4px 10px;background:#faf9f6;border-radius:0 8px 8px 0;font-size:12.5px}
+.ms b{font-weight:600}
+.about .kicker{color:#6f6f6f;font-style:italic}
 </style></head><body>
 <script src="shared.js"></script>
 <div id="appnav" style="position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif"><a href="index.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#1c1c1c;color:#fff;font-size:11.5px">Home</a><a href="map.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Globe</a><a href="views/atlas.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Timeline</a><a href="views/tree.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Tree</a><a href="views/deck.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Deck</a><a href="table.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Table</a></div><div class="wrap">
 <h1>Tooling Cards</h1>
 <p class="sub">Tools that drove the progress of technology — explored four ways. <span id="n"></span></p>
+<div class="about">
+<p class="lead">Every tool here does one of four jobs, and they fall in order.</p>
+<div class="ms">
+<div style="border-color:#3266ad"><b style="color:#3266ad">Measure</b> — seeing what's there: a microscope, an X-ray, a way to read DNA.</div>
+<div style="border-color:#8a4fb3"><b style="color:#8a4fb3">Model</b> — a way to think about it: an equation or rule that lets you predict and reason without touching the real thing.</div>
+<div style="border-color:#b06a1e"><b style="color:#b06a1e">Make</b> — building one working copy: a single transistor, engine, or molecule.</div>
+<div style="border-color:#2f8f6b"><b style="color:#2f8f6b">Manufacture</b> — building a billion of them, cheap and identical, on a factory floor.</div>
+</div>
+<p>See it, understand it, build one, build a million. And because ideas are free to copy, the lead that lasts almost always sits at the far end — in the making at scale, where the skill is in the doing and can't be written down.</p>
+</div>
 <div class="grid">
 <a class="card" href="map.html"><h2>🌐 Globe</h2><p>Where each tool was made, and how leadership migrated across the world. Drag to spin, scroll to zoom.</p></a>
 <a class="card" href="views/atlas.html"><h2>📊 Timeline</h2><p>Lanes by thread, geography, or the four Ms, on a time axis with key-event overlays.</p></a>
