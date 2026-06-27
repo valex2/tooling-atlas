@@ -30,13 +30,13 @@ td.gap{background:#fbe7e7;color:#c0392b;font-weight:600}td.era{text-align:left;c
 <script>
 const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
 const KINDS=["Measure","Model","Make","Manufacture"];
-const ERAS=[["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World War I",1914,1918],["Interwar",1918,1939],["World War II",1939,1945],["Cold War",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
+const ERAS=[["Medieval / Renaissance",1400,1600],["Scientific Revolution",1600,1687],["Enlightenment",1687,1760],["Industrial Revolution",1760,1840],["2nd Industrial Rev.",1840,1914],["World War I",1914,1918],["Interwar",1918,1939],["World War II",1939,1945],["Cold War",1945,1991],["Information Age",1991,2008],["AI Age",2008,2031]];
 const threads=[...new Set(CARDS.flatMap(c=>c.threads))];
 document.getElementById("sub").textContent=CARDS.length+" tools · "+threads.length+" threads · "+new Set(CARDS.map(c=>c.country).filter(Boolean)).size+" countries";
-function bars(el,data,max,colorfn){el.innerHTML=data.map(d=>`<div class="row"><span class="lab">${d.k}</span><div class="bar" style="width:${Math.max(2,d.v/max*260)}px;background:${colorfn(d.k)}"></div><span class="n">${d.v}</span></div>`).join("");}
+function bars(el,data,max,colorfn,linkfn){el.innerHTML=data.map(d=>{const inner=`<span class="lab">${d.k}</span><div class="bar" style="width:${Math.max(2,d.v/max*260)}px;background:${colorfn(d.k)}"></div><span class="n">${d.v}</span>`;return linkfn?`<a class="row" href="${linkfn(d.k)}" style="text-decoration:none;color:inherit">${inner}</a>`:`<div class="row">${inner}</div>`;}).join("");}
 // by kind
 const kc=KINDS.map(k=>({k,v:CARDS.filter(c=>c.kind===k).length}));
-bars(document.getElementById("bykind"),kc,Math.max(...kc.map(d=>d.v)),k=>KC[k]||"#999");
+bars(document.getElementById("bykind"),kc,Math.max(...kc.map(d=>d.v)),k=>KC[k]||"#999",k=>"table.html#kind="+encodeURIComponent(k));
 // by decade
 const dec={};CARDS.forEach(c=>{if(!c.year)return;const d=Math.floor(c.year/10)*10;dec[d]=(dec[d]||0)+1;});
 const decs=Object.keys(dec).map(Number).sort((a,b)=>a-b);
@@ -44,9 +44,9 @@ const dmax=Math.max(...decs.map(d=>dec[d]));
 document.getElementById("bydecade").innerHTML=decs.map(d=>`<div class="row"><span class="lab" style="width:46px">${d}s</span><div class="bar" style="width:${Math.max(2,dec[d]/dmax*240)}px;background:#b06a1e"></div><span class="n">${dec[d]}</span></div>`).join("");
 // threads by size
 const ts=threads.map(t=>({k:t,v:CARDS.filter(c=>c.threads.includes(t)).length})).sort((a,b)=>b.v-a.v);
-bars(document.getElementById("bythread"),ts,Math.max(...ts.map(d=>d.v)),()=> "#666");
+bars(document.getElementById("bythread"),ts,Math.max(...ts.map(d=>d.v)),()=>"#666",k=>"table.html#thread="+encodeURIComponent(k));
 // era x kind matrix
-let h='<table><tr><th>Era</th>'+KINDS.map(k=>`<th style="color:${KC[k]}">${k}</th>`).join("")+'<th>Σ</th></tr>';
+let h='<table><tr><th>Era</th>'+KINDS.map(k=>`<th style="color:${KC[k]};cursor:pointer" onclick="location.href='table.html#kind='+encodeURIComponent('${k}')">${k}</th>`).join("")+'<th>Σ</th></tr>';
 for(const [name,a,b] of ERAS){let rsum=0;let cells="";for(const k of KINDS){const n=CARDS.filter(c=>c.kind===k&&c.year>=a&&c.year<b).length;rsum+=n;cells+=`<td class="${n===0?'gap':''}">${n||"·"}</td>`;}h+=`<tr><td class="era">${name} <span style="color:#bbb">${a}–${b-1}</span></td>${cells}<td>${rsum}</td></tr>`;}
 h+='</table>';document.getElementById("matrix").innerHTML=h;
 </script>
