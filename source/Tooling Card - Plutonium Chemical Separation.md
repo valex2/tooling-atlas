@@ -14,7 +14,7 @@ Goal: 2
 Mechanism: Convergence
 Confidence: Direct
 Unlocked: harvesting pounds of plutonium from tons of deadly irradiated fuel
-Significance: "Two secrets rode in one process, the very existence of element 94 and the chemistry to pull it from tons of hot fuel, and both held through the war because the work was tacit craft no spy could carry out in a notebook."
+Significance: "One process hid two secrets: that element 94 existed at all, and the chemistry to pull it from tons of hot fuel. Both held through the war, because the work was tacit craft no spy could carry off in a notebook."
 BuildsOn:
   - "[[Tooling Card - The Nuclear Pile]]"
 Enables:

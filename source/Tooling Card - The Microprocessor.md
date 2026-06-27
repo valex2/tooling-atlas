@@ -14,7 +14,7 @@ Goal: Both
 Mechanism: Convergence
 Confidence: Direct
 Unlocked: the personal computer and the embedded chip
-Significance: "Putting a general-purpose CPU on one buyable chip meant any machine could be given a programmable mind, and the craft of laying that mind out in silicon spread to whoever could learn it, as Shima carried it to Japan."
+Significance: "Putting a general-purpose CPU on one buyable chip gave any machine a programmable mind. The craft of laying that mind out in silicon spread to whoever could learn it; Masatoshi Shima carried it to Japan."
 BuildsOn:
   - "[[Tooling Card - The MOSFET]]"
 Enables:

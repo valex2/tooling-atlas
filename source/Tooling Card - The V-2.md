@@ -14,7 +14,7 @@ Goal: Both
 Mechanism: Convergence
 Confidence: Direct
 Unlocked: the first big liquid-fuel rocket engine
-Significance: "The turbopump-fed, regeneratively cooled engine von Braun proved at Peenemunde is the template almost every large rocket since has copied, and the lead it represented walked to America with the engineers who built it."
+Significance: "The turbopump-fed, regeneratively cooled engine von Braun proved at Peenemünde is the template almost every large rocket has copied since. Its lead walked to America with the engineers who built it."
 BuildsOn:
 Enables:
   - "[[Tooling Card - The R-7 Rocket]]"

@@ -14,7 +14,7 @@ Goal: Both
 Mechanism: Fragility
 Confidence: Direct
 Unlocked: the architecture under every modern AI model
-Significance: "Google published the Transformer architecture freely in 2017, giving the entire industry the shape that scales with compute, so the lead pooled not in the design but in whoever could afford the largest clusters to run it."
+Significance: "Google published the Transformer freely in 2017, handing the whole industry an architecture that scales with compute. The lead then pooled not in the design but in whoever could afford the largest clusters to run it."
 BuildsOn:
   - "[[Tooling Card - AlexNet]]"
 Enables:
@@ -28,5 +28,5 @@ Threads:
 
 **Front.** In 2017 eight researchers at Google were trying to make machine translation faster. The models of the day read a sentence one word at a time, each step waiting on the one before it, which made them slow to train and hard to grow. The eight wrote a [nine-page paper](https://arxiv.org/abs/1706.03762) describing a design that threw out the waiting: it read every word of a sentence at once and learned which words to pay attention to. It [trained in 3.5 days on eight GPUs](https://arxiv.org/abs/1706.03762) where older models took far longer. What was new was the shape. It had no built-in ceiling, so it [kept getting better the bigger you made it and the more text and compute you fed it](https://arxiv.org/abs/2001.08361).
 
-**Back.** That shape, the Transformer, opened the way to a new kind of model: train it on a mountain of text, then ask it anything. Google published the paper and patented nothing, so anyone could build on it. Within a year OpenAI built [its first GPT](https://en.wikipedia.org/wiki/GPT-1) on the same design. The model traveled free with the idea, fast as a download, and held no ground of its own. The lead pooled downstream, in the chips and giant clusters needed to train and run it at scale, while the [chatbot built on it reached 100 million users in two months](https://www.reuters.com/technology/chatgpt-sets-record-fastest-growing-user-base-analyst-note-2023-02-01/). The design is free for all; the cluster that runs it is the moat.
+**Back.** That shape, the Transformer, opened the way to a new kind of model: train it on a mountain of text, then ask it anything. Google published the paper and patented nothing, so anyone could build on it. Within a year OpenAI built [its first GPT](https://en.wikipedia.org/wiki/GPT-1) on the same design. The model traveled free with the idea, fast as a download, and held no ground of its own. The lead pooled downstream, in the chips and giant clusters needed to train and run it at scale, while the [chatbot built on it reached 100 million users in two months](https://www.reuters.com/technology/chatgpt-sets-record-fastest-growing-user-base-analyst-note-2023-02-01/). The design is free; the moat is the cluster that runs it.
 

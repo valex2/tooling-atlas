@@ -21,3 +21,11 @@ Enables:
 Threads:
   - "[[Thread - Engineering Biology]]"
 ---
+
+*Make · Changsha, China · 1970s*
+**Yuan Longping** · a male-sterile rice that must be crossed
+
+**Front.** Most rice pollinates itself, so its seed breeds true and gains none of the [extra vigour](https://en.wikipedia.org/wiki/Hybrid_rice) you get by crossing two different parents. For a self-pollinating crop there is no easy way to make hybrid seed by the ton. In 1970 a team led by [Yuan Longping](https://en.wikipedia.org/wiki/Yuan_Longping) found a wild rice plant on Hainan island that was naturally male-sterile, unable to pollinate itself. Around that one plant they built a [three-line system](https://en.wikipedia.org/wiki/Hybrid_rice): a male-sterile line that cannot self-seed, a second line to keep it going, and a third to restore fertility in the crop, so hybrid seed could be made at scale.
+
+**Back.** Hybrid rice yielded [roughly 20 percent more](https://en.wikipedia.org/wiki/Hybrid_rice) than ordinary varieties and spread across China, then much of Asia and Africa, feeding hundreds of millions. The tool is the seed system itself. Each season's hybrid seed must be re-made from the parent lines, because the crop's own saved seed loses the vigour, so the lead stays with whoever holds the parent lines and the crossing craft. China shared its early lines, kept refining the making, and held the lead.
+

@@ -14,7 +14,7 @@ Goal: Both
 Mechanism: Convergence
 Confidence: Direct
 Unlocked: pen-and-paper calculation for everyone
-Significance: "Fibonacci carried India's place-value digits and its zero into Europe in one book, and because the notation was free to copy it became the ground floor of every calculation that followed, from merchant ledgers to the slide rule to the computer."
+Significance: "Fibonacci carried India's place-value digits and zero into Europe in a single book. Free to copy, the notation became the ground floor of every later calculation, from merchant ledgers to the slide rule to the computer."
 BuildsOn:
 Enables:
   - "[[Tooling Card - The Slide Rule]]"

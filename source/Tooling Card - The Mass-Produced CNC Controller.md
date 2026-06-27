@@ -14,7 +14,7 @@ Goal: 2
 Mechanism: Convergence
 Confidence: Direct
 Unlocked: cheap mass-produced machine brains; Japan takes the machine-tool lead
-Significance: "The controller is the brain that reads a program and drives a cutting machine to a thousandth of an inch, and making it cheap and off-the-shelf handed the machine-tool lead from the country that invented it to the country that mass-produced it."
+Significance: "The controller reads a program and drives a cutting tool to a thousandth of an inch. Making it a cheap, off-the-shelf part moved the machine-tool lead from America, which invented numerical control, to Japan, which mass-produced it."
 BuildsOn:
   - "[[Tooling Card - Numerical Control]]"
   - "[[Tooling Card - The Microcontroller]]"

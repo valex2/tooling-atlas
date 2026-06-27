@@ -14,7 +14,7 @@ Goal: Both
 Mechanism: Convergence
 Confidence: Direct
 Unlocked: cheap reading of the genome
-Significance: "Sanger's 1977 method made it possible to read the order of DNA letters for the first time, opening a four-decade cost collapse that moved the sequencing lead from Cambridge to San Diego's Illumina and now into contest with China's BGI."
+Significance: "Sanger's 1977 method let anyone read the order of DNA letters for the first time, opening a four-decade cost collapse that carried the sequencing lead from Cambridge to San Diego's Illumina, and now into contest with China's BGI."
 BuildsOn:
   - "[[Tooling Card - Gel Electrophoresis]]"
   - "[[Tooling Card - Recombinant DNA]]"

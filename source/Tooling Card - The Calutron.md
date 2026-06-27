@@ -14,7 +14,7 @@ Goal: 1
 Mechanism: Convergence
 Confidence: Direct
 Unlocked: separating bomb-grade uranium one atom-stream at a time
-Significance: "The calutron was Aston's atom-weighing instrument scaled into a building, and the guarded secret was never the method but the industrial scale; once that was declassified as obsolete, Iraq quietly rebuilt it for its own bomb."
+Significance: "The calutron was Aston's atom-weighing instrument scaled into a building. The guarded secret was never the method but the industrial scale, and once declassified as obsolete, the design let Iraq quietly rebuild it for a bomb."
 BuildsOn:
   - "[[Tooling Card - The Mass Spectrograph]]"
 Enables:

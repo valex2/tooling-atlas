@@ -14,7 +14,7 @@ Goal: 1
 Mechanism: Convergence
 Confidence: Direct
 Unlocked: a network that survives broken links
-Significance: "Cutting a message into small numbered packets that each find their own route is the switching idea every computer network runs on, and because it was published openly the lead pooled in the gear and protocols built on top of it."
+Significance: "Cutting a message into small numbered packets, each finding its own route, is the idea every computer network runs on. Published openly, it left the lead to pool in the gear and protocols built on top."
 BuildsOn:
   - "[[Tooling Card - The Bit]]"
 Enables:
