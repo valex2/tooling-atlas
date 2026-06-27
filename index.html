@@ -1,42 +1,69 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tooling Cards — Atlas</title>
+<title>Tooling Atlas — how tools make technology leadership</title>
+<meta name="description" content="An interactive atlas of the tools behind technology leadership: explore as a globe, timeline, genealogy tree, deck, table, and coverage dashboard.">
+<meta name="theme-color" content="#f5f3ef">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='8' height='8' fill='%233266ad'/><rect x='8' width='8' height='8' fill='%238a4fb3'/><rect y='8' width='8' height='8' fill='%23b06a1e'/><rect x='8' y='8' width='8' height='8' fill='%232f8f6b'/></svg>">
 <style>
-body{margin:0;background:#f5f3ef;color:#1c1c1c;font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-.wrap{max-width:760px;margin:0 auto;padding:48px 22px}
-h1{font-size:26px;font-weight:600;margin:0 0 4px}.sub{color:#6f6f6f;margin:0 0 26px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-a.card{display:block;text-decoration:none;color:inherit;background:#fff;border:.5px solid rgba(0,0,0,.12);border-radius:12px;padding:16px 18px;transition:box-shadow .15s}
-a.card:hover{box-shadow:0 6px 20px rgba(0,0,0,.1)}
-a.card h2{font-size:16px;font-weight:600;margin:0 0 4px}a.card p{font-size:12.5px;color:#6f6f6f;margin:0}
-.foot{color:#b9b4ab;font-size:12px;margin-top:26px}
-.about{background:#fff;border:.5px solid rgba(0,0,0,.12);border-radius:12px;padding:18px 20px;margin:0 0 22px;font-size:13.5px;line-height:1.6}
-.about p{margin:0 0 10px}.about .lead{font-weight:600;font-size:15px}
-.ms{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
-.ms div{border-left:4px solid #999;padding:4px 10px;background:#faf9f6;border-radius:0 8px 8px 0;font-size:12.5px}
-.ms b{font-weight:600}
-.about .kicker{color:#6f6f6f;font-style:italic}
+ :root{--ink:#1c1c1c;--mut:#6f6f6f;--bg:#f5f3ef;--card:#fff;--line:rgba(0,0,0,.12);
+  --Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;
+  --serif:"Charter","Iowan Old Style","Palatino Linotype",Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+ .hwrap{max-width:760px;margin:0 auto;padding:54px 24px 80px}
+ .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0 0 10px}
+ h1{font-family:var(--serif);font-weight:600;font-size:46px;line-height:1.02;letter-spacing:-.01em;margin:0 0 18px}
+ .lede{font-size:18px;line-height:1.6;color:#39362f;margin:0 0 22px}
+ .lede em{font-style:italic}
+ .stats{display:flex;gap:26px;flex-wrap:wrap;padding:16px 0;border-top:.5px solid var(--line);border-bottom:.5px solid var(--line);margin-bottom:34px;color:var(--mut);font-size:13px}
+ .stats b{color:var(--ink);font-size:16px;font-weight:600;margin-right:5px}
+ h2{font-family:var(--serif);font-weight:600;font-size:21px;margin:30px 0 4px}
+ .sub{color:var(--mut);margin:0 0 16px;font-size:13.5px}
+ .ms{display:grid;gap:9px}
+ .m{display:grid;grid-template-columns:auto auto 1fr;align-items:baseline;gap:10px;padding:10px 14px;background:var(--card);border:.5px solid var(--line);border-radius:10px}
+ .m .sw{width:11px;height:11px;border-radius:3px;align-self:center}
+ .m b{font-weight:600}.m .md{color:var(--mut);font-size:13px}
+ .tagline{font-family:var(--serif);font-style:italic;font-size:18px;color:#5a4a32;text-align:center;margin:26px 0 4px}
+ .views{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+ a.vc{display:block;text-decoration:none;color:inherit;background:var(--card);border:.5px solid var(--line);border-radius:11px;padding:13px 15px;transition:border-color .12s,transform .06s,box-shadow .12s}
+ a.vc:hover{border-color:rgba(0,0,0,.28);box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
+ a.vc .vn{display:block;font-weight:600;font-size:14.5px;margin-bottom:3px}
+ a.vc .vd{display:block;color:var(--mut);font-size:12.5px;line-height:1.5}
+ @media (max-width:620px){h1{font-size:34px}.lede{font-size:16px}.views{grid-template-columns:1fr}
+  .m{grid-template-columns:auto 1fr;grid-auto-flow:row}.m .md{grid-column:1/-1}}
 </style></head><body>
 <script src="shared.js"></script>
-<div id="appnav" style="position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif"><a href="index.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#1c1c1c;color:#fff;font-size:11.5px">Home</a><a href="map.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Globe</a><a href="views/atlas.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Timeline</a><a href="views/tree.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Tree</a><a href="views/deck.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Deck</a><a href="table.html" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#1c1c1c;font-size:11.5px">Table</a></div><div class="wrap">
-<h1>Tooling Cards</h1>
-<p class="sub">Tools that drove the progress of technology — explored four ways. <span id="n"></span></p>
-<div class="about">
-<p class="lead">Every tool here does one of four jobs, and they fall in order.</p>
-<div class="ms">
-<div style="border-color:#3266ad"><b style="color:#3266ad">Measure</b> — seeing what's there: a microscope, an X-ray, a way to read DNA.</div>
-<div style="border-color:#8a4fb3"><b style="color:#8a4fb3">Model</b> — a way to think about it: an equation or rule that lets you predict and reason without touching the real thing.</div>
-<div style="border-color:#b06a1e"><b style="color:#b06a1e">Make</b> — building one working copy: a single transistor, engine, or molecule.</div>
-<div style="border-color:#2f8f6b"><b style="color:#2f8f6b">Manufacture</b> — building a billion of them, cheap and identical, on a factory floor.</div>
+<div id="appnav" style="position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap"></div>
+<div class="hwrap">
+ <p class="kicker">An atlas of the tools behind technology leadership</p>
+ <h1>Tooling Atlas</h1>
+ <p class="lede">Leadership in a field tends to follow leadership in its <em>tools</em> — and the lead migrates over time. Each tool here is an instrument, machine, method, or process someone built and others picked up, mapped four ways. <span id="lede2"></span></p>
+ <div class="stats" id="stats"></div>
+ <h2>The four jobs a tool does</h2>
+ <p class="sub">Every tool here does one of four jobs, and they fall in order.</p>
+ <div class="ms">
+  <div class="m"><span class="sw" style="background:var(--Measure)"></span><b>Measure</b><span class="md">see what is there — a microscope, an X-ray, a way to read DNA</span></div>
+  <div class="m"><span class="sw" style="background:var(--Model)"></span><b>Model</b><span class="md">reason about it — an equation or rule that predicts without building</span></div>
+  <div class="m"><span class="sw" style="background:var(--Make)"></span><b>Make</b><span class="md">build one working copy — a single transistor, engine, or molecule</span></div>
+  <div class="m"><span class="sw" style="background:var(--Manufacture)"></span><b>Manufacture</b><span class="md">build a billion, cheap and identical, on a factory floor</span></div>
+ </div>
+ <p class="tagline">See it, understand it, build one, build a million.</p>
+ <h2>Six ways to read it</h2>
+ <div class="views">
+  <a class="vc" href="map.html"><span class="vn">Globe</span><span class="vd">Where each tool was invented, and how each fed a later one somewhere else.</span></a>
+  <a class="vc" href="views/atlas.html"><span class="vn">Timeline</span><span class="vd">Every tool on a time axis, in lanes by thread, geography, or the four Ms.</span></a>
+  <a class="vc" href="views/tree.html"><span class="vn">Tree</span><span class="vd">The genealogy: which tool built on which, branching through time.</span></a>
+  <a class="vc" href="views/deck.html"><span class="vn">Deck</span><span class="vd">Flip cards — the moment on the front, the aftermath on the back.</span></a>
+  <a class="vc" href="table.html"><span class="vn">Table</span><span class="vd">A sortable, filterable database of every tool.</span></a>
+  <a class="vc" href="dashboard.html"><span class="vn">Dashboard</span><span class="vd">Coverage by kind, decade, and thread, plus the gaps still to fill.</span></a>
+ </div>
 </div>
-<p>See it, understand it, build one, build a million. And because ideas are free to copy, the lead that lasts almost always sits at the far end — in the making at scale, where the skill is in the doing and can't be written down.</p>
-</div>
-<div class="grid">
-<a class="card" href="map.html"><h2>🌐 Globe</h2><p>Where each tool was made, and how leadership migrated across the world. Drag to spin, scroll to zoom.</p></a>
-<a class="card" href="views/atlas.html"><h2>📊 Timeline</h2><p>Lanes by thread, geography, or the four Ms, on a time axis with key-event overlays.</p></a>
-<a class="card" href="views/tree.html"><h2>🌿 Tree</h2><p>The branching genealogy — what each tool builds on and enables.</p></a>
-<a class="card" href="views/deck.html"><h2>🃏 Deck</h2><p>The cards themselves: front (the moment), back (the aftermath).</p></a>
-</div>
-<p class="foot">Generated from the Obsidian vault. Run <code>python3 regenerate.py</code> after editing cards to refresh the data.</p>
-</div>
-<script src="data/cards.js"></script><script>document.getElementById('n').textContent=CARDS.length+' tools · '+new Set(CARDS.flatMap(c=>c.threads)).size+' threads.';</script>
+<script src="data/cards.js"></script>
+<script>
+(function(){var C=window.CARDS||[];var th=new Set(C.flatMap(function(c){return c.threads||[]}));
+ var ct=new Set(C.map(function(c){return c.country}).filter(Boolean));
+ var ys=C.map(function(c){return c.year}).filter(Boolean);var span=ys.length?Math.min.apply(0,ys)+"–"+Math.max.apply(0,ys):"";
+ document.getElementById("stats").innerHTML="<span><b>"+C.length+"</b> tools</span><span><b>"+th.size+"</b> threads</span><span><b>"+ct.size+"</b> countries</span><span><b>"+span+"</b></span>";
+ document.getElementById("lede2").textContent="";})();
+</script>
 </body></html>
