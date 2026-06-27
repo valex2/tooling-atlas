@@ -32,5 +32,28 @@ python3 regenerate.py        # rewrites data/cards.js + data/countries.js from t
 ```
 Vault path defaults to `/Users/Vassilis/Documents/Obsidian Vault`; override with `VAULT=/path python3 regenerate.py`.
 
+## Deploy & update (GitHub Pages)
+Static site, no build step — GitHub Pages serves it as-is. Live URL is a project page: `https://<username>.github.io/tooling-atlas/`.
+
+First-time setup (one-shot, needs the `gh` CLI logged in):
+```
+cd ~/Desktop/Tooling/tooling-atlas
+gh repo create tooling-atlas --public --source=. --remote=origin --push
+```
+Or without `gh`: create an empty `tooling-atlas` repo on github.com (no README/license), then:
+```
+git remote add origin https://github.com/<username>/tooling-atlas.git
+git push -u origin master
+```
+Then turn it on: **repo Settings → Pages → Source: "Deploy from a branch" → Branch: `master` → `/ (root)` → Save.** Live in ~1 min.
+
+Update the live site after editing cards — the full loop:
+```
+python3 regenerate.py        # vault → data/*.js
+git add -A && git commit -m "update cards"
+git push                     # Pages redeploys automatically (~1 min)
+```
+Notes: Pages on a free account requires a **public** repo (all card text becomes publicly readable). The `obsidian://` "Open note" links only resolve on a machine that has the vault; everything else works for any visitor, and the `file://` quirks vanish over https. `.nojekyll` is committed so GitHub skips Jekyll processing.
+
 ## Architecture
 The **vault is the single source of truth** for card content; this repo is the presentation layer. `regenerate.py` is the only bridge (vault → `data/*.js`). Each view is a small self-contained file reading `window.CARDS`; `shared.js` holds everything common. No build step, no server, no network.
