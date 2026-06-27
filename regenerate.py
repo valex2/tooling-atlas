@@ -26,8 +26,7 @@ for p in sorted(glob.glob(os.path.join(VAULT, "Tooling Card - *.md"))):
         sig=field(fm,"Significance"), goal=field(fm,"Goal"), mech=field(fm,"Mechanism"), threads=th, primary=th[0] if th else "—",
         lat=float(lat) if lat else None, lon=float(lon) if lon else None,
         bo=clist(fm,"BuildsOn"), en=clist(fm,"Enables"), country=""))
-open(os.path.join(HERE,"data/cards.js"),"w").write("window.CARDS="+json.dumps(cards,ensure_ascii=False)+";")
-print("cards.js:", len(cards), "cards")
+# NOTE: cards.js is written below, AFTER the point-in-polygon pass fills c["country"].
 
 # countries (basemap rings + tool counts), bundled Natural Earth shapefile
 import shapefile
@@ -53,6 +52,8 @@ for c in cards:
     if c["lat"] is None: continue
     for i,rings in enumerate(Cr):
         if any(pip(c["lon"],c["lat"],r) for r in rings if len(r)>3): cnt[i]+=1; c["country"]=names[i]; break
+open(os.path.join(HERE,"data/cards.js"),"w").write("window.CARDS="+json.dumps(cards,ensure_ascii=False)+";")
+print("cards.js:", len(cards), "cards;", sum(1 for c in cards if c["country"]), "with country")
 out=[]
 for rings,c,nm in zip(Cr,cnt,names):
     rr=[]
