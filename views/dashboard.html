@@ -31,7 +31,7 @@ td.gap{background:#fbe7e7;color:#a83232;font-weight:600}td.era{text-align:left;c
  <div class="card full"><h2>Threads by size</h2><div id="bythread"></div></div>
  <div class="card full"><h2>Coverage — era × kind <span style="font-weight:400;color:var(--mut)">(red = gap, nothing written yet)</span></h2><div id="matrix"></div></div>
 </div></div>
-<script src="data/cards.js"></script><script src="shared.js"></script>
+<script src="../data/cards.js"></script><script src="../shared.js"></script>
 <script>
 const KC=window.KCOL;                 // single source of truth (shared.js)
 const KINDS=["Measure","Model","Make","Manufacture"];
@@ -56,7 +56,7 @@ document.getElementById("bydecade").innerHTML=decs.map(d=>{const n=decCards[d].l
 const ts=threads.map(t=>({k:t,cards:CARDS.filter(c=>c.threads.includes(t))})).sort((a,b)=>b.cards.length-a.cards.length);
 const tmax=Math.max(...ts.map(d=>d.cards.length));
 document.getElementById("bythread").innerHTML=ts.map(d=>{const n=d.cards.length,e=encodeURIComponent(d.k);
- const links=`<span class="vlinks"><a href="map.html#thread=${e}" title="Trace on globe">⊙ globe</a><a href="views/atlas.html#thread=${e}" title="See its lane on the timeline">▤ timeline</a><a href="table.html#thread=${e}" title="List in the table">▦ table</a></span>`;
+ const links=`<span class="vlinks"><a href="map.html#thread=${e}" title="Trace on globe">⊙ globe</a><a href="atlas.html#thread=${e}" title="See its lane on the timeline">▤ timeline</a><a href="table.html#thread=${e}" title="List in the table">▦ table</a></span>`;
  return `<div class="row"><a href="table.html#thread=${e}" class="lab" style="text-decoration:none;color:var(--mut)">${d.k}</a>${segBar(perKind(d.cards),n,tmax,260)}<span class="n">${n}</span>${links}</div>`;}).join("");
 // era x kind matrix
 let h='<table><tr><th>Era</th>'+KINDS.map(k=>`<th style="color:${KC[k]};cursor:pointer" onclick="location.href='table.html#kind='+encodeURIComponent('${k}')">${k}</th>`).join("")+'<th>Σ</th></tr>';

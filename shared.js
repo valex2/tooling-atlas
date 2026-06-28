@@ -47,7 +47,7 @@ window.getThreads=function(){return ((getState().thread)||"").split(",").map(s=>
 window.setThreads=function(arr){setState({thread:(arr||[]).join(",")});};
 window.threadMatch=function(card,arr){return !arr||!arr.length||arr.some(t=>(card.threads||[]).includes(t));};
 // dynamic nav
-const NAVITEMS=[["Home","index.html"],["Globe","map.html"],["Timeline","views/atlas.html"],["Tree","views/tree.html"],["Deck","views/deck.html"],["Table","table.html"],["Dashboard","dashboard.html"]];
+const NAVITEMS=[["Home","index.html"],["Globe","views/map.html"],["Timeline","views/atlas.html"],["Tree","views/tree.html"],["Deck","views/deck.html"],["Table","views/table.html"],["Dashboard","views/dashboard.html"]];
 function buildNav(){const el=document.getElementById("appnav");if(!el)return;const views=location.pathname.indexOf("/views/")>=0;const cur=location.pathname.split("/").pop()||"index.html";
  el.innerHTML=NAVITEMS.map(([label,file])=>{let h=file;if(views){h=file.indexOf("views/")===0?file.slice(6):"../"+file;}const key=file.split("/").pop();const act=key===cur?"background:#1c1c1c;color:#fff;":"background:#fff;color:#1c1c1c;";return '<a href="'+h+location.hash+'" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);'+act+'font-size:11.5px">'+label+'</a>';}).join("");}
 // help overlay

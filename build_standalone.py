@@ -6,8 +6,8 @@ renders inside a single-file preview. Run after regenerate.py (sync.sh does both
 import re, os, json
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VIEWS = [("Globe","map.html"),("Timeline","views/atlas.html"),("Tree","views/tree.html"),
-         ("Deck","views/deck.html"),("Table","table.html"),("Dashboard","dashboard.html")]
+VIEWS = [("Globe","views/map.html"),("Timeline","views/atlas.html"),("Tree","views/tree.html"),
+         ("Deck","views/deck.html"),("Table","views/table.html"),("Dashboard","views/dashboard.html")]
 BLURB = {
  "Globe":"Where each tool was invented, and how each fed a later one somewhere else.",
  "Timeline":"Every tool on a time axis, in lanes by thread, geography, or the four Ms.",

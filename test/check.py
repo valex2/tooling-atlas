@@ -35,7 +35,7 @@ n = len(re.findall(r'"id":', cards_js))
 check(n > 100, "cards.js has a full dataset (%d cards)" % n)
 
 # 2) no view may fork its own inline dataset — every view reads window.CARDS
-VIEWS = ["index.html", "map.html", "table.html", "dashboard.html",
+VIEWS = ["index.html", "views/map.html", "views/table.html", "views/dashboard.html",
          "views/atlas.html", "views/tree.html", "views/deck.html"]
 for v in VIEWS:
     t = open(os.path.join(ROOT, v), encoding="utf-8").read()
@@ -43,7 +43,7 @@ for v in VIEWS:
           "%s carries no forked inline dataset" % v)
 
 # 3) the data-driven views actually reference the canonical cards
-for v in ["map.html", "table.html", "dashboard.html",
+for v in ["views/map.html", "views/table.html", "views/dashboard.html",
           "views/atlas.html", "views/tree.html", "views/deck.html"]:
     t = open(os.path.join(ROOT, v), encoding="utf-8").read()
     check("cards.js" in t, "%s loads data/cards.js" % v)

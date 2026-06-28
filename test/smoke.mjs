@@ -23,9 +23,9 @@ const CHROME = process.env.CHROME || (process.platform === 'darwin'
 fs.mkdirSync(SHOT, { recursive: true });
 
 const VIEWS = [
-  ['home', 'index.html'], ['globe', 'map.html'], ['timeline', 'views/atlas.html'],
-  ['tree', 'views/tree.html'], ['deck', 'views/deck.html'], ['table', 'table.html'],
-  ['dashboard', 'dashboard.html'],
+  ['home', 'index.html'], ['globe', 'views/map.html'], ['timeline', 'views/atlas.html'],
+  ['tree', 'views/tree.html'], ['deck', 'views/deck.html'], ['table', 'views/table.html'],
+  ['dashboard', 'views/dashboard.html'],
 ];
 
 const srv = spawn('python3', ['-m', 'http.server', String(PORT), '--directory', ROOT], { stdio: 'ignore' });
