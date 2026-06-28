@@ -16,10 +16,19 @@ BLURB = {
  "Table":"A sortable, filterable database of every tool.",
  "Dashboard":"Coverage by kind, decade, and thread, plus the gaps still to fill.",
 }
-MS = [("Measure","#3266ad","see what is there — a microscope, an X-ray, a way to read DNA"),
-      ("Model","#8a4fb3","reason about it — an equation or rule that predicts without building"),
-      ("Make","#b06a1e","build one working copy — a single transistor, engine, or molecule"),
-      ("Manufacture","#2f8f6b","build a billion, cheap and identical, on a factory floor")]
+MS = [("01","Measure","var(--Measure-ink)","◇","see what is there — a microscope, an X-ray, a way to read DNA"),
+      ("02","Model","var(--Model-ink)","◯","reason about it — an equation or rule that predicts without building"),
+      ("03","Make","var(--Make-ink)","△","build one working copy — a single transistor, engine, or molecule"),
+      ("04","Manufacture","var(--Manufacture-ink)","▦","build a billion, cheap and identical, on a factory floor")]
+# line-art glyph per view (mirrors index.html)
+VGLY = {
+ "Globe":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="16" cy="16" r="11"/><ellipse cx="16" cy="16" rx="5" ry="11"/><path d="M5 16h22M7 10h18M7 22h18"/></svg>',
+ "Timeline":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 8h24M4 16h24M4 24h24"/><circle cx="10" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="20" cy="16" r="2" fill="currentColor" stroke="none"/><circle cx="14" cy="24" r="2" fill="currentColor" stroke="none"/></svg>',
+ "Tree":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="16" r="2.4"/><circle cx="22" cy="8" r="2.4"/><circle cx="22" cy="24" r="2.4"/><path d="M9 15l11-6M9 17l11 6"/></svg>',
+ "Deck":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="9" y="6" width="17" height="21" rx="2"/><rect x="5" y="9" width="15" height="18" rx="2" fill="var(--card)"/></svg>',
+ "Table":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="5" y="6" width="22" height="20" rx="1.5"/><path d="M5 12h22M13 6v20M20 6v20"/></svg>',
+ "Dashboard":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 26V6"/><rect x="9" y="18" width="4" height="8"/><rect x="15" y="12" width="4" height="14"/><rect x="21" y="15" width="4" height="11"/></svg>',
+}
 
 # Front/Back text is only needed by the Deck; slim it out of the other views' data to keep the bundle small.
 _jsonp = os.path.join(HERE, "data/cards.json")
@@ -56,22 +65,29 @@ fav = ("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 
        "<rect y='8' width='8' height='8' fill='%23b06a1e'/><rect x='8' y='8' width='8' height='8' fill='%232f8f6b'/></svg>")
 
 ms_html = "".join(
- f'<div class="m"><span class="sw" style="background:{c}"></span><b>{n}</b><span class="md">{d}</span></div>'
- for n,c,d in MS)
+ f'<div class="m"><span class="ix">{ix}</span><span class="gl" style="color:{ink}">{gly}</span><b>{n}</b><span class="md">{d}</span></div>'
+ for ix,n,ink,gly,d in MS)
 view_cards = "".join(
- f'<button class="vc" data-k="{k}"><span class="vn">{k}</span><span class="vd">{BLURB[k]}</span></button>'
+ f'<button class="vc" data-k="{k}">{VGLY[k]}<span><span class="vn">{k}</span><span class="vd">{BLURB[k]}</span></span></button>'
  for k in order)
+readout_html = "".join(
+ f'<div class="gauge"><b>{v}</b><span>{l}</span></div>'
+ for v,l in [(n_cards,"tools"),(n_threads,"threads"),(n_countries,"countries"),(span,"years spanned")])
 
 HOME = f"""<section id="home"><div class="hwrap">
- <p class="kicker">An atlas of the tools behind technology leadership</p>
- <h1>Tooling Atlas</h1>
- <p class="lede">Leadership in a field tends to follow leadership in its <em>tools</em> — and the lead migrates over time. Here are <b>{n_cards}</b> tools spanning <b>{span}</b>, each one an instrument, machine, method, or process someone built and others picked up, mapped four ways.</p>
- <div class="stats"><span><b>{n_cards}</b> tools</span><span><b>{n_threads}</b> threads</span><span><b>{n_countries}</b> countries</span><span><b>{span}</b></span></div>
+ <header class="masthead">
+  <p class="kicker">An atlas of the tools behind technology leadership</p>
+  <h1>Tooling Atlas</h1>
+  <p class="desig">{n_cards} tools · {n_threads} threads · {n_countries} countries · {span}</p>
+  <p class="lede">Leadership in a field tends to follow leadership in its <em>tools</em> — and the lead migrates over time. Each tool here is an instrument, machine, method, or process someone built and others picked up, mapped four ways.</p>
+  <div class="readout">{readout_html}</div>
+ </header>
  <h2>The four jobs a tool does</h2>
  <p class="sub">Every tool here does one of four jobs, and they fall in order.</p>
  <div class="ms">{ms_html}</div>
  <p class="tagline">See it, understand it, build one, build a million.</p>
  <h2>Six ways to read it</h2>
+ <p class="sub">The same {n_cards} tools, six instruments for reading them.</p>
  <div class="views">{view_cards}</div>
 </div></section>"""
 
@@ -86,10 +102,12 @@ shell = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="__FAV__">
 <style>
- :root{--ink:#1c1c1c;--mut:#6f6f6f;--bg:#f5f3ef;--card:#fff;--line:rgba(0,0,0,.12);
+ :root{--ink:#1c1c1c;--mut:#6f6f6f;--bg:#f5f3ef;--card:#fff;--line:rgba(0,0,0,.12);--rule:rgba(0,0,0,.22);
   --Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;
+  --Measure-ink:#2b5896;--Model-ink:#7a429e;--Make-ink:#8a5212;--Manufacture-ink:#1d7350;
   --serif:"Charter","Iowan Old Style","Palatino Linotype",Georgia,"Times New Roman",serif;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"SF Mono","JetBrains Mono","Roboto Mono",ui-monospace,Menlo,Consolas,monospace}
  *{box-sizing:border-box}
  html,body{margin:0;height:100%}
  body{display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:14px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
@@ -105,31 +123,45 @@ shell = """<!doctype html><html lang="en"><head><meta charset="utf-8">
  .tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
  main{flex:1;min-height:0;position:relative}
  #frame{border:0;width:100%;height:100%;display:block;background:var(--bg)}
- /* home */
+ /* home — the instrument panel */
  #home{height:100%;overflow:auto}
- .hwrap{max-width:760px;margin:0 auto;padding:54px 24px 80px}
- .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0 0 10px}
- h1{font-family:var(--serif);font-weight:600;font-size:46px;line-height:1.02;letter-spacing:-.01em;margin:0 0 18px}
- .lede{font-size:18px;line-height:1.6;color:#39362f;margin:0 0 22px}
+ .hwrap{max-width:780px;margin:0 auto;padding:0 24px 80px}
+ .masthead{display:block;position:relative;margin:0 -24px;padding:54px 24px 8px;  /* override shell header{display:flex} */
+  background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);
+  background-size:34px 34px;background-position:center}
+ .masthead::before,.masthead::after{content:"";position:absolute;width:13px;height:13px;border:1.5px solid var(--rule)}
+ .masthead::before{top:14px;left:16px;border-right:0;border-bottom:0}
+ .masthead::after{top:14px;right:16px;border-left:0;border-bottom:0}
+ .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);margin:0 0 14px}
+ h1{font-family:var(--serif);font-weight:600;font-size:46px;line-height:1.0;letter-spacing:-.015em;margin:0 0 6px}
+ .desig{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--mut);margin:0 0 20px}
+ .lede{font-size:18px;line-height:1.6;color:#39362f;margin:0;max-width:62ch}
  .lede em{font-style:italic}
- .stats{display:flex;gap:26px;flex-wrap:wrap;padding:16px 0;border-top:.5px solid var(--line);border-bottom:.5px solid var(--line);margin-bottom:34px;color:var(--mut);font-size:13px}
- .stats b{color:var(--ink);font-size:16px;font-weight:600;margin-right:5px}
- h2{font-family:var(--serif);font-weight:600;font-size:21px;margin:30px 0 4px}
- .sub{color:var(--mut);margin:0 0 16px;font-size:13.5px}
- .ms{display:grid;gap:9px}
- .m{display:grid;grid-template-columns:auto auto 1fr;align-items:baseline;gap:10px;padding:10px 14px;background:var(--card);border:.5px solid var(--line);border-radius:10px}
- .m .sw{width:11px;height:11px;border-radius:3px;align-self:center}
- .m b{font-weight:600}
+ .readout{display:flex;flex-wrap:wrap;margin:24px -24px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+ .gauge{flex:1 1 0;min-width:120px;padding:12px 18px;border-left:.5px solid var(--line);font-family:var(--mono)}
+ .gauge:first-child{border-left:0}
+ .gauge b{display:block;font-size:23px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink)}
+ .gauge span{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+ h2{font-family:var(--serif);font-weight:600;font-size:22px;margin:44px 0 4px}
+ .sub{color:var(--mut);margin:0 0 18px;font-size:13.5px}
+ .ms{display:grid;border:.5px solid var(--line);border-radius:11px;overflow:hidden;background:var(--card)}
+ .m{display:grid;grid-template-columns:34px 22px 112px 1fr;align-items:baseline;gap:11px;padding:13px 16px;border-top:.5px solid var(--line)}
+ .m:first-child{border-top:0}
+ .m .ix{font-family:var(--mono);font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
+ .m .gl{font-size:14px;line-height:1;align-self:center}
+ .m b{font-weight:600;font-size:15px}
  .m .md{color:var(--mut);font-size:13px}
- .tagline{font-family:var(--serif);font-style:italic;font-size:18px;color:#5a4a32;text-align:center;margin:26px 0 4px}
- .views{display:grid;grid-template-columns:1fr 1fr;gap:10px}
- .vc{text-align:left;background:var(--card);border:.5px solid var(--line);border-radius:11px;padding:13px 15px;cursor:pointer;transition:border-color .12s,transform .06s,box-shadow .12s}
- .vc:hover{border-color:rgba(0,0,0,.28);box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
- .vc .vn{display:block;font-weight:600;font-size:14.5px;margin-bottom:3px}
+ .tagline{font-family:var(--serif);font-style:italic;font-size:18px;color:#4a4135;text-align:center;margin:24px 0 4px}
+ .views{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+ .vc{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;text-align:left;background:var(--card);border:.5px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:border-color .12s,transform .06s,box-shadow .12s}
+ .vc:hover{border-color:rgba(0,0,0,.32);box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
+ .vc svg{width:30px;height:30px;color:var(--mut)}
+ .vc:hover svg{color:var(--ink)}
+ .vc .vn{display:block;font-weight:600;font-size:15px;margin-bottom:3px}
  .vc .vd{display:block;color:var(--mut);font-size:12.5px;line-height:1.5}
- .foot{color:var(--mut);font-size:12px;margin-top:34px;padding-top:16px;border-top:.5px solid var(--line)}
- @media (max-width:620px){h1{font-size:34px}.lede{font-size:16px}.views{grid-template-columns:1fr}
-  .m{grid-template-columns:auto 1fr;grid-auto-flow:row}.m .md{grid-column:1/-1}}
+ @media (max-width:620px){h1{font-size:36px}.lede{font-size:16px}.views{grid-template-columns:1fr}
+  .gauge{min-width:50%;flex-basis:50%}
+  .m{grid-template-columns:28px 20px 1fr;grid-auto-flow:row}.m .md{grid-column:1/-1}}
 </style></head><body>
 <header>
  <span class="brand" data-k="Home"><span class="dot"></span>Tooling Atlas</span>
