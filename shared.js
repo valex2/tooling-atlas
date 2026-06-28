@@ -78,6 +78,7 @@ function injectChrome(){
  if(!document.getElementById("ta-a11y")){
   const s=document.createElement("style");s.id="ta-a11y";
   s.textContent=
+   "#appnav{position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif}"+
    ":focus-visible{outline:2px solid #1c1c1c;outline-offset:2px;border-radius:3px}"+
    "a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid #1c1c1c;outline-offset:2px}"+
    ".num,.yr,.ylab,.car,td{font-variant-numeric:tabular-nums}"+   // align digits like an instrument
