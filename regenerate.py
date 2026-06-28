@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""Rebuild data/cards.js and data/countries.js from the Obsidian vault.
+"""Rebuild data/cards.js + data/cards.json + data/countries.js.
+
+Source of truth = the committed `source/` markdown bundle (synced from the
+Obsidian vault by sync.sh). Regeneration reads `source/` so the atlas is fully
+reproducible from the repo alone, with no vault present.
 Usage: python3 regenerate.py     (needs: pip install pyshp)
+Override the input dir with CARDS_SRC=/path python3 regenerate.py
 """
-import re, glob, os, json
-VAULT = os.environ.get("VAULT", "/Users/Vassilis/Documents/Obsidian Vault")
+import re, glob, os, json, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
+SRC = os.environ.get("CARDS_SRC", os.path.join(HERE, "source"))
 
 def field(fm, k):
     m = re.search(r'^%s:\s*(.*)$' % re.escape(k), fm, re.M)
@@ -22,25 +27,45 @@ def mdlite(s):
     s = re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)', r'<i>\1</i>', s)
     return re.sub(r'\s+', ' ', s).strip()
 
-cards = []
-for p in sorted(glob.glob(os.path.join(VAULT, "Tooling Card - *.md"))):
+def parse_year(s):
+    # Tolerate "1769", "c. 1800", "1769?", "1980s", "552 CE"; 0 = unknown.
+    m = re.search(r'\d{1,4}', s or "")
+    return int(m.group()) if m else 0
+
+if not os.path.isdir(SRC):
+    sys.exit("Source dir not found: %s\n(run sync.sh to bundle source/ from the vault)" % SRC)
+
+cards, skipped, warns = [], [], []
+for p in sorted(glob.glob(os.path.join(SRC, "Tooling Card - *.md"))):
     cid = os.path.basename(p)[len("Tooling Card - "):-3]
     raw = open(p, encoding="utf-8").read()
     mfm = re.match(r'^---\n(.*?)\n---\n', raw, re.S)
+    if not mfm:                      # no/garbled frontmatter — skip, don't crash the run
+        skipped.append(cid); continue
     fm, body = mfm.group(1), raw[mfm.end():]
     # Front/Back faces from the body; stop before the off-card *Curator's note:* (kept private)
     fb = re.search(r'\*\*Front\.\*\*(.*?)\*\*Back\.\*\*(.*?)(?:\n\*Curator|\Z)', body, re.S)
     front = mdlite(fb.group(1)) if fb else ""
     back  = mdlite(fb.group(2)) if fb else ""
     y, lat, lon, th = field(fm,"Year"), field(fm,"Lat"), field(fm,"Lon"), threads(fm)
-    cards.append(dict(id=cid, name=field(fm,"Name"), kind=field(fm,"Kind"),
-        year=int(y) if y.isdigit() else 0, place=field(fm,"Place"), person=field(fm,"Person"),
+    if y and not parse_year(y): warns.append("%s: unparseable Year %r -> 0" % (cid, y))
+    cards.append(dict(id=cid, name=field(fm,"Name") or cid, kind=field(fm,"Kind"),
+        year=parse_year(y), place=field(fm,"Place"), person=field(fm,"Person"),
         sig=field(fm,"Significance"), goal=field(fm,"Goal"), mech=field(fm,"Mechanism"),
         tool=field(fm,"Tool"), era=field(fm,"Era"), conf=field(fm,"Confidence"),
         front=front, back=back,
         threads=th, primary=th[0] if th else "—",
         lat=float(lat) if lat else None, lon=float(lon) if lon else None,
         bo=clist(fm,"BuildsOn"), en=clist(fm,"Enables"), country=""))
+
+# Validate cross-references resolve to real cards (a typo'd [[link]] is silently broken otherwise).
+ids = {c["id"] for c in cards}
+for c in cards:
+    for k in ("bo", "en"):
+        bad = [x for x in c[k] if x not in ids]
+        if bad: warns.append("%s: %s -> unknown %s" % (c["id"], k, ", ".join(bad)))
+if skipped: print("WARN skipped (no frontmatter):", ", ".join(skipped))
+for w in warns: print("WARN", w)
 # NOTE: cards.js is written below, AFTER the point-in-polygon pass fills c["country"].
 
 # countries (basemap rings + tool counts), bundled Natural Earth shapefile
@@ -67,7 +92,9 @@ for c in cards:
     if c["lat"] is None: continue
     for i,rings in enumerate(Cr):
         if any(pip(c["lon"],c["lat"],r) for r in rings if len(r)>3): cnt[i]+=1; c["country"]=names[i]; break
-open(os.path.join(HERE,"data/cards.js"),"w").write("window.CARDS="+json.dumps(cards,ensure_ascii=False)+";")
+cards_json = json.dumps(cards, ensure_ascii=False)
+open(os.path.join(HERE,"data/cards.js"),"w").write("window.CARDS="+cards_json+";")
+open(os.path.join(HERE,"data/cards.json"),"w").write(cards_json)
 print("cards.js:", len(cards), "cards;", sum(1 for c in cards if c["country"]), "with country")
 out=[]
 for rings,c,nm in zip(Cr,cnt,names):

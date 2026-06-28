@@ -22,7 +22,11 @@ MS = [("Measure","#3266ad","see what is there — a microscope, an X-ray, a way 
       ("Manufacture","#2f8f6b","build a billion, cheap and identical, on a factory floor")]
 
 # Front/Back text is only needed by the Deck; slim it out of the other views' data to keep the bundle small.
-cards = json.loads(open(os.path.join(HERE,"data/cards.js"),encoding="utf-8").read().split("=",1)[1].rstrip().rstrip(";"))
+_jsonp = os.path.join(HERE, "data/cards.json")
+if os.path.exists(_jsonp):
+    cards = json.loads(open(_jsonp, encoding="utf-8").read())
+else:  # fallback: parse the window.CARDS=… assignment in cards.js
+    cards = json.loads(open(os.path.join(HERE,"data/cards.js"),encoding="utf-8").read().split("=",1)[1].rstrip().rstrip(";"))
 SLIM_JS = "window.CARDS=" + json.dumps([{k:v for k,v in c.items() if k not in ("front","back")} for c in cards], ensure_ascii=False) + ";"
 
 def inline(relpath, slim=False):

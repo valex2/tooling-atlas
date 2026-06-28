@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Sync the atlas from the Obsidian vault.
-#   1. regenerate data/cards.js + data/countries.js from the vault
-#   2. bundle the card + thread markdown into source/ (keeps the repo self-contained)
-#   3. stage everything for commit
+#   1. bundle the card + thread markdown from the vault into source/  (the SOURCE OF TRUTH)
+#   2. regenerate data/cards.js + data/cards.json + data/countries.js FROM source/
+#   3. build the single-file offline bundle (tooling-atlas.html)
+#   4. stage everything for commit
+#
+# source/ is what the repo ships and what regeneration reads, so the atlas is
+# reproducible from the repo alone — the vault is only needed for step 1.
 #
 # Usage:  ./sync.sh            (uses the default vault path below)
 #         VAULT=/path ./sync.sh
@@ -16,15 +20,9 @@ echo "Vault: $VAULT"
 # 0) deps
 python3 -c "import shapefile" 2>/dev/null || pip install pyshp --quiet
 
-# 1) regenerate the data the views read
-VAULT="$VAULT" python3 regenerate.py
-
-# 1b) build the single-file offline bundle (tooling-atlas.html)
-python3 build_standalone.py
-
-# 2) bundle the markdown source (so the repo carries the cards, not just the derived JS)
-#    NOTE: the off-card *Curator's note:* (private author commentary) is stripped from the
-#    public bundle. Front/Back card faces and frontmatter are kept.
+# 1) bundle the markdown source — the repo carries the cards, not just derived JS.
+#    The off-card *Curator's note:* (private author commentary) is stripped here;
+#    Front/Back card faces and frontmatter are kept.
 rm -rf source && mkdir -p source
 python3 - "$VAULT" <<'PY'
 import sys, os, re, glob, shutil
@@ -41,7 +39,13 @@ print("stripped curator notes from %d card files" % n)
 PY
 echo "bundled $(ls source | wc -l) source notes into source/ (curator notes excluded)"
 
-# 3) stage
+# 2) regenerate the data the views read — FROM source/, not the vault
+python3 regenerate.py
+
+# 3) build the single-file offline bundle (tooling-atlas.html)
+python3 build_standalone.py
+
+# 4) stage
 git add -A
 echo
 echo "Staged. Review:  git status"
