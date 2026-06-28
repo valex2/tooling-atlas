@@ -1,5 +1,5 @@
 (function(){
-const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
+const KC=window.KCOL, KINK=window.KINK;   // single source of truth (shared.js)
 const D2R=Math.PI/180, YR0=1600,YR1=2025;
 const tfrac=y=>Math.max(0,Math.min(1,(y-YR0)/(YR1-YR0)));
 const byId=Object.fromEntries(CARDS.map(c=>[c.id,c]));
@@ -85,7 +85,7 @@ function countryChart(inC){const w=294,h=112,x0=6,x1=w-6,y0=10,yb=h-15,mn=1600,m
 function showCountry(ci){const o=COUNTRIES[ci];if(!o)return;const name=o.n||"(area)";const inC=CARDS.filter(c=>c.country===name).sort((a,b)=>a.year-b.year);
  let p=document.getElementById('appdetail');if(!p){p=document.createElement('div');p.id='appdetail';p.style.cssText=PANELCSS;document.body.appendChild(p);}
  const bk={};inC.forEach(c=>bk[c.kind]=(bk[c.kind]||0)+1);
- const bars=["Measure","Model","Make","Manufacture"].filter(k=>bk[k]).map(k=>'<span style="display:inline-block;background:'+KC[k]+'22;color:'+KC[k]+';border-radius:8px;padding:1px 7px;margin:2px 3px 0 0;font-size:11px">'+k+' '+bk[k]+'</span>').join("");
+ const bars=["Measure","Model","Make","Manufacture"].filter(k=>bk[k]).map(k=>'<span style="display:inline-block;background:'+KC[k]+'1f;color:'+KINK[k]+';border-radius:8px;padding:1px 7px;margin:2px 3px 0 0;font-size:11px">'+k+' '+bk[k]+'</span>').join("");
  const list=inC.map(c=>'<div class="ctool" data-id="'+encodeURIComponent(c.id)+'" style="cursor:pointer;padding:3px 0;border-bottom:.5px solid #eee;font-size:12px"><span style="color:'+KC[c.kind]+'">●</span> '+c.name+' <span style="color:#aaa">'+c.year+'</span></div>').join("")||"<div style='color:#bbb'>No tools recorded here.</div>";
  p.innerHTML='<div style="display:flex;justify-content:space-between"><div style="font-size:16px;font-weight:600">'+name+'</div><span id="appdx" style="cursor:pointer;color:#999;font-size:18px">✕</span></div><div style="color:#6f6f6f;font-size:12px;margin:2px 0 8px">'+inC.length+' tool'+(inC.length!=1?'s':'')+'</div>'+bars+countryChart(inC)+'<div style="margin-top:6px">'+list+'</div>';
  p.style.display='block';document.getElementById('appdx').onclick=()=>p.style.display='none';
@@ -96,7 +96,7 @@ function renderChips(){const el=document.getElementById('chips');if(!el)return;c
  if(chipsOpen){for(let i=ERAS.length-1;i>=0;i--){const nm=ERAS[i][0],a=ERAS[i][1],b=ERAS[i][2];const grp=list.filter(c=>c.year>=a&&c.year<b).sort((x,y)=>y.year-x.year);if(!grp.length)continue;html+='<div style="font-size:9.5px;font-weight:600;color:#9a6a3a;margin:9px 0 2px;border-bottom:.5px solid #eee">'+nm+'</div>'+grp.map(c=>'<div class="chip2" data-id="'+encodeURIComponent(c.id)+'" style="cursor:pointer;display:flex;gap:6px;align-items:baseline;padding:2px 4px;border-radius:6px"><span style="color:#aaa;font-size:10px;min-width:30px">'+c.year+'</span><span style="color:'+KC[c.kind]+';font-size:7px">●</span><span style="font-size:11.5px">'+c.name+'</span></div>').join("");}}
  el.innerHTML=html;const tg=document.getElementById('chipstog');if(tg)tg.onclick=()=>{chipsOpen=!chipsOpen;renderChips();};
  el.querySelectorAll('.chip2').forEach(d=>{d.onmouseenter=()=>d.style.background='#efece6';d.onmouseleave=()=>d.style.background='';d.onclick=()=>{const c=byId[decodeURIComponent(d.dataset.id)];if(!c)return;foundId=c.id;rotLon=c.lon;rotLat=Math.max(-80,Math.min(80,c.lat));render();try{showDetail(c);}catch(e){}};});}
-function showTip(id,e){const c=byId[id];tip.style.borderLeftColor=KC[c.kind];tip.innerHTML=`<div class="t" style="color:${KC[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig||''}</div>`;tip.style.display='block';tip.style.left=Math.min(e.clientX+14,window.innerWidth-270)+'px';tip.style.top=(e.clientY+14)+'px';}
+function showTip(id,e){const c=byId[id];tip.style.borderLeftColor=KC[c.kind];tip.innerHTML=`<div class="t" style="color:${KINK[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig||''}</div>`;tip.style.display='block';tip.style.left=Math.min(e.clientX+14,window.innerWidth-270)+'px';tip.style.top=(e.clientY+14)+'px';}
 // interaction
 let dn=false,lx,ly,moved=false,chipsOpen=true;
 const ERAS=window.ERAS;

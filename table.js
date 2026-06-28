@@ -1,5 +1,5 @@
 (function(){
-const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
+const KC=window.KCOL, KINK=window.KINK, KGLY=window.KGLY;   // single source of truth (shared.js)
 const KINDS=["Measure","Model","Make","Manufacture"];
 const COLS=[["name","Tool"],["kind","Kind"],["mech","Mech"],["year","Year"],["place","Place"],["threads","Threads"],["links","Links"],["sig","Significance"]];
 let q="",kind=null,selT=[],goal="",mech="",decade="",sortK="year",sortDir=1;
@@ -27,13 +27,13 @@ function render(){
  const r=rows();
  document.getElementById("body").innerHTML=r.map(c=>`<tr>
   <td><b>${c.name}</b><div class="thr">${c.person||""}</div></td>
-  <td><span class="kpill" style="background:${KC[c.kind]}22;color:${KC[c.kind]}">${c.kind}</span></td>
+  <td><span class="kpill" style="background:${KC[c.kind]}1f;color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.kind}</span></td>
   <td class="thr">${c.mech||""}</td>
   <td>${c.year}</td><td>${c.place||""}</td>
   <td class="thr">${c.threads.join(", ")}</td>
   <td title="builds on ${c.bo.length}, enables ${c.en.length}">${c.bo.length}→${c.en.length}</td>
   <td class="sig">${c.sig||""}</td></tr>`).join("");
- document.getElementById("count").innerHTML=`${r.length} of ${CARDS.length} tools`+selT.map(t=>` · <span class="tpill" data-t="${encodeURIComponent(t)}" style="cursor:pointer;color:#9a6a3a">${t} ✕</span>`).join("")+(decade?` · <span style="cursor:pointer;color:#9a6a3a" id="cdec">${decade}s ✕</span>`:"");
+ document.getElementById("count").innerHTML=`${r.length} of ${CARDS.length} tools`+selT.map(t=>` · <span class="tpill" data-t="${encodeURIComponent(t)}" style="cursor:pointer;color:#33302b">${t} ✕</span>`).join("")+(decade?` · <span style="cursor:pointer;color:#33302b" id="cdec">${decade}s ✕</span>`:"");
  const cd=document.getElementById("cdec");if(cd)cd.onclick=()=>{decade="";render();};
  document.querySelectorAll('#count .tpill').forEach(el=>el.onclick=()=>{const t=decodeURIComponent(el.dataset.t);selT=selT.filter(x=>x!==t);render();});
  document.querySelectorAll('#body tr').forEach((tr,ix)=>{tr.style.cursor='pointer';tr.onclick=()=>showDetail(r[ix]);});

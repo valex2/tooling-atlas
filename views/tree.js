@@ -1,5 +1,5 @@
 (function(){
-const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
+const KC=window.KCOL, KINK=window.KINK;   // single source of truth (shared.js)
 const byId=Object.fromEntries(CARDS.map(c=>[c.id,c]));
 const ERAS=window.ERAS;
 const EVENTS=[[1769,"Watt steam engine"],[1776,"American Revolution"],[1957,"Sputnik"],[1969,"Moon landing"],[1971,"Microprocessor"],[1989,"World Wide Web"],[2003,"Iraq War"],[2007,"iPhone"],[2012,"Deep learning"],[2020,"COVID-19"]];
@@ -44,7 +44,7 @@ function render(){const meta=layout();
  for(let y=1200;y<=2030;y+=10){const gx=xs(y),mj=y%50===0;h+=`<div class="gl ${mj?'maj':''}" style="left:${gx}px;top:${24+ERABAND}px;height:${layoutH-30-ERABAND}px"></div>`;if(mj)h+=`<div class="yr" style="left:${gx+2}px;top:${8+ERABAND}px;color:#999;font-weight:600">${y}</div>`;}
  for(const m of meta)h+=`<div class="lanelab" style="top:${m[1]}px">${m[0]}</div>`;
  for(const c of CARDS){const dimd=lit&&!lit.has(c.id);const hl=(lit&&lit.has(c.id)&&c.id!==sel)||(q&&(c.name.toLowerCase().includes(q)));
-  h+=`<div class="c${dimd?' dim':''}${c.id===sel?' sel':''}${hl?' hl':''}" data-id="${encodeURIComponent(c.id)}" style="left:${c._x}px;top:${c._y}px;border-left-color:${KC[c.kind]}"><div class="ti" style="color:${KC[c.kind]}">${c.name}</div><div class="yt">${c.kind} · ${c.year}</div></div>`;}
+  h+=`<div class="c${dimd?' dim':''}${c.id===sel?' sel':''}${hl?' hl':''}" data-id="${encodeURIComponent(c.id)}" style="left:${c._x}px;top:${c._y}px;border-left-color:${KC[c.kind]}"><div class="ti" style="color:${KINK[c.kind]}">${c.name}</div><div class="yt">${c.kind} · ${c.year}</div></div>`;}
  [...stage.querySelectorAll('.c,.lanelab,.gl,.yr,div[style*="z-index:0"]')].forEach(e=>e.remove());
  stage.insertAdjacentHTML("beforeend",h);
  let e="";for(const c of CARDS){const a=pos[c.id];if(!a)continue;for(const en of (c.en||[])){const b=pos[en];if(!b)continue;const on=lit?(lit.has(c.id)&&lit.has(en)):true;const op=lit?(on?.9:.05):.25;const x1=a.x+W,y1=a.y+H/2,x2=b.x,y2=b.y+H/2,mx=(x1+x2)/2;e+=`<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${(lit&&on)?2:1}"/>`;}}
@@ -53,7 +53,7 @@ function render(){const meta=layout();
  document.getElementById("hint")&&(document.getElementById("hint").textContent="");
  pinLabels();
 }
-function showTip(id,e){const c=byId[id];tip.style.borderLeftColor=KC[c.kind];tip.innerHTML=`<div class="t" style="color:${KC[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig||''}</div>`;tip.style.display='block';tip.style.left=Math.min(e.clientX+14,window.innerWidth-270)+'px';tip.style.top=(e.clientY+14)+'px';}
+function showTip(id,e){const c=byId[id];tip.style.borderLeftColor=KC[c.kind];tip.innerHTML=`<div class="t" style="color:${KINK[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig||''}</div>`;tip.style.display='block';tip.style.left=Math.min(e.clientX+14,window.innerWidth-270)+'px';tip.style.top=(e.clientY+14)+'px';}
 document.getElementById("q").oninput=e=>{q=e.target.value.toLowerCase();try{setState({q:q});}catch(e){}render();};
 try{if(q)document.getElementById("q").value=q;}catch(e){}
 document.getElementById("reset").onclick=()=>{sel=null;q="";document.getElementById("q").value="";render();};

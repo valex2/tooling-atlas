@@ -74,7 +74,7 @@ input[type=range]{accent-color:var(--ink);width:90px;}
 <div class="hint" id="hint"></div>
 <script>
 const DATA=(window.CARDS||[]).filter(function(c){return c.year;});
-const KC={Measure:"#3266ad",Model:"#8a4fb3",Make:"#b06a1e",Manufacture:"#2f8f6b"};
+const KC=window.KCOL, KINK=window.KINK;   // single source of truth (shared.js)
 const byId=Object.fromEntries(DATA.map(c=>[c.id,c]));
 const COUNTRIES={type:"FeatureCollection",features:[]};
 let mapT=2030,mplaying=false,mtimer=null;let gScale=0,gRot=null,gProj=null,gPath=null;
@@ -198,7 +198,7 @@ lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute
    else if(selThreads.length&&!inT(c.id))extra=" dim"; if(c.id===selCard&&!it.ghost)extra+=" sel"; if(matchq)extra+=" hl";
    const op=it.ghost?(extra.includes("dim")?"":"opacity:.4;"):"";
    if(dotmode){const r=it.ghost?3:4.2;html+=`<div class="dot${extra}" data-id="${enc(c.id)}" style="left:${it.x}px;top:${it._y}px;width:${r*2}px;height:${r*2}px;background:${KC[c.kind]};${op}"></div>`;}
-   else{const d=it.d;const body=laneMode(l)==="chip"?`<div class="ti" style="color:${KC[c.kind]}">${c.name}</div><div class="kx">${c.year}</div>`:`<div class="ti" style="color:${KC[c.kind]}">${c.name}</div><div class="pe">${c.person||""}</div><div class="kx">${c.kind} · ${c.year}</div><div class="sg">${c.sig||""}</div>`;
+   else{const d=it.d;const body=laneMode(l)==="chip"?`<div class="ti" style="color:${KINK[c.kind]}">${c.name}</div><div class="kx">${c.year}</div>`:`<div class="ti" style="color:${KINK[c.kind]}">${c.name}</div><div class="pe">${c.person||""}</div><div class="kx">${c.kind} · ${c.year}</div><div class="sg">${c.sig||""}</div>`;
    html+=`<div class="c${laneMode(l)==="full"?" full":""}${extra}" data-id="${enc(c.id)}" style="left:${it.x}px;top:${it._y}px;width:${d.w}px;height:${d.h}px;overflow:hidden;border-left-color:${KC[c.kind]};${it.ghost?'border-style:dashed;'+op:''}">${body}</div>`;}
  }}
  [...stage.querySelectorAll('.c,.dot,.lanelab,.lanesep,.gl,.yr')].forEach(e=>e.remove());
@@ -216,7 +216,7 @@ lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute
  document.getElementById("hint").textContent=`${DATA.length} cards · ${lanes.length} lanes · by ${axis} · click a lane name to expand`;
 }
 function showFull(id,el){const c=byId[id];fc.style.borderLeftColor=KC[c.kind];
- fc.innerHTML=`<div class="ti" style="color:${KC[c.kind]}">${c.name}</div><div class="me">${c.kind} · ${c.place||""} · ${c.year}</div><div class="me">${c.person||""}</div><div class="sg">${c.sig||""}</div><div class="rel"><b>builds on:</b> ${(c.bo||[]).map(x=>byId[x]?byId[x].name:x).join(", ")||"—"}<br><b>enables:</b> ${(c.en||[]).map(x=>byId[x]?byId[x].name:x).join(", ")||"—"}</div><div style="margin-top:6px">${c.threads.map(t=>`<span class="tg">${t}</span>`).join("")}</div>`;
+ fc.innerHTML=`<div class="ti" style="color:${KINK[c.kind]}">${c.name}</div><div class="me">${c.kind} · ${c.place||""} · ${c.year}</div><div class="me">${c.person||""}</div><div class="sg">${c.sig||""}</div><div class="rel"><b>builds on:</b> ${(c.bo||[]).map(x=>byId[x]?byId[x].name:x).join(", ")||"—"}<br><b>enables:</b> ${(c.en||[]).map(x=>byId[x]?byId[x].name:x).join(", ")||"—"}</div><div style="margin-top:6px">${c.threads.map(t=>`<span class="tg">${t}</span>`).join("")}</div>`;
  const lx=parseFloat(el.style.left)+parseFloat(el.style.width||el.offsetWidth)+8;
  fc.style.left=Math.max(4,Math.min(lx,layoutW-248))+"px";fc.style.top=(parseFloat(el.style.top)-6)+"px";fc.style.display="block";}
 function hideFull(){fc.style.display="none";}
