@@ -1,3 +1,5 @@
-data/ne/
 __pycache__/
 .DS_Store
+test/shots/
+test/node_modules/
+test/package*.json
