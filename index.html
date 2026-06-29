@@ -47,13 +47,12 @@
  .m .md{color:var(--mut);font-size:13px}
  .tagline{font-family:var(--serif);font-style:italic;font-size:18px;color:#4a4135;text-align:center;margin:24px 0 4px}
  .views{display:grid;grid-template-columns:1fr 1fr;gap:11px}
- a.vc{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;text-decoration:none;color:inherit;background:var(--card);
-  border:.5px solid var(--line);border-radius:11px;padding:14px 16px;transition:border-color .12s,transform .06s,box-shadow .12s}
+ a.vc{display:grid;grid-template-columns:32px 1fr;gap:13px;align-items:center;text-decoration:none;color:inherit;background:var(--card);
+  border:.5px solid var(--line);border-radius:11px;padding:15px 16px;transition:border-color .12s,transform .06s,box-shadow .12s}
  a.vc:hover{border-color:rgba(0,0,0,.32);box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
  a.vc svg{width:30px;height:30px;color:var(--mut)}
  a.vc:hover svg{color:var(--ink)}
- a.vc .vn{display:block;font-weight:600;font-size:15px;margin-bottom:3px}
- a.vc .vd{display:block;color:var(--mut);font-size:12.5px;line-height:1.5}
+ a.vc .vn{font-weight:600;font-size:15.5px}
  @media (max-width:620px){h1{font-size:36px}.lede{font-size:16px}.views{grid-template-columns:1fr}
   .readout{margin:24px -24px 0}.gauge{min-width:50%;flex-basis:50%}
   .m{grid-template-columns:28px 20px 1fr;grid-auto-flow:row}.m .md{grid-column:1/-1}}
@@ -65,7 +64,7 @@
   <p class="kicker">An atlas of the tools behind technology leadership</p>
   <h1>Tooling Atlas</h1>
   <p class="desig" id="desig">— tools · — threads · — countries · —</p>
-  <p class="lede">Leadership in a field tends to follow leadership in its <em>tools</em> — and the lead migrates over time. Each tool here is an instrument, machine, method, or process someone built and others picked up, mapped four ways.</p>
+  <p class="lede">Lead in the <em>tools</em> and you tend to lead in the field — and the lead keeps moving. Each one here is a tool someone built and others picked up.</p>
   <div class="readout" id="readout"></div>
  </header>
  <h2>The four jobs a tool does</h2>
@@ -78,14 +77,13 @@
  </div>
  <p class="tagline">See it, understand it, build one, build a million.</p>
  <h2>Six ways to read it</h2>
- <p class="sub">The same 145 tools, six instruments for reading them.</p>
  <div class="views">
-  <a class="vc" href="views/map.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="16" cy="16" r="11"/><ellipse cx="16" cy="16" rx="5" ry="11"/><path d="M5 16h22M7 10h18M7 22h18"/></svg><span><span class="vn">Globe</span><span class="vd">Where each tool was invented, and how each fed a later one somewhere else.</span></span></a>
-  <a class="vc" href="views/atlas.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 8h24M4 16h24M4 24h24"/><circle cx="10" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="20" cy="16" r="2" fill="currentColor" stroke="none"/><circle cx="14" cy="24" r="2" fill="currentColor" stroke="none"/></svg><span><span class="vn">Timeline</span><span class="vd">Every tool on a time axis, in lanes by thread, geography, or the four Ms.</span></span></a>
-  <a class="vc" href="views/tree.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="16" r="2.4"/><circle cx="22" cy="8" r="2.4"/><circle cx="22" cy="24" r="2.4"/><path d="M9 15l11-6M9 17l11 6"/></svg><span><span class="vn">Tree</span><span class="vd">The genealogy: which tool built on which, branching through time.</span></span></a>
-  <a class="vc" href="views/deck.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="9" y="6" width="17" height="21" rx="2"/><rect x="5" y="9" width="15" height="18" rx="2" fill="var(--card)"/></svg><span><span class="vn">Deck</span><span class="vd">Flip cards — the moment on the front, the aftermath on the back.</span></span></a>
-  <a class="vc" href="views/table.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="5" y="6" width="22" height="20" rx="1.5"/><path d="M5 12h22M13 6v20M20 6v20"/></svg><span><span class="vn">Table</span><span class="vd">A sortable, filterable database of every tool.</span></span></a>
-  <a class="vc" href="views/dashboard.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 26V6"/><rect x="9" y="18" width="4" height="8"/><rect x="15" y="12" width="4" height="14"/><rect x="21" y="15" width="4" height="11"/></svg><span><span class="vn">Dashboard</span><span class="vd">Coverage by kind, decade, and thread, plus the gaps still to fill.</span></span></a>
+  <a class="vc" href="views/map.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="16" cy="16" r="11"/><ellipse cx="16" cy="16" rx="5" ry="11"/><path d="M5 16h22M7 10h18M7 22h18"/></svg><span class="vn">Globe</span></a>
+  <a class="vc" href="views/atlas.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 8h24M4 16h24M4 24h24"/><circle cx="10" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="20" cy="16" r="2" fill="currentColor" stroke="none"/><circle cx="14" cy="24" r="2" fill="currentColor" stroke="none"/></svg><span class="vn">Timeline</span></a>
+  <a class="vc" href="views/tree.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="16" r="2.4"/><circle cx="22" cy="8" r="2.4"/><circle cx="22" cy="24" r="2.4"/><path d="M9 15l11-6M9 17l11 6"/></svg><span class="vn">Tree</span></a>
+  <a class="vc" href="views/deck.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="9" y="6" width="17" height="21" rx="2"/><rect x="5" y="9" width="15" height="18" rx="2" fill="var(--card)"/></svg><span class="vn">Deck</span></a>
+  <a class="vc" href="views/table.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="5" y="6" width="22" height="20" rx="1.5"/><path d="M5 12h22M13 6v20M20 6v20"/></svg><span class="vn">Table</span></a>
+  <a class="vc" href="views/dashboard.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 26V6"/><rect x="9" y="18" width="4" height="8"/><rect x="15" y="12" width="4" height="14"/><rect x="21" y="15" width="4" height="11"/></svg><span class="vn">Dashboard</span></a>
  </div>
 </div>
 <script src="data/cards.js"></script>

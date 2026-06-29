@@ -8,14 +8,6 @@ import re, os, json
 HERE = os.path.dirname(os.path.abspath(__file__))
 VIEWS = [("Globe","views/map.html"),("Timeline","views/atlas.html"),("Tree","views/tree.html"),
          ("Deck","views/deck.html"),("Table","views/table.html"),("Dashboard","views/dashboard.html")]
-BLURB = {
- "Globe":"Where each tool was invented, and how each fed a later one somewhere else.",
- "Timeline":"Every tool on a time axis, in lanes by thread, geography, or the four Ms.",
- "Tree":"The genealogy: which tool built on which, branching through time.",
- "Deck":"Flip cards — the moment on the front, the aftermath on the back.",
- "Table":"A sortable, filterable database of every tool.",
- "Dashboard":"Coverage by kind, decade, and thread, plus the gaps still to fill.",
-}
 MS = [("01","Measure","var(--Measure-ink)","◇","see what is there — a microscope, an X-ray, a way to read DNA"),
       ("02","Model","var(--Model-ink)","◯","reason about it — an equation or rule that predicts without building"),
       ("03","Make","var(--Make-ink)","△","build one working copy — a single transistor, engine, or molecule"),
@@ -68,7 +60,7 @@ ms_html = "".join(
  f'<div class="m"><span class="ix">{ix}</span><span class="gl" style="color:{ink}">{gly}</span><b>{n}</b><span class="md">{d}</span></div>'
  for ix,n,ink,gly,d in MS)
 view_cards = "".join(
- f'<button class="vc" data-k="{k}">{VGLY[k]}<span><span class="vn">{k}</span><span class="vd">{BLURB[k]}</span></span></button>'
+ f'<button class="vc" data-k="{k}">{VGLY[k]}<span class="vn">{k}</span></button>'
  for k in order)
 readout_html = "".join(
  f'<div class="gauge"><b>{v}</b><span>{l}</span></div>'
@@ -79,7 +71,7 @@ HOME = f"""<section id="home"><div class="hwrap">
   <p class="kicker">An atlas of the tools behind technology leadership</p>
   <h1>Tooling Atlas</h1>
   <p class="desig">{n_cards} tools · {n_threads} threads · {n_countries} countries · {span}</p>
-  <p class="lede">Leadership in a field tends to follow leadership in its <em>tools</em> — and the lead migrates over time. Each tool here is an instrument, machine, method, or process someone built and others picked up, mapped four ways.</p>
+  <p class="lede">Lead in the <em>tools</em> and you tend to lead in the field — and the lead keeps moving. Each one here is a tool someone built and others picked up.</p>
   <div class="readout">{readout_html}</div>
  </header>
  <h2>The four jobs a tool does</h2>
@@ -87,7 +79,6 @@ HOME = f"""<section id="home"><div class="hwrap">
  <div class="ms">{ms_html}</div>
  <p class="tagline">See it, understand it, build one, build a million.</p>
  <h2>Six ways to read it</h2>
- <p class="sub">The same {n_cards} tools, six instruments for reading them.</p>
  <div class="views">{view_cards}</div>
 </div></section>"""
 
@@ -153,12 +144,11 @@ shell = """<!doctype html><html lang="en"><head><meta charset="utf-8">
  .m .md{color:var(--mut);font-size:13px}
  .tagline{font-family:var(--serif);font-style:italic;font-size:18px;color:#4a4135;text-align:center;margin:24px 0 4px}
  .views{display:grid;grid-template-columns:1fr 1fr;gap:11px}
- .vc{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;text-align:left;background:var(--card);border:.5px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;transition:border-color .12s,transform .06s,box-shadow .12s}
+ .vc{display:grid;grid-template-columns:32px 1fr;gap:13px;align-items:center;text-align:left;background:var(--card);border:.5px solid var(--line);border-radius:11px;padding:15px 16px;cursor:pointer;transition:border-color .12s,transform .06s,box-shadow .12s}
  .vc:hover{border-color:rgba(0,0,0,.32);box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
  .vc svg{width:30px;height:30px;color:var(--mut)}
  .vc:hover svg{color:var(--ink)}
- .vc .vn{display:block;font-weight:600;font-size:15px;margin-bottom:3px}
- .vc .vd{display:block;color:var(--mut);font-size:12.5px;line-height:1.5}
+ .vc .vn{font-weight:600;font-size:15.5px}
  @media (max-width:620px){h1{font-size:36px}.lede{font-size:16px}.views{grid-template-columns:1fr}
   .gauge{min-width:50%;flex-basis:50%}
   .m{grid-template-columns:28px 20px 1fr;grid-auto-flow:row}.m .md{grid-column:1/-1}}
