@@ -62,7 +62,6 @@ input[type=range]{accent-color:var(--ink);width:90px;}
   <div class="grp"><span class="lab">By</span><span id="axisBtns"></span></div>
   <div class="grp"><span class="lab">Detail</span><span id="sizeBtns"></span></div>
   <div class="grp"><span class="lab">Zoom</span><input type="range" id="zoom" min="20" max="150" value="100"><button class="btn" id="fitw">fit width</button><button class="btn" id="fitall">fit all</button></div>
-  <div class="grp"><span class="lab">Time</span><span id="timeBtns"></span></div>
   <input class="search" id="search" placeholder="search…">
   <button class="btn" id="reset">reset</button>
 </div>
@@ -96,13 +95,14 @@ const groupOf=l=>GEOGROUP[l]||l;
 let axis="thread",size="overview",selThreads=[],selCard=null,q="",zoom=1;try{selThreads=getThreads();}catch(e){}
 const expanded=new Set();
 const DIM={overview:{w:13,h:14,gh:3,gv:5,dot:true},chip:{w:120,h:38,gh:12,gv:8},medium:{w:158,h:96,gh:14,gv:12},full:{w:158,h:150,gh:14,gv:12}};
-const x0=200,minY=1200,maxY=2030,SPAN=830,WIDTH=3400;
+const x0=200,minY=1200,maxY=2030,SPAN=830,WIDTH=3400,LOGK=45;
 const YEARS=DATA.map(c=>c.year).filter(y=>y).sort((a,b)=>a-b);
-function densFrac(y){let lo=0,hi=YEARS.length;while(lo<hi){const m=(lo+hi)>>1;if(YEARS[m]<=y)lo=m+1;else hi=m;}return lo/YEARS.length;}
-let timeScale="comp";
+// Log-in-time scale (the default and only axis): compresses the sparse pre-1800 range and
+// expands the dense 20th–21st c. x grows with log of "years before the present edge".
+function logFrac(y){const A=maxY-minY;return 1-Math.log(1+(maxY-y)/LOGK)/Math.log(1+A/LOGK);}
 const ERAS=window.ERAS;
 const EVENTS=[[1769,"Watt steam engine"],[1776,"American Revolution"],[1957,"Sputnik"],[1969,"Moon landing"],[1971,"Microprocessor"],[1989,"World Wide Web"],[2003,"Iraq War"],[2007,"iPhone"],[2012,"Deep learning"],[2020,"COVID-19"]];
-function xs(y){y=Math.max(minY,Math.min(maxY,y));const n=(y-minY)/SPAN;return timeScale==="even"?x0+WIDTH*n:timeScale==="comp"?x0+WIDTH*Math.pow(n,1.8):x0+WIDTH*densFrac(y);}
+function xs(y){y=Math.max(minY,Math.min(maxY,y));return x0+WIDTH*logFrac(y);}
 function laneOrder(){
  if(axis==="kind")return ["Measure","Model","Make","Manufacture"].filter(k=>DATA.some(c=>c.kind===k));
  if(axis==="geo"){const p=new Set(DATA.map(c=>c.region));return REGIONS.map(r=>r[0]).concat(["Other"]).filter(r=>p.has(r));}
@@ -224,7 +224,6 @@ const enc=s=>encodeURIComponent(s),dec=s=>decodeURIComponent(s);
 function mk(el,opts,cur,fn){document.getElementById(el).innerHTML=opts.map(o=>`<button class="btn ${o[0]===cur?'on':''}" data-v="${o[0]}">${o[1]}</button>`).join("");document.querySelectorAll(`#${el} .btn`).forEach(b=>b.onclick=()=>fn(b.dataset.v));}
 const axisBtns=()=>mk("axisBtns",[["thread","Thread"],["geo","Geography"],["kind","Four Ms"]],axis,v=>{axis=v;selCard=null;expanded.clear();axisBtns();render();fitWidth();scroll.addEventListener('scroll',pinLabels);});
 const sizeBtns=()=>mk("sizeBtns",[["overview","Overview"],["chip","Chip"],["medium","Medium"],["full","Full"]],size,v=>{size=v;sizeBtns();render();});
-const timeBtns=()=>mk("timeBtns",[["even","Even"],["comp","Compressed"],["density","Density"]],timeScale,v=>{timeScale=v;timeBtns();render();fitWidth();});
 function threadbar(){const all=[...new Set(DATA.flatMap(c=>c.threads))].sort();document.getElementById("threadbar").innerHTML=all.map(t=>`<span class="tchip ${selThreads.includes(t)?'on':''}" data-t="${enc(t)}">${t}</span>`).join("");document.querySelectorAll("#threadbar .tchip").forEach(b=>b.onclick=()=>{const t=dec(b.dataset.t);const i=selThreads.indexOf(t);if(i>=0)selThreads.splice(i,1);else selThreads.push(t);try{setThreads(selThreads);}catch(e){}threadbar();render();});}
 function fitWidth(){if(axis==="map")return;zoom=Math.max(.2,Math.min(1.5,(scroll.clientWidth-16)/layoutW));applyZoom();}
 function fitAll(){if(axis==="map")return;zoom=Math.max(.12,Math.min(1.5,Math.min((scroll.clientWidth-16)/layoutW,(scroll.clientHeight-16)/layoutH)));applyZoom();}
@@ -245,6 +244,6 @@ function mstop(){mplaying=false;clearInterval(mtimer);const b=document.getElemen
  sv.addEventListener('mousedown',e=>{if(axis!=='map'||(e.target.closest&&e.target.closest('.mdot')))return;dn=true;lx=e.clientX;ly=e.clientY;sv.style.cursor='grabbing';e.preventDefault();});
  window.addEventListener('mousemove',e=>{if(!dn||!gRot)return;const k=0.25*(300/gScale);gRot[0]+=(e.clientX-lx)*k;gRot[1]-=(e.clientY-ly)*k;gRot[1]=Math.max(-90,Math.min(90,gRot[1]));lx=e.clientX;ly=e.clientY;renderMap();});
  window.addEventListener('mouseup',()=>{dn=false;sv.style.cursor='grab';});})();
-axisBtns();sizeBtns();timeBtns();threadbar();render();fitWidth();
+axisBtns();sizeBtns();threadbar();render();fitWidth();
 </script><div id="mtip"></div>
 </body></html>

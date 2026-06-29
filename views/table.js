@@ -1,7 +1,7 @@
 (function(){
 const KC=window.KCOL, KINK=window.KINK, KGLY=window.KGLY;   // single source of truth (shared.js)
 const KINDS=["Measure","Model","Make","Manufacture"];
-const COLS=[["name","Tool"],["kind","Kind"],["mech","Mech"],["year","Year"],["place","Place"],["threads","Threads"],["links","Links"],["sig","Significance"]];
+const COLS=[["name","Tool"],["kind","Kind"],["year","Year"],["place","Place"],["threads","Threads"],["links","Links"],["sig","Significance"]];
 let q="",kind=null,selT=[],goal="",mech="",decade="",sortK="year",sortDir=1;
 try{const st=getState();if(st.kind)kind=st.kind;selT=getThreads();if(st.q)q=st.q;if(st.goal)goal=st.goal;if(st.mech)mech=st.mech;if(st.decade)decade=st.decade;}catch(e){}
 const allThreads=[...new Set(CARDS.flatMap(c=>c.threads))].sort();
@@ -28,7 +28,6 @@ function render(){
  document.getElementById("body").innerHTML=r.map(c=>`<tr>
   <td><b>${c.name}</b><div class="thr">${c.person||""}</div></td>
   <td><span class="kpill" style="background:${KC[c.kind]}1f;color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.kind}</span></td>
-  <td class="thr">${c.mech||""}</td>
   <td>${c.year}</td><td>${c.place||""}</td>
   <td class="thr">${c.threads.join(", ")}</td>
   <td title="builds on ${c.bo.length}, enables ${c.en.length}">${c.bo.length}→${c.en.length}</td>

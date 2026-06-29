@@ -3,8 +3,10 @@ const KC=window.KCOL, KINK=window.KINK;   // single source of truth (shared.js)
 const byId=Object.fromEntries(CARDS.map(c=>[c.id,c]));
 const ERAS=window.ERAS;
 const EVENTS=[[1769,"Watt steam engine"],[1776,"American Revolution"],[1957,"Sputnik"],[1969,"Moon landing"],[1971,"Microprocessor"],[1989,"World Wide Web"],[2003,"Iraq War"],[2007,"iPhone"],[2012,"Deep learning"],[2020,"COVID-19"]];
-const minY=1200,maxY=2030,x0=170,PPY=5.2,W=118,H=34;
-const xs=y=>x0+(Math.max(minY,Math.min(maxY,y))-minY)*PPY;
+const minY=1200,maxY=2030,x0=170,W=118,H=34,WIDTH=4316,LOGK=45;
+// Log-in-time x-axis (default): compress the sparse pre-1800 range, expand the dense 20th–21st c.
+const logFrac=y=>{const A=maxY-minY,c=Math.max(minY,Math.min(maxY,y));return 1-Math.log(1+(maxY-c)/LOGK)/Math.log(1+A/LOGK);};
+const xs=y=>x0+WIDTH*logFrac(y);
 // auto lanes by primary thread, ordered by earliest member
 const prim=c=>(c.threads&&c.threads.length?c.threads[0]:"—");
 const tmin={};CARDS.forEach(c=>{const t=prim(c);tmin[t]=Math.min(tmin[t]??9999,c.year||9999);});
