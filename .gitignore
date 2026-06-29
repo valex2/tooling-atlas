@@ -3,3 +3,4 @@ __pycache__/
 test/shots/
 test/node_modules/
 test/package*.json
+node_modules/

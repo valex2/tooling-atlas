@@ -1,0 +1,10 @@
+{
+  "name": "tooling-atlas",
+  "private": true,
+  "description": "An interactive atlas of the tools behind technology leadership.",
+  "scripts": {
+    "format": "npx --yes prettier@3 --write \"shared.js\" \"views/*.js\"",
+    "check": "python3 test/check.py",
+    "smoke": "node test/smoke.mjs"
+  }
+}
