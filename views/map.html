@@ -1,5 +1,8 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Globe · Tooling Atlas</title>
+<meta name="description" content="Globe — where each tool was invented, and how each fed a later one somewhere else.">
+<meta property="og:title" content="Globe · Tooling Atlas">
+<meta property="og:description" content="Globe — where each tool was invented, and how each fed a later one somewhere else.">
 <style>
 :root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--card:#fff;
 --Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
@@ -42,7 +45,7 @@ svg.drag{cursor:grabbing}
 </div>
 <div class="legend"><span><i style="background:var(--Measure)"></i>Measure</span><span><i style="background:var(--Model)"></i>Model</span><span><i style="background:var(--Make)"></i>Make</span><span><i style="background:var(--Manufacture)"></i>Manufacture</span><span>drag to spin · scroll to zoom · colour = M, opacity = recency · pick threads to trace their migration over time (press play)</span></div>
 </div>
-<div id="wrap"><svg id="g"></svg></div><div id="chips"></div>
+<div id="wrap"><svg id="g" role="img" aria-label="Globe of where each tool was invented and how each fed a later one"></svg></div><div id="chips"></div>
 <div class="tip" id="tip"></div>
 <div class="hint" id="hint"></div>
 <script src="../data/cards.js"></script>

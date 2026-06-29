@@ -1,5 +1,8 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Timeline · Tooling Atlas</title>
+<meta name="description" content="Every tool on a time axis, in lanes by thread, geography, or the four Ms.">
+<meta property="og:title" content="Timeline · Tooling Atlas">
+<meta property="og:description" content="Every tool on a time axis, in lanes by thread, geography, or the four Ms.">
 <style>
 :root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--card:#fff;
 --Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
@@ -66,7 +69,7 @@ input[type=range]{accent-color:var(--ink);width:90px;}
 <div class="legend"><span><i style="background:var(--Measure)"></i>Measure</span><span><i style="background:var(--Model)"></i>Model</span><span><i style="background:var(--Make)"></i>Make</span><span><i style="background:var(--Manufacture)"></i>Manufacture</span><span>line = builds-on → enables · click a lane name to expand it · click a card for its lineage</span></div>
 <div class="threadbar" id="threadbar"></div>
 </div>
-<div class="scroll" id="scroll"><div id="zoomwrap"><div id="stage"><svg id="edges"></svg><div id="fc"></div></div></div></div>
+<div class="scroll" id="scroll"><div id="zoomwrap"><div id="stage"><svg id="edges" aria-hidden="true"></svg><div id="fc"></div></div></div></div>
 <div class="hint" id="hint"></div>
 <script>
 const DATA=(window.CARDS||[]).filter(function(c){return c.year;});

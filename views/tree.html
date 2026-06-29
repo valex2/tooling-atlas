@@ -1,5 +1,8 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tree · Tooling Atlas</title>
+<meta name="description" content="The genealogy of tools: which built on which, branching through time.">
+<meta property="og:title" content="Tree · Tooling Atlas">
+<meta property="og:description" content="The genealogy of tools: which built on which, branching through time.">
 <style>
 :root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--card:#fff;
 --Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
@@ -32,7 +35,7 @@ input.search{border:.5px solid var(--line);border-radius:14px;padding:4px 11px;f
 <span style="color:var(--mut)">click a card for its full ancestry &amp; descendants</span></div>
 <div class="legend"><span><i style="background:var(--Measure)"></i>Measure</span><span><i style="background:var(--Model)"></i>Model</span><span><i style="background:var(--Make)"></i>Make</span><span><i style="background:var(--Manufacture)"></i>Manufacture</span><span>lines = builds-on → enables</span></div>
 </div>
-<div class="scroll" id="scroll"><div id="stage"><svg id="edges"></svg></div></div>
+<div class="scroll" id="scroll"><div id="stage"><svg id="edges" aria-hidden="true"></svg></div></div>
 <div class="tip" id="tip"></div>
 <script src="../data/cards.js"></script>
 <script src="tree.js"></script>

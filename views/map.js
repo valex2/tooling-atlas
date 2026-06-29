@@ -319,7 +319,7 @@
         wTot,
       ) +
       '" fill="none" stroke="#bbb" stroke-width="1" stroke-dasharray="3 3" opacity=".75"/>';
-    s += '<path d="' + cum(inC, cTot) + '" fill="none" stroke="#7a5a30" stroke-width="1.5"/>';
+    s += '<path d="' + cum(inC, cTot) + '" fill="none" stroke="#5a544c" stroke-width="1.5"/>';
     const by = {};
     inC.forEach(c => {
       (by[c.year] = by[c.year] || []).push(c);
@@ -359,7 +359,7 @@
       x0 +
       '" y="' +
       (y0 + 2) +
-      '" font-size="7.5" fill="#9a6a3a">cumulative — dashed = world shape</text></svg>';
+      '" font-size="7.5" fill="#9a9488">cumulative — dashed = world shape</text></svg>';
     return s;
   }
   function showCountry(ci) {
@@ -458,7 +458,7 @@
         const grp = list.filter(c => c.year >= a && c.year < b).sort((x, y) => y.year - x.year);
         if (!grp.length) continue;
         html +=
-          '<div style="font-size:9.5px;font-weight:600;color:#9a6a3a;margin:9px 0 2px;border-bottom:.5px solid #eee">' +
+          '<div style="font-size:9.5px;font-weight:600;color:#7a746a;margin:9px 0 2px;border-bottom:.5px solid #eee">' +
           nm +
           "</div>" +
           grp
@@ -634,7 +634,7 @@
           })
           .join("") +
         (selThreads.length
-          ? `<div id="tclr" style="text-align:center;color:#9a6a3a;cursor:pointer;font-size:11.5px;padding:6px 0 2px;border-top:.5px solid #eee;margin-top:4px">clear all</div>`
+          ? `<div id="tclr" style="text-align:center;color:#5a544c;cursor:pointer;font-size:11.5px;padding:6px 0 2px;border-top:.5px solid #eee;margin-top:4px">clear all</div>`
           : "");
       btn.textContent =
         (selThreads.length

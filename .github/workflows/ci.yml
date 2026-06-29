@@ -13,3 +13,20 @@ jobs:
       - run: pip install pyshp
       - name: Invariant checks (regenerate from source/, no forked datasets, build)
         run: python3 test/check.py
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+        with:
+          chrome-version: stable
+      - run: npm install puppeteer-core@23
+      - name: Visual smoke (load every view headless, assert no console errors / consistent count)
+        env:
+          CHROME: ${{ steps.chrome.outputs.chrome-path }}
+        run: node test/smoke.mjs
