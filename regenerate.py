@@ -22,7 +22,10 @@ def threads(fm):
     return re.findall(r'\[\[Thread - ([^\]|]+?)(?:\|[^\]]*)?\]\]', b.group(1)) if b else []
 def mdlite(s):
     # minimal markdown -> HTML for the deck's Front/Back faces (links, bold, italic)
-    s = re.sub(r'\[([^\]]+)\]\((https?://[^)\s]+)\)', r'<a href="\2" target="_blank" rel="noopener">\1</a>', s)
+    # URL allows one level of balanced parens so Wikipedia links like
+    # ...John_H._Hall_(gunsmith) aren't truncated at the inner ")".
+    s = re.sub(r'\[([^\]]+)\]\((https?://(?:[^\s()]|\([^\s()]*\))*)\)',
+               r'<a href="\2" target="_blank" rel="noopener">\1</a>', s)
     s = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', s)
     s = re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)', r'<i>\1</i>', s)
     return re.sub(r'\s+', ' ', s).strip()

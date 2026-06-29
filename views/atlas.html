@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tooling Cards — Atlas</title>
+<title>Timeline · Tooling Atlas</title>
 <style>
 :root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--card:#fff;
 --Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
@@ -95,7 +95,7 @@ const groupOf=l=>GEOGROUP[l]||l;
 let axis="thread",size="overview",selThreads=[],selCard=null,q="",zoom=1;try{selThreads=getThreads();}catch(e){}
 const expanded=new Set();
 const DIM={overview:{w:13,h:14,gh:3,gv:5,dot:true},chip:{w:120,h:38,gh:12,gv:8},medium:{w:158,h:96,gh:14,gv:12},full:{w:158,h:150,gh:14,gv:12}};
-const x0=200,minY=1200,maxY=2030,SPAN=830,WIDTH=3400,LOGK=45;
+const x0=200,minY=540,maxY=2030,WIDTH=3400,LOGK=35;
 const YEARS=DATA.map(c=>c.year).filter(y=>y).sort((a,b)=>a-b);
 // Log-in-time scale (the default and only axis): compresses the sparse pre-1800 range and
 // expands the dense 20th–21st c. x grows with log of "years before the present edge".
@@ -192,7 +192,7 @@ function render(){
 lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute;left:0;top:${LTOP[l]}px;width:${layoutW}px;height:${(LBOT[l]-LTOP[l])}px;background:rgba(0,0,0,.03);z-index:0"></div>`;});
  html+=eraBandHtml();
  {const EVROWS=[16,27,38];const evRight=[-1e9,-1e9,-1e9];EVENTS.forEach((ev)=>{const x=xs(ev[0]);const lab=x+3;const w=ev[1].length*4.4+6;let row=-1;for(let s=0;s<EVROWS.length;s++){if(lab-evRight[s]>=3){row=s;break;}}if(row<0){row=EVROWS.length-1;}evRight[row]=lab+w;const ty=EVROWS[row]+ERABAND;html+=`<div style="position:absolute;left:${x}px;top:${16+ERABAND}px;height:${layoutH-16-ERABAND}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:${16+ERABAND}px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${lab}px;top:${ty}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;});}
- for(let y=1200;y<=2030;y+=10){const gx=xs(y),maj=(y%50===0);html+=`<div class="gl ${maj?'maj':''}" style="left:${gx}px;top:${26+ERABAND}px;height:${layoutH-32-ERABAND}px"></div>`;html+=`<div class="yr" style="left:${gx+2}px;top:${10+ERABAND}px;color:${maj?'#8f8f8f':'#c9c9c9'};${maj?'font-weight:600':''}">${maj?y:"’"+String(y).slice(2)}</div>`;}
+ for(let y=600;y<=2030;y+=10){if(y<1200&&y%100)continue;const gx=xs(y),maj=(y%50===0);html+=`<div class="gl ${maj?'maj':''}" style="left:${gx}px;top:${26+ERABAND}px;height:${layoutH-32-ERABAND}px"></div>`;html+=`<div class="yr" style="left:${gx+2}px;top:${10+ERABAND}px;color:${maj?'#8f8f8f':'#c9c9c9'};${maj?'font-weight:600':''}">${maj?y:"’"+String(y).slice(2)}</div>`;}
  for(const l of lanes){const dotmode=DIM[laneMode(l)].dot;for(const it of laneItems[l]){const c=it.c;const matchq=q&&(c.name.toLowerCase().includes(q)||(c.person||'').toLowerCase().includes(q));
    let extra="";if(lit){if(!it.ghost&&!lit.has(c.id))extra=" dim";else if(!it.ghost&&lit.has(c.id)&&c.id!==selCard)extra=" hl";}
    else if(selThreads.length&&!inT(c.id))extra=" dim"; if(c.id===selCard&&!it.ghost)extra+=" sel"; if(matchq)extra+=" hl";
@@ -210,7 +210,7 @@ lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute
    e+=`<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${sw}"/>`;}}
  if(selThreads.length){let ee="";selThreads.forEach(function(stt){const mem=DATA.filter(c=>c.threads.includes(stt)&&pos[c.id]).sort((a,b)=>a.year-b.year);if(mem.length>1){let d="M"+(pos[mem[0].id].x+pos[mem[0].id].w/2)+" "+(pos[mem[0].id].y+pos[mem[0].id].h/2);for(let i=1;i<mem.length;i++){const p=pos[mem[i].id];d+=" L"+(p.x+p.w/2)+" "+(p.y+p.h/2);}ee+=`<path d="${d}" fill="none" stroke="#9a6a3a" stroke-width="7" stroke-opacity="0.16" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#9a6a3a" stroke-width="1.5" stroke-opacity="0.85"/>`;}});e=ee+e;}
  svg.innerHTML=e;stage.appendChild(fc);
- stage.querySelectorAll('.c,.dot').forEach(el=>{el.onmouseenter=()=>showFull(dec(el.dataset.id),el);el.onmouseleave=hideFull;el.onclick=()=>{const id=dec(el.dataset.id);try{showDetail(byId[id]);}catch(e){}selCard=selCard===id?null:id;render();};});
+ stage.querySelectorAll('.c,.dot').forEach(el=>{el.onmouseenter=()=>showFull(dec(el.dataset.id),el);el.onmouseleave=hideFull;el.onclick=()=>{const id=dec(el.dataset.id);try{showDetail(byId[id]);}catch(e){}selCard=selCard===id?null:id;render();};const _c=byId[dec(el.dataset.id)];kbd(el,()=>el.onclick(),_c&&_c.name);});
  stage.querySelectorAll('.lanelab').forEach(el=>el.onclick=()=>{const l=dec(el.dataset.lane);expanded.has(l)?expanded.delete(l):expanded.add(l);render();});
  applyZoom();
  document.getElementById("hint").textContent=`${DATA.length} cards · ${lanes.length} lanes · by ${axis} · click a lane name to expand`;

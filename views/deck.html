@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tooling Cards — The Deck</title>
+<title>Deck · Tooling Atlas</title>
 <style>
 :root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--card:#fff;
 --Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;--accent:#8a5212;}
@@ -111,12 +111,12 @@ function render(){
  const v=visible();
  document.getElementById("count").textContent=`${v.length} card${v.length!=1?"s":""}${fThread?" in this lineage, oldest first":""}${fKind?" · "+fKind:""}`;
  document.getElementById("grid").innerHTML=v.map(cardHTML).join("");
- document.querySelectorAll(".card").forEach(el=>el.onclick=e=>{
+ document.querySelectorAll(".card").forEach(el=>{el.onclick=e=>{
    if(e.target.closest("a"))return;
    const g=e.target.closest("[data-go]");if(g){e.stopPropagation();const t=byName[g.dataset.go];if(t){fThread=null;fKind=null;render();setTimeout(()=>scrollTo2(g.dataset.go,true),60);}return;}
    const tc=e.target.closest(".xchip");if(tc){e.stopPropagation();fThread=tc.dataset.t;fKind=null;render();return;}
    el.classList.toggle("flip");
- });
+ };kbd(el,()=>el.classList.toggle("flip"),(el.querySelector(".who")||{}).textContent+" — flip card");});
 }
 function scrollTo2(name,flip){const el=document.getElementById("card-"+cssid(name));if(!el)return;el.scrollIntoView({behavior:"smooth",block:"center"});el.style.transition="box-shadow .3s";const f=el.querySelector(".front");if(flip)el.classList.add("flip");el.parentElement.style.outline="2px solid var(--accent)";setTimeout(()=>el.parentElement.style.outline="",1600);}
 render();

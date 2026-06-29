@@ -2,8 +2,8 @@
 const KC=window.KCOL, KINK=window.KINK, KGLY=window.KGLY;   // single source of truth (shared.js)
 const KINDS=["Measure","Model","Make","Manufacture"];
 const COLS=[["name","Tool"],["kind","Kind"],["year","Year"],["place","Place"],["threads","Threads"],["links","Links"],["sig","Significance"]];
-let q="",kind=null,selT=[],goal="",mech="",decade="",sortK="year",sortDir=1;
-try{const st=getState();if(st.kind)kind=st.kind;selT=getThreads();if(st.q)q=st.q;if(st.goal)goal=st.goal;if(st.mech)mech=st.mech;if(st.decade)decade=st.decade;}catch(e){}
+let q="",kind=null,selT=[],goal="",decade="",sortK="year",sortDir=1;
+try{const st=getState();if(st.kind)kind=st.kind;selT=getThreads();if(st.q)q=st.q;if(st.goal)goal=st.goal;if(st.decade)decade=st.decade;}catch(e){}
 const allThreads=[...new Set(CARDS.flatMap(c=>c.threads))].sort();
 document.getElementById("thread").innerHTML='<option value="">all threads</option>'+allThreads.map(t=>`<option>${t}</option>`).join("");
 document.getElementById("kinds").innerHTML=KINDS.map(k=>`<button class="chip" data-k="${k}" style="border-color:${KC[k]}">${k}</button>`).join("");
@@ -15,7 +15,6 @@ function rows(){
   if(kind&&c.kind!==kind)return false;
   if(selT.length&&!threadMatch(c,selT))return false;
   if(goal&&c.goal!==goal)return false;
-  if(mech&&c.mech!==mech)return false;
   if(decade&&Math.floor(c.year/10)*10!==+decade)return false;
   if(q){const hay=(c.name+" "+(c.person||"")+" "+(c.place||"")+" "+c.threads.join(" ")+" "+(c.sig||"")).toLowerCase();if(!hay.includes(q))return false;}
   return true;});
@@ -35,16 +34,15 @@ function render(){
  document.getElementById("count").innerHTML=`${r.length} of ${CARDS.length} tools`+selT.map(t=>` · <span class="tpill" data-t="${encodeURIComponent(t)}" style="cursor:pointer;color:#33302b">${t} ✕</span>`).join("")+(decade?` · <span style="cursor:pointer;color:#33302b" id="cdec">${decade}s ✕</span>`:"");
  const cd=document.getElementById("cdec");if(cd)cd.onclick=()=>{decade="";render();};
  document.querySelectorAll('#count .tpill').forEach(el=>el.onclick=()=>{const t=decodeURIComponent(el.dataset.t);selT=selT.filter(x=>x!==t);render();});
- document.querySelectorAll('#body tr').forEach((tr,ix)=>{tr.style.cursor='pointer';tr.onclick=()=>showDetail(r[ix]);});
- try{setState({kind:kind||'',thread:selT.join(','),q:q||'',goal:goal||'',mech:mech||'',decade:decade||''});}catch(e){}
+ document.querySelectorAll('#body tr').forEach((tr,ix)=>{tr.style.cursor='pointer';tr.onclick=()=>showDetail(r[ix]);kbd(tr,()=>showDetail(r[ix]),r[ix].name);});
+ try{setState({kind:kind||'',thread:selT.join(','),q:q||'',goal:goal||'',decade:decade||''});}catch(e){}
  document.querySelectorAll("#kinds .chip").forEach(b=>b.classList.toggle("on",b.dataset.k===kind));
 }
 document.getElementById("q").oninput=e=>{q=e.target.value.toLowerCase();render();};
 document.getElementById("thread").onchange=e=>{const v=e.target.value;if(v&&!selT.includes(v))selT.push(v);e.target.value="";render();};
 document.getElementById("goal").onchange=e=>{goal=e.target.value;render();};
-document.getElementById("mech").onchange=e=>{mech=e.target.value;render();};
 document.querySelectorAll("#kinds .chip").forEach(b=>b.onclick=()=>{kind=kind===b.dataset.k?null:b.dataset.k;render();});
-document.getElementById("reset").onclick=()=>{q="";kind=null;selT=[];goal="";mech="";decade="";document.getElementById("q").value="";document.getElementById("thread").value="";document.getElementById("goal").value="";document.getElementById("mech").value="";render();};
-try{if(q){document.getElementById('q').value=q;}if(goal)document.getElementById('goal').value=goal;if(mech)document.getElementById('mech').value=mech;}catch(e){}
+document.getElementById("reset").onclick=()=>{q="";kind=null;selT=[];goal="";decade="";document.getElementById("q").value="";document.getElementById("thread").value="";document.getElementById("goal").value="";render();};
+try{if(q){document.getElementById('q').value=q;}if(goal)document.getElementById('goal').value=goal;}catch(e){}
 render();
 })();

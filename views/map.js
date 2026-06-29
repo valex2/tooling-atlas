@@ -58,8 +58,8 @@ function render(){
   _lab.push({x:lx,y:ly,w});
   s+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2.5px">${h.city}</text>`;}
  svg.innerHTML=s;
- svg.querySelectorAll('.dot').forEach(el=>{el.style.cursor='pointer';el.onmousemove=e=>showTip(decodeURIComponent(el.dataset.id),e);el.onmouseleave=()=>tip.style.display='none';el.onclick=()=>{try{showDetail(byId[decodeURIComponent(el.dataset.id)]);}catch(e){}};});
- svg.querySelectorAll('.cty').forEach(el=>{el.style.cursor='pointer';el.onclick=()=>{if(!moved)showCountry(+el.dataset.ci);};});
+ // dots/countries are handled by one set of delegated listeners on the svg (set up once,
+ // below) — no per-frame re-binding of hundreds of nodes while dragging/playing.
  document.getElementById('hint').textContent=`${CARDS.filter(c=>c.lat!=null&&c.year<=T).length} of ${CARDS.length} tools through ${T}`;
  renderChips();
 }
@@ -94,8 +94,8 @@ function showCountry(ci){const o=COUNTRIES[ci];if(!o)return;const name=o.n||"(ar
 function renderChips(){const el=document.getElementById('chips');if(!el)return;const list=CARDS.filter(c=>c.year<=T);
  let html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#888">Innovations through '+T+' ('+list.length+')</div><span id="chipstog" style="cursor:pointer;color:#888;font-size:13px">'+(chipsOpen?'▾':'▸')+'</span></div>';
  if(chipsOpen){for(let i=ERAS.length-1;i>=0;i--){const nm=ERAS[i][0],a=ERAS[i][1],b=ERAS[i][2];const grp=list.filter(c=>c.year>=a&&c.year<b).sort((x,y)=>y.year-x.year);if(!grp.length)continue;html+='<div style="font-size:9.5px;font-weight:600;color:#9a6a3a;margin:9px 0 2px;border-bottom:.5px solid #eee">'+nm+'</div>'+grp.map(c=>'<div class="chip2" data-id="'+encodeURIComponent(c.id)+'" style="cursor:pointer;display:flex;gap:6px;align-items:baseline;padding:2px 4px;border-radius:6px"><span style="color:#aaa;font-size:10px;min-width:30px">'+c.year+'</span><span style="color:'+KC[c.kind]+';font-size:7px">●</span><span style="font-size:11.5px">'+c.name+'</span></div>').join("");}}
- el.innerHTML=html;const tg=document.getElementById('chipstog');if(tg)tg.onclick=()=>{chipsOpen=!chipsOpen;renderChips();};
- el.querySelectorAll('.chip2').forEach(d=>{d.onmouseenter=()=>d.style.background='#efece6';d.onmouseleave=()=>d.style.background='';d.onclick=()=>{const c=byId[decodeURIComponent(d.dataset.id)];if(!c)return;foundId=c.id;rotLon=c.lon;rotLat=Math.max(-80,Math.min(80,c.lat));render();try{showDetail(c);}catch(e){}};});}
+ el.innerHTML=html;const tg=document.getElementById('chipstog');if(tg){tg.onclick=()=>{chipsOpen=!chipsOpen;renderChips();};kbd(tg,()=>tg.onclick(),"Toggle the innovations list");}
+ el.querySelectorAll('.chip2').forEach(d=>{d.onmouseenter=()=>d.style.background='#efece6';d.onmouseleave=()=>d.style.background='';d.onclick=()=>{const c=byId[decodeURIComponent(d.dataset.id)];if(!c)return;foundId=c.id;rotLon=c.lon;rotLat=Math.max(-80,Math.min(80,c.lat));render();try{showDetail(c);}catch(e){}};const _c=byId[decodeURIComponent(d.dataset.id)];kbd(d,()=>d.onclick(),_c&&_c.name);});}
 function showTip(id,e){const c=byId[id];tip.style.borderLeftColor=KC[c.kind];tip.innerHTML=`<div class="t" style="color:${KINK[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig||''}</div>`;tip.style.display='block';tip.style.left=Math.min(e.clientX+14,window.innerWidth-270)+'px';tip.style.top=(e.clientY+14)+'px';}
 // interaction
 let dn=false,lx,ly,moved=false,chipsOpen=true;
@@ -125,5 +125,10 @@ document.getElementById('msearch').oninput=e=>{const q=e.target.value.toLowerCas
  document.addEventListener('click',()=>{pan.style.display='none';});
  paint();})();
 window.addEventListener('resize',render);
+// Delegated interaction (bound once): tooltip on dot hover, open card on dot click,
+// open country panel on country click (unless the gesture was a drag).
+svg.addEventListener('mousemove',e=>{const d=e.target.closest('.dot');if(d)showTip(decodeURIComponent(d.dataset.id),e);else tip.style.display='none';});
+svg.addEventListener('mouseleave',()=>tip.style.display='none');
+svg.addEventListener('click',e=>{const d=e.target.closest('.dot');if(d){try{showDetail(byId[decodeURIComponent(d.dataset.id)]);}catch(err){}return;}const ct=e.target.closest('.cty');if(ct&&!moved)showCountry(+ct.dataset.ci);});
 T=qYear(1);document.getElementById('ylab').textContent=T;render();
 })();

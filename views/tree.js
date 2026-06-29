@@ -3,7 +3,7 @@ const KC=window.KCOL, KINK=window.KINK;   // single source of truth (shared.js)
 const byId=Object.fromEntries(CARDS.map(c=>[c.id,c]));
 const ERAS=window.ERAS;
 const EVENTS=[[1769,"Watt steam engine"],[1776,"American Revolution"],[1957,"Sputnik"],[1969,"Moon landing"],[1971,"Microprocessor"],[1989,"World Wide Web"],[2003,"Iraq War"],[2007,"iPhone"],[2012,"Deep learning"],[2020,"COVID-19"]];
-const minY=1200,maxY=2030,x0=170,W=118,H=34,WIDTH=4316,LOGK=45;
+const minY=540,maxY=2030,x0=170,W=118,H=34,WIDTH=4316,LOGK=35;
 // Log-in-time x-axis (default): compress the sparse pre-1800 range, expand the dense 20th–21st c.
 const logFrac=y=>{const A=maxY-minY,c=Math.max(minY,Math.min(maxY,y));return 1-Math.log(1+(maxY-c)/LOGK)/Math.log(1+A/LOGK);};
 const xs=y=>x0+WIDTH*logFrac(y);
@@ -43,7 +43,7 @@ function render(){const meta=layout();
  meta.forEach((m,i)=>{if(i%2)h+=`<div style="position:absolute;left:0;top:${m[2]}px;width:${layoutW}px;height:${m[3]-m[2]}px;background:rgba(0,0,0,.03);z-index:0"></div>`;});
  h+=eraBandHtml();
  EVENTS.forEach((ev,i)=>{const x=xs(ev[0]);h+=`<div style="position:absolute;left:${x}px;top:${16+ERABAND}px;height:${layoutH-16-ERABAND}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:${16+ERABAND}px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${x+3}px;top:${(i%2?16:27)+ERABAND}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;});
- for(let y=1200;y<=2030;y+=10){const gx=xs(y),mj=y%50===0;h+=`<div class="gl ${mj?'maj':''}" style="left:${gx}px;top:${24+ERABAND}px;height:${layoutH-30-ERABAND}px"></div>`;if(mj)h+=`<div class="yr" style="left:${gx+2}px;top:${8+ERABAND}px;color:#999;font-weight:600">${y}</div>`;}
+ for(let y=600;y<=2030;y+=10){if(y<1200&&y%100)continue;const gx=xs(y),mj=y%50===0;h+=`<div class="gl ${mj?'maj':''}" style="left:${gx}px;top:${24+ERABAND}px;height:${layoutH-30-ERABAND}px"></div>`;if(mj)h+=`<div class="yr" style="left:${gx+2}px;top:${8+ERABAND}px;color:#999;font-weight:600">${y}</div>`;}
  for(const m of meta)h+=`<div class="lanelab" style="top:${m[1]}px">${m[0]}</div>`;
  for(const c of CARDS){const dimd=lit&&!lit.has(c.id);const hl=(lit&&lit.has(c.id)&&c.id!==sel)||(q&&(c.name.toLowerCase().includes(q)));
   h+=`<div class="c${dimd?' dim':''}${c.id===sel?' sel':''}${hl?' hl':''}" data-id="${encodeURIComponent(c.id)}" style="left:${c._x}px;top:${c._y}px;border-left-color:${KC[c.kind]}"><div class="ti" style="color:${KINK[c.kind]}">${c.name}</div><div class="yt">${c.kind} · ${c.year}</div></div>`;}
@@ -51,7 +51,7 @@ function render(){const meta=layout();
  stage.insertAdjacentHTML("beforeend",h);
  let e="";for(const c of CARDS){const a=pos[c.id];if(!a)continue;for(const en of (c.en||[])){const b=pos[en];if(!b)continue;const on=lit?(lit.has(c.id)&&lit.has(en)):true;const op=lit?(on?.9:.05):.25;const x1=a.x+W,y1=a.y+H/2,x2=b.x,y2=b.y+H/2,mx=(x1+x2)/2;e+=`<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${(lit&&on)?2:1}"/>`;}}
  svg.innerHTML=e;
- stage.querySelectorAll('.c').forEach(el=>{const id=decodeURIComponent(el.dataset.id);el.onclick=()=>{sel=sel===id?null:id;try{showDetail(byId[id]);}catch(e){}render();};el.onmousemove=ev=>showTip(id,ev);el.onmouseleave=()=>tip.style.display='none';});
+ stage.querySelectorAll('.c').forEach(el=>{const id=decodeURIComponent(el.dataset.id);el.onclick=()=>{sel=sel===id?null:id;try{showDetail(byId[id]);}catch(e){}render();};el.onmousemove=ev=>showTip(id,ev);el.onmouseleave=()=>tip.style.display='none';kbd(el,()=>el.onclick(),byId[id]&&byId[id].name);});
  document.getElementById("hint")&&(document.getElementById("hint").textContent="");
  pinLabels();
 }

@@ -14,6 +14,9 @@ window.openCard=function(name){name=name||"";
  try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:"opencard",id:name},"*");return;}}catch(e){}
  var views=location.pathname.indexOf("/views/")>=0;var deck=views?"deck.html":"views/deck.html";
  location.href=deck+"#card="+encodeURIComponent(name);};
+// Make a click-only element keyboard-operable: focusable, button semantics, Enter/Space fires fn.
+window.kbd=function(el,fn,label){el.setAttribute("tabindex","0");el.setAttribute("role","button");if(label)el.setAttribute("aria-label",label);
+ el.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();fn(e);}});};
 window.rebuildById=function(){window.__byId=(window.CARDS?Object.fromEntries(CARDS.map(c=>[c.id,c])):{});return window.__byId;};
 window.__byId=window.rebuildById();
 window.showDetail=function(c){
