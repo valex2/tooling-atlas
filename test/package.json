@@ -1,0 +1,10 @@
+{
+  "name": "tooling-atlas-test",
+  "private": true,
+  "description": "Dev-only test harness deps. Nothing here is a runtime dependency of the site.",
+  "devDependencies": {
+    "pixelmatch": "^7.2.0",
+    "pngjs": "^7.0.0",
+    "puppeteer-core": "^24.43.1"
+  }
+}

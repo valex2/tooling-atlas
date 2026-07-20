@@ -25,8 +25,12 @@ jobs:
         id: chrome
         with:
           chrome-version: stable
-      - run: npm install puppeteer-core@23
-      - name: Visual smoke (load every view headless, assert no console errors / consistent count)
+      # Deps live in test/package.json (puppeteer-core + pixelmatch + pngjs) and
+      # smoke.mjs resolves them from test/node_modules. Installing puppeteer at the
+      # repo root left pixelmatch/pngjs unresolvable and pinned a different browser
+      # version than the one the golden images were blessed on.
+      - run: npm ci --prefix test
+      - name: Visual smoke (golden-image diff + console/count assertions, every view)
         env:
           CHROME: ${{ steps.chrome.outputs.chrome-path }}
         run: node test/smoke.mjs

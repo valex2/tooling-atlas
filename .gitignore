@@ -2,5 +2,8 @@ __pycache__/
 .DS_Store
 test/shots/
 test/node_modules/
-test/package*.json
 node_modules/
+# test/baseline/ holds the committed golden images — it must stay tracked.
+# test/package.json + lockfile are tracked too: they declare the dev-only test deps
+# (puppeteer-core, pixelmatch, pngjs). Neither is a runtime dependency of the site.
+!test/baseline/
