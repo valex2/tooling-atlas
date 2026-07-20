@@ -1,6 +1,9 @@
 (function () {
   const KC = window.KCOL,
-    KINK = window.KINK; // single source of truth (shared.js)
+    KINK = window.KINK,
+    KGLY = window.KGLY; // single source of truth (shared.js)
+  // legend glyphs: kind is never carried by colour alone (matches atlas.html / table.js)
+  document.querySelectorAll(".legend .gly").forEach(e => (e.textContent = KGLY[e.dataset.k] || ""));
   const byId = Object.fromEntries(CARDS.map(c => [c.id, c]));
   const ERAS = window.ERAS;
   const EVENTS = [
@@ -55,7 +58,7 @@
     ERAS.forEach(e => {
       const a = xs(e[1]),
         b = xs(e[2]);
-      h += `<div style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div>`;
+      h += `<div class="bg" style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div>`;
       const cx = (a + b) / 2,
         w = e[0].length * 5.6 + 12;
       let left = cx - w / 2;
@@ -154,12 +157,12 @@
     let h = "";
     meta.forEach((m, i) => {
       if (i % 2)
-        h += `<div style="position:absolute;left:0;top:${m[2]}px;width:${layoutW}px;height:${m[3] - m[2]}px;background:rgba(0,0,0,.03);z-index:0"></div>`;
+        h += `<div class="bg" style="position:absolute;left:0;top:${m[2]}px;width:${layoutW}px;height:${m[3] - m[2]}px;background:rgba(0,0,0,.03);z-index:0"></div>`;
     });
     h += eraBandHtml();
     EVENTS.forEach((ev, i) => {
       const x = xs(ev[0]);
-      h += `<div style="position:absolute;left:${x}px;top:${16 + ERABAND}px;height:${layoutH - 16 - ERABAND}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:${16 + ERABAND}px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${x + 3}px;top:${(i % 2 ? 16 : 27) + ERABAND}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;
+      h += `<div class="bg" style="position:absolute;left:${x}px;top:${16 + ERABAND}px;height:${layoutH - 16 - ERABAND}px;border-left:1px solid rgba(154,106,58,.35);z-index:0"></div><div style="position:absolute;left:${x}px;top:${16 + ERABAND}px;width:6px;height:6px;border-radius:50%;background:#9a6a3a;transform:translate(-3px,-3px);z-index:4"></div><div style="position:absolute;left:${x + 3}px;top:${(i % 2 ? 16 : 27) + ERABAND}px;font-size:8px;color:#7a5a30;background:rgba(252,251,249,.85);padding:0 2px;z-index:4;white-space:nowrap">${ev[1]}</div>`;
     });
     for (let y = 600; y <= 2030; y += 10) {
       if (y < 1200 && y % 100) continue;
@@ -173,11 +176,9 @@
     for (const c of CARDS) {
       const dimd = lit && !lit.has(c.id);
       const hl = (lit && lit.has(c.id) && c.id !== sel) || (q && c.name.toLowerCase().includes(q));
-      h += `<div class="c${dimd ? " dim" : ""}${c.id === sel ? " sel" : ""}${hl ? " hl" : ""}" data-id="${encodeURIComponent(c.id)}" style="left:${c._x}px;top:${c._y}px;border-left-color:${KC[c.kind]}"><div class="ti" style="color:${KINK[c.kind]}">${c.name}</div><div class="yt">${c.kind} · ${c.year}</div></div>`;
+      h += `<div class="c${dimd ? " dim" : ""}${c.id === sel ? " sel" : ""}${hl ? " hl" : ""}" data-id="${encodeURIComponent(c.id)}" style="left:${c._x}px;top:${c._y}px;border-left-color:${KC[c.kind]}"><div class="ti" style="color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.name}</div><div class="yt">${c.kind} · ${c.year}</div></div>`;
     }
-    [...stage.querySelectorAll('.c,.lanelab,.gl,.yr,div[style*="z-index:0"]')].forEach(e =>
-      e.remove(),
-    );
+    [...stage.querySelectorAll(".c,.lanelab,.gl,.yr,.bg")].forEach(e => e.remove());
     stage.insertAdjacentHTML("beforeend", h);
     let e = "";
     for (const c of CARDS) {
@@ -210,7 +211,6 @@
       el.onmouseleave = () => (tip.style.display = "none");
       kbd(el, () => el.onclick(), byId[id] && byId[id].name);
     });
-    document.getElementById("hint") && (document.getElementById("hint").textContent = "");
     pinLabels();
   }
   function showTip(id, e) {

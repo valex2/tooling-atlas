@@ -35,6 +35,10 @@ h1{font-size:24px;font-weight:600;margin:0 0 2px;}
 .tool{font-size:12.5px;color:#8a8377;font-style:italic;margin-top:5px;margin-bottom:10px;}
 .txt{font-size:13.5px;line-height:1.62;}
 .txt a{color:inherit;text-decoration:underline;text-decoration-color:rgba(0,0,0,.25);text-underline-offset:2px;}
+/* .xcard = a link to another card in this deck (from a [[wikilink]] in the vault).
+   Tinted to read as internal navigation, unlike the plain external links above. */
+.txt a.xcard{color:#7a5a30;text-decoration-color:rgba(122,90,48,.4);}
+.txt a.xcard:hover{background:#f4ece1;}
 .label{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:7px;}
 .foot{flex:none;border-top:0.5px solid var(--line);padding:8px 17px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#fbfaf8;}
 .tag{font-size:11px;padding:2px 8px;border-radius:9px;background:#f0ede7;color:#555;}
@@ -43,7 +47,8 @@ h1{font-size:24px;font-weight:600;margin:0 0 2px;}
 .xlinks .h{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:5px;}
 .xchip{display:inline-block;border:0.5px solid var(--line);border-radius:10px;padding:2px 8px;font-size:12px;margin:0 5px 5px 0;cursor:pointer;background:#fff;}
 .xchip:hover{background:#efece6;}
-.pairlink{color:var(--accent);font-weight:600;cursor:pointer;}
+.flipbtn{border:0.5px solid var(--line);background:#fff;border-radius:9px;padding:2px 9px;font:inherit;font-size:11px;color:var(--mut);cursor:pointer;}
+.flipbtn:hover{background:#efece6;color:var(--ink);}
 .count{color:var(--mut);font-size:13px;margin:6px 0 0;}
 .hint{font-size:11px;color:#b9b4ab;margin-top:8px;}
 </style></head><body>
@@ -100,15 +105,35 @@ function cardHTML(c){
       <div class="who">${c.name}</div><div class="maker">${c.person}</div><div class="tool">${c.tool}</div>
       <div class="txt">${c.front}</div></div>
     <div class="foot"><span class="tag" style="background:${KC[c.kind]}1f;color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.kind}</span>
-      <span class="tag">${c.year}</span></div>
+      <span class="tag">${c.year}</span>
+      <button class="flipbtn" type="button" style="margin-left:auto">Show aftermath ⟲</button></div>
   </div>
-  <div class="face back"><div class="stripe" style="background:${KC[c.kind]}"></div>
+  <div class="face back" inert><div class="stripe" style="background:${KC[c.kind]}"></div>
     <div class="pad"><div class="label">Aftermath</div><div class="txt">${c.back}</div>
       <div class="xlinks"><div class="h">Why it matters</div><div style="font-size:12.5px;line-height:1.5;margin-bottom:4px">${c.sig||""}</div></div><div class="xlinks"><div class="h">Cross-links</div>${others}${location.protocol==='file:'?('<div style="margin-top:8px"><a href="obsidian://open?vault=Obsidian%20Vault&file='+encodeURIComponent('Tooling Card - '+c.name.replace(/\//g,'-'))+'" style="color:#9a6a3a;font-size:11px;text-decoration:none">Open note in Obsidian ↗</a></div>'):''}</div></div>
-    <div class="foot"><span class="tag">Goal ${c.goal}</span><span class="tag">${c.conf}</span><span class="tag" style="margin-left:auto;color:#b9b4ab">flip ⟲</span></div>
+    <div class="foot"><span class="tag">Goal ${c.goal}</span><span class="tag">${c.conf}</span>
+      <button class="flipbtn" type="button" style="margin-left:auto">Show the moment ⟲</button></div>
   </div></div></div>`;
 }
 function cssid(s){return s.replace(/[^a-z0-9]/gi,"_");}
+// Single entry point for flip state. `inert` (not aria-hidden) on the turned-away
+// face: backface-visibility hides it visually only, and aria-hidden over a subtree
+// containing focusable things — every back face has an obsidian:// link, and the
+// prose carries a.xcard wikilinks — is the aria-hidden-focus trap, where Tab lands
+// on a control the screen reader swears does not exist. inert removes it from the
+// a11y tree AND from the tab order, which is the actual intent.
+// The card itself is deliberately NOT a button: role="button" is
+// children-presentational, so making the card one collapsed all its prose and links
+// into a single label and left the deck's content unreadable in BOTH states.
+// No aria-pressed: these are not toggle buttons. Only ONE is reachable at a time (the
+// other sits on the inert face), and each names the action it performs — "Show aftermath"
+// / "Show the moment". A pressed-state on top of a changing label double-encodes the same
+// fact, and the markup shipped the two buttons with CONTRADICTORY initial values anyway.
+function setFlip(el,on){
+ el.classList.toggle("flip",on);
+ el.querySelector(".front").inert=on;
+ el.querySelector(".back").inert=!on;
+}
 function render(){
  chips();rail();
  const v=visible();
@@ -118,12 +143,30 @@ function render(){
    if(e.target.closest("a"))return;
    const g=e.target.closest("[data-go]");if(g){e.stopPropagation();const t=byName[g.dataset.go];if(t){fThread=null;fKind=null;render();setTimeout(()=>scrollTo2(g.dataset.go,true),60);}return;}
    const tc=e.target.closest(".xchip");if(tc){e.stopPropagation();fThread=tc.dataset.t;fKind=null;render();return;}
-   el.classList.toggle("flip");
- };kbd(el,()=>el.classList.toggle("flip"),(el.querySelector(".who")||{}).textContent+" — flip card");});
+   setFlip(el,!el.classList.contains("flip"));
+ };
+ // No kbd() on the card: it would set role="button" (see setFlip) and its blanket
+ // preventDefault on Enter also stopped Enter from following the a.xcard wikilinks.
+ // The .flipbtn buttons carry keyboard operation properly instead.
+ el.querySelectorAll(".flipbtn").forEach(b=>b.onclick=e=>{
+   e.stopPropagation();setFlip(el,!el.classList.contains("flip"));
+   // keep focus usable: move to the newly-shown face's flip button
+   const vis=el.querySelector((el.classList.contains("flip")?".back":".front")+" .flipbtn");
+   if(vis)vis.focus();
+ });});
 }
-function scrollTo2(name,flip){const el=document.getElementById("card-"+cssid(name));if(!el)return;el.scrollIntoView({behavior:"smooth",block:"center"});el.style.transition="box-shadow .3s";const f=el.querySelector(".front");if(flip)el.classList.add("flip");el.parentElement.style.outline="2px solid var(--accent)";setTimeout(()=>el.parentElement.style.outline="",1600);}
+function scrollTo2(name,flip){const el=document.getElementById("card-"+cssid(name));if(!el)return;el.scrollIntoView({behavior:"smooth",block:"center"});if(flip)setFlip(el,true);el.parentElement.style.outline="2px solid var(--accent)";setTimeout(()=>el.parentElement.style.outline="",1600);}
 render();
 
 window.addEventListener("message",function(e){if(e.data&&e.data.type==="focuscard")try{scrollTo2(e.data.id,true);}catch(x){}});
-(function(){function fh(){var m=(location.hash||"").match(/card=([^&]+)/);if(m)setTimeout(function(){try{scrollTo2(decodeURIComponent(m[1]),true);}catch(x){}},80);}window.addEventListener("hashchange",fh);fh();})();
+(function(){
+ // clear=true only on hashchange (an in-page .xcard click): if the target card is
+ // filtered out of the current view, drop the filters first, matching what the
+ // [data-go] chips do — otherwise the link would silently land on nothing.
+ // The initial load passes false so a deep link like #thread=X keeps its filter.
+ function fh(clear){var m=(location.hash||"").match(/card=([^&]+)/);if(!m)return;
+  var nm=decodeURIComponent(m[1]);
+  if(clear&&byName[nm]&&!document.getElementById("card-"+cssid(nm))){fThread=null;fKind=null;render();}
+  setTimeout(function(){try{scrollTo2(nm,true);}catch(x){}},80);}
+ window.addEventListener("hashchange",function(){fh(true);});fh(false);})();
 </script></body></html>

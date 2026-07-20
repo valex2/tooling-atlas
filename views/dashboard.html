@@ -62,7 +62,7 @@ document.getElementById("bythread").innerHTML=ts.map(d=>{const n=d.cards.length,
  const links=`<span class="vlinks"><a href="map.html#thread=${e}" title="Trace on globe">⊙ globe</a><a href="atlas.html#thread=${e}" title="See its lane on the timeline">▤ timeline</a><a href="table.html#thread=${e}" title="List in the table">▦ table</a></span>`;
  return `<div class="row"><a href="table.html#thread=${e}" class="lab" style="text-decoration:none;color:var(--mut)">${d.k}</a>${segBar(perKind(d.cards),n,tmax,260)}<span class="n">${n}</span>${links}</div>`;}).join("");
 // era x kind matrix
-let h='<table><tr><th>Era</th>'+KINDS.map(k=>`<th style="color:${KC[k]};cursor:pointer" onclick="location.href='table.html#kind='+encodeURIComponent('${k}')">${k}</th>`).join("")+'<th>Σ</th></tr>';
+let h='<table><tr><th>Era</th>'+KINDS.map(k=>`<th><a href="table.html#kind=${encodeURIComponent(k)}" style="color:${KC[k]};text-decoration:none">${k}</a></th>`).join("")+'<th>Σ</th></tr>';
 for(const [name,a,b] of ERAS){let rsum=0;let cells="";for(const k of KINDS){const n=CARDS.filter(c=>c.kind===k&&c.year>=a&&c.year<b).length;rsum+=n;cells+=`<td class="${n===0?'gap':''}">${n||"·"}</td>`;}h+=`<tr><td class="era">${name} <span style="color:#bbb">${a}–${b-1}</span></td>${cells}<td>${rsum}</td></tr>`;}
 h+='</table>';document.getElementById("matrix").innerHTML=h;
 </script>

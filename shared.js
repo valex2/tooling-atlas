@@ -20,6 +20,38 @@ window.VAULT = "Obsidian Vault";
 window.KCOL = { Measure: "#3266ad", Model: "#8a4fb3", Make: "#b06a1e", Manufacture: "#2f8f6b" };
 window.KINK = { Measure: "#2b5896", Model: "#7a429e", Make: "#8a5212", Manufacture: "#1d7350" };
 window.KGLY = { Measure: "◇", Model: "◯", Make: "△", Manufacture: "▦" };
+
+// TPAL = the thread palette, shared by every view so a thread keeps ONE colour
+// across the globe and the timeline. Five slots, validated all-pairs against the
+// cream surface (#fcfbf9): CVD and contrast land in the band that is legal only
+// with secondary encoding. Six or more fails the normal-vision floor, so five is
+// a real ceiling, not a round number.
+//
+// That secondary encoding is NOT uniformly present, and this comment used to claim
+// it was. The timeline supplies it — every trace carries an SVG <text> label at its
+// head. The globe does NOT: its migration paths, arrowheads and dot rings are drawn
+// in the thread colour with no label anywhere on the map, so thread identity there
+// rests on colour alone, decodable only by opening the thread picker and matching
+// swatches. Fixing that means labelling the paths in views/map.js; until then, five
+// slots is the ceiling that keeps the gap as small as the palette can make it.
+window.TPAL = ["#2a78d6", "#008300", "#e87ba4", "#eda100", "#1baf7a"];
+// Slots are held by thread identity for as long as the thread stays selected, so
+// deselecting one never repaints the survivors. Never assign by rank (indexOf)
+// and never cycle (% length) — both make two threads share a colour silently.
+window.threadSlots = function (slotMap, selected) {
+  for (const t of [...slotMap.keys()]) if (!selected.includes(t)) slotMap.delete(t);
+  for (const t of selected) {
+    if (slotMap.has(t)) continue;
+    const used = new Set(slotMap.values());
+    for (let i = 0; i < window.TPAL.length; i++)
+      if (!used.has(i)) {
+        slotMap.set(t, i);
+        break;
+      }
+  }
+  return slotMap;
+};
+window.threadColor = (slotMap, t) => (slotMap.has(t) ? window.TPAL[slotMap.get(t)] : null);
 // Single source of truth for historical era bands (used by every view). Edit here only.
 window.ERAS = [
   ["Medieval", 1200, 1400],

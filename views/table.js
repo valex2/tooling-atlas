@@ -34,21 +34,42 @@
     k => `<button class="chip" data-k="${k}" style="border-color:${KC[k]}">${k}</button>`,
   ).join("");
   function headRow() {
+    // aria-sort carries the sort state for screen readers; the ▲/▼ glyph is visual only.
+    // This blows away the <th>s, so remember which one had focus and put it back below —
+    // otherwise sorting by keyboard drops focus to <body> after a single Enter.
+    const act = document.activeElement,
+      prev = act && act.closest ? act.closest("#head th") : null,
+      refocusK = prev && prev.dataset.k;
     document.getElementById("head").innerHTML = COLS.map(
-      c => `<th data-k="${c[0]}">${c[1]}${sortK === c[0] ? (sortDir > 0 ? " ▲" : " ▼") : ""}</th>`,
+      c =>
+        `<th data-k="${c[0]}" aria-sort="${sortK === c[0] ? (sortDir > 0 ? "ascending" : "descending") : "none"}">${c[1]}${sortK === c[0] ? (sortDir > 0 ? " ▲" : " ▼") : ""}</th>`,
     ).join("");
-    document.querySelectorAll("#head th").forEach(
-      th =>
-        (th.onclick = () => {
-          const k = th.dataset.k;
-          if (sortK === k) sortDir *= -1;
-          else {
-            sortK = k;
-            sortDir = 1;
-          }
-          render();
-        }),
-    );
+    document.querySelectorAll("#head th").forEach(th => {
+      const sort = () => {
+        const k = th.dataset.k;
+        if (sortK === k) sortDir *= -1;
+        else {
+          sortK = k;
+          sortDir = 1;
+        }
+        render();
+      };
+      th.onclick = sort;
+      // Deliberately NOT kbd(): that sets role="button", which overrides the <th>'s
+      // implicit columnheader role. aria-sort is only defined on columnheader, so it
+      // would go inert, AND the table would lose its headers entirely — cells would
+      // read "1957" instead of "Year, 1957". Focusability is added by hand instead so
+      // the header keeps its semantics.
+      th.setAttribute("tabindex", "0");
+      // Deliberately NO aria-label: on a columnheader the accessible name is what AT
+      // announces when entering EVERY cell in the column, so "Year — activate to sort"
+      // would be read out on all 161 rows. The header text names it; aria-sort carries
+      // the state; role + tabindex carry the affordance.
+      th.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sort(); }
+      });
+    });
+    if (refocusK) document.querySelector(`#head th[data-k="${refocusK}"]`).focus();
   }
   function val(c, k) {
     return k === "links"

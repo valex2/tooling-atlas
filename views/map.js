@@ -1,6 +1,9 @@
 (function () {
   const KC = window.KCOL,
-    KINK = window.KINK; // single source of truth (shared.js)
+    KINK = window.KINK,
+    KGLY = window.KGLY; // single source of truth (shared.js)
+  // legend glyphs: kind is never carried by colour alone (matches atlas.html / table.js)
+  document.querySelectorAll(".legend .gly").forEach(e => (e.textContent = KGLY[e.dataset.k] || ""));
   const D2R = Math.PI / 180,
     YR0 = 1600,
     YR1 = 2025;
@@ -45,17 +48,17 @@
   try {
     selThreads = getThreads();
   } catch (e) {}
-  const TPAL = [
-    "#c0392b",
-    "#1f77b4",
-    "#2ca02c",
-    "#9467bd",
-    "#e6862e",
-    "#16a3a3",
-    "#d6336c",
-    "#6b4f2a",
-  ];
-  const threadColor = t => TPAL[Math.max(0, selThreads.indexOf(t)) % TPAL.length];
+  // Was a local 8-colour palette assigned by rank and cycled with %. It failed
+  // hard: orange vs green measured deltaE 0.3 under protanopia (identical for
+  // ~8% of men), the two reds 9.5 for normal vision, and the brown read as grey.
+  // Worse, `Math.max(0, indexOf(t))` gave every UNSELECTED thread slot 0, so it
+  // rendered in the same red as the first selected one. Now shares the validated
+  // palette in shared.js, so a thread keeps one colour across every view.
+  const threadSlot = new Map();
+  // Past the five validated slots a thread stays selected but renders neutral —
+  // honest ("selected, not colour-coded") rather than reusing a hue that already
+  // means another thread.
+  const threadColor = t => window.threadColor(threadSlot, t) || "#9b968c";
   const svg = document.getElementById("g"),
     tip = document.getElementById("tip");
   let W = 0,
@@ -107,6 +110,9 @@
   }
   function render() {
     size();
+    // Idempotent and O(selected): reconcile here so every entry point that can
+    // mutate selThreads is covered without each one having to remember.
+    window.threadSlots(threadSlot, selThreads);
     let s = "";
     s += `<circle cx="${cx}" cy="${cy}" r="${scale}" fill="#dbe5ee" stroke="rgba(0,0,0,.22)" stroke-width="1.2"/>`;
     // graticule
@@ -218,7 +224,10 @@
     // below) — no per-frame re-binding of hundreds of nodes while dragging/playing.
     document.getElementById("hint").textContent =
       `${CARDS.filter(c => c.lat != null && c.year <= T).length} of ${CARDS.length} tools through ${T}`;
-    renderChips();
+    // The era rail depends only on T and chipsOpen, never on rotation/zoom — so it is
+    // NOT rebuilt here. render() runs on every mousemove while dragging; rebuilding 161
+    // rows plus their handlers per frame was the single biggest cost in the drag loop.
+    // Callers that actually change T or chipsOpen call renderChips() themselves.
   }
   // hubs
   const hg = {};
@@ -409,7 +418,7 @@
     p.innerHTML =
       '<div style="display:flex;justify-content:space-between"><div style="font-size:16px;font-weight:600">' +
       name +
-      '</div><span id="appdx" style="cursor:pointer;color:#999;font-size:18px">✕</span></div><div style="color:#6f6f6f;font-size:12px;margin:2px 0 8px">' +
+      '</div><button id="appdx" aria-label="Close panel" style="cursor:pointer;color:#777;font-size:18px;line-height:1;background:none;border:0;padding:2px 4px">✕</button></div><div style="color:#6f6f6f;font-size:12px;margin:2px 0 8px">' +
       inC.length +
       " tool" +
       (inC.length != 1 ? "s" : "") +
@@ -421,22 +430,15 @@
       "</div>";
     p.style.display = "block";
     document.getElementById("appdx").onclick = () => (p.style.display = "none");
-    p.querySelectorAll(".ctool").forEach(
-      el =>
-        (el.onclick = () => {
-          try {
-            showDetail(byId[decodeURIComponent(el.dataset.id)]);
-          } catch (e) {}
-        }),
-    );
-    p.querySelectorAll(".cdot").forEach(
-      el =>
-        (el.onclick = () => {
-          try {
-            showDetail(byId[decodeURIComponent(el.dataset.id)]);
-          } catch (e) {}
-        }),
-    );
+    p.querySelectorAll(".ctool,.cdot").forEach(el => {
+      const c = byId[decodeURIComponent(el.dataset.id)];
+      el.onclick = () => {
+        try {
+          showDetail(c);
+        } catch (e) {}
+      };
+      kbd(el, () => el.onclick(), c ? "Open " + c.name + " (" + c.year + ")" : null);
+    });
   }
   function renderChips() {
     const el = document.getElementById("chips");
@@ -560,6 +562,7 @@
     T = qYear(+e.target.value / 1000);
     ylab.textContent = T;
     render();
+    renderChips();
   };
   function stop() {
     playing = false;
@@ -585,6 +588,7 @@
         yr.value = 1000;
         ylab.textContent = T;
         render();
+        renderChips();
         stop();
         return;
       }
@@ -592,6 +596,7 @@
       yr.value = v;
       ylab.textContent = T;
       render();
+      renderChips();
     }, 90);
   };
   document.getElementById("reset").onclick = () => {
@@ -625,6 +630,14 @@
     CARDS.forEach(c => c.threads.forEach(t => (counts[t] = (counts[t] || 0) + 1)));
     const ths = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
     function paint() {
+      window.threadSlots(threadSlot, selThreads);
+      // .trow rows and #tclr are keyboard-operable now, but this rebuilds pan.innerHTML
+      // wholesale — so activating a row destroyed the focused element and dropped focus
+      // to <body>, making the list untraversable by keyboard. Remember and restore.
+      const act = document.activeElement,
+        keep = act && act.closest && act.closest("#threadpanel")
+          ? (act.id === "tclr" ? "#tclr" : act.classList.contains("trow") ? `.trow[data-t="${act.dataset.t}"]` : null)
+          : null;
       pan.innerHTML =
         ths
           .map(t => {
@@ -640,22 +653,23 @@
         (selThreads.length
           ? selThreads.length + (selThreads.length > 1 ? " threads" : " thread")
           : "threads") + " ▾";
-      pan.querySelectorAll(".trow").forEach(
-        r =>
-          (r.onclick = () => {
-            const t = decodeURIComponent(r.dataset.t);
-            const i = selThreads.indexOf(t);
-            if (i >= 0) selThreads.splice(i, 1);
-            else selThreads.push(t);
-            try {
-              setThreads(selThreads);
-            } catch (e) {}
-            paint();
-            render();
-          }),
-      );
+      pan.querySelectorAll(".trow").forEach(r => {
+        const t = decodeURIComponent(r.dataset.t);
+        r.onclick = () => {
+          const i = selThreads.indexOf(t);
+          if (i >= 0) selThreads.splice(i, 1);
+          else selThreads.push(t);
+          try {
+            setThreads(selThreads);
+          } catch (e) {}
+          paint();
+          render();
+        };
+        const verb = selThreads.includes(t) ? "Deselect thread " : "Select thread ";
+        kbd(r, () => r.onclick(), verb + t + " (" + counts[t] + " tools)");
+      });
       const clr = document.getElementById("tclr");
-      if (clr)
+      if (clr) {
         clr.onclick = () => {
           selThreads = [];
           try {
@@ -664,14 +678,27 @@
           paint();
           render();
         };
+        kbd(clr, () => clr.onclick(), "Clear all selected threads");
+      }
+      if (keep) { const back = pan.querySelector(keep); if (back) back.focus(); }
+    }
+    // aria-expanded on the button is the only thing that tells AT whether the panel is
+    // open — the label ("3 threads") is identical in both states.
+    function setOpen(open, refocus) {
+      pan.style.display = open ? "block" : "none";
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (!open && refocus) btn.focus();
     }
     btn.onclick = ev => {
       ev.stopPropagation();
-      pan.style.display = pan.style.display === "none" ? "block" : "none";
+      setOpen(pan.style.display === "none");
     };
     pan.addEventListener("click", ev => ev.stopPropagation());
-    document.addEventListener("click", () => {
-      pan.style.display = "none";
+    document.addEventListener("click", () => setOpen(false));
+    // Escape closes and hands focus back to the button, so keyboard users are not
+    // stranded inside a panel they can only leave by tabbing past every thread.
+    document.addEventListener("keydown", ev => {
+      if (ev.key === "Escape" && pan.style.display !== "none") setOpen(false, true);
     });
     paint();
   })();
@@ -698,4 +725,5 @@
   T = qYear(1);
   document.getElementById("ylab").textContent = T;
   render();
+  renderChips();
 })();
