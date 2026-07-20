@@ -21,6 +21,7 @@ Enables:
   - "[[Tooling Card - The Mass-Produced CNC Controller]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
+  - "[[Thread - Machine Tools]]"
 ---
 *Make · Texas, United States · 1970s*
 **Gary Boone and the TI team** · a whole computer on one chip

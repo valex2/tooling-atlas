@@ -15,10 +15,9 @@ Mechanism: Convergence
 Confidence: Direct
 Unlocked: a clock steady enough for science and navigation
 Significance: "A swinging weight tied to a clock's gears cut the day's error from a quarter hour to a few seconds, the first machine that measured time well enough to do science with."
-BuildsOn: []
-Enables: []
 BuildsOn:
   - "[[Tooling Card - The Escapement]]"
+Enables: []
 Threads:
   - "[[Thread - Machine Tools]]"
 ---

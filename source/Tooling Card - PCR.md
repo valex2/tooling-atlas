@@ -20,6 +20,7 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - Next-Generation Sequencing]]"
   - "[[Tooling Card - CRISPR-Cas9]]"
+  - "[[Tooling Card - Directed Evolution]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
 ---

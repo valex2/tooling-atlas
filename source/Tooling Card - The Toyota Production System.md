@@ -19,7 +19,7 @@ BuildsOn:
   - "[[Tooling Card - The Control Chart]]"
   - "[[Tooling Card - The Moving Assembly Line]]"
 Threads:
-  - "[[Thread - Machine Tools]]"
+  - "[[Thread - Production Systems]]"
 ---
 *Manufacture · Toyota City, Japan · 1950s*
 **Taiichi Ohno** · make only what the next step needs

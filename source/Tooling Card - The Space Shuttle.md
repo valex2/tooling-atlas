@@ -7,7 +7,7 @@ Person: NASA
 Place: Cape Canaveral, Florida, USA
 Lat: 28.57
 Lon: -80.65
-City:
+City: Cape Canaveral
 Era: 1980s onward
 Year: 1981
 Goal: 1

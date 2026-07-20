@@ -20,6 +20,7 @@ BuildsOn:
   - "[[Tooling Card - Negative Feedback]]"
 Enables:
   - "[[Tooling Card - The Mass-Produced CNC Controller]]"
+  - "[[Tooling Card - Ion Beam Figuring]]"
 Threads:
   - "[[Thread - Machine Tools]]"
 ---

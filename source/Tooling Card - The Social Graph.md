@@ -20,6 +20,7 @@ BuildsOn:
   - "[[Tooling Card - The Web]]"
 Threads:
   - "[[Thread - The Network]]"
+  - "[[Thread - The Open Reservoir]]"
 ---
 *Make · Cambridge, Massachusetts, USA · 2000s*
 **Mark Zuckerberg** · people as nodes, ties as edges

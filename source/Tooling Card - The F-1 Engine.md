@@ -7,7 +7,7 @@ Person: the F-1 engine team
 Place: Canoga Park, California, USA
 Lat: 34.2
 Lon: -118.6
-City:
+City: Canoga Park
 Era: 1960s
 Year: 1967
 Goal: 1

@@ -20,9 +20,11 @@ BuildsOn:
   - "[[Tooling Card - Electronic Design Automation]]"
   - "[[Tooling Card - Immersion Lithography]]"
   - "[[Tooling Card - The EUV Machine]]"
+  - "[[Tooling Card - Optical Proximity Correction]]"
 Enables:
 Threads:
   - "[[Thread - Chip Lithography]]"
+  - "[[Thread - Production Systems]]"
 ---
 *Manufacture · Hsinchu, Taiwan · 1980s onward*
 **Morris Chang and TSMC's process engineers** · a tuned thousand-step flow run at high yield

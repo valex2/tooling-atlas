@@ -21,6 +21,7 @@ BuildsOn:
   - "[[Tooling Card - The Electric Telegraph]]"
 Threads:
   - "[[Thread - Long-Distance Comms]]"
+  - "[[Thread - Electronic Instruments]]"
 ---
 *Measure · Atlantic, UK and US · 1860s*
 **William Thomson (Lord Kelvin)** · reading a faint, smeared signal

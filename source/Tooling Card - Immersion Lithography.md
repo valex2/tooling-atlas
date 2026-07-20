@@ -17,11 +17,13 @@ Unlocked: another decade of smaller chips
 Significance: "Slipping a film of water under the lens let the existing 193nm light print a dozen more chip generations, buying the industry a decade before EUV became unavoidable and helping ASML pull permanently ahead of Nikon in the process."
 BuildsOn:
   - "[[Tooling Card - The Wafer Stepper]]"
+  - "[[Tooling Card - The Measure Station]]"
 Enables:
   - "[[Tooling Card - The High-Yield Process Recipe]]"
   - "[[Tooling Card - The EUV Machine]]"
 Threads:
   - "[[Thread - Chip Lithography]]"
+  - "[[Thread - Precision Optics]]"
 ---
 *Make · Hsinchu, Taiwan · 2000s*
 **Burn-Jeng Lin** · a drop of water under the lens

@@ -17,6 +17,7 @@ Unlocked: general machine tools that spread shop to shop
 Significance: "A machine built to cut one part for one war contract became a general-purpose metalworking tool that crossed industry after industry, letting New England shops supply sewing machines, shoes, and rifles from the same equipment."
 BuildsOn:
   - "[[Tooling Card - The Go-No-Go Gauge]]"
+  - "[[Tooling Card - The Three-Plate Method]]"
 Enables:
   - "[[Tooling Card - The Production Grinder]]"
 Threads:

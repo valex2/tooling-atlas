@@ -20,6 +20,7 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - Unix and C]]"
   - "[[Tooling Card - Smalltalk]]"
+  - "[[Tooling Card - The Self-Hosting Compiler]]"
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---

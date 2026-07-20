@@ -20,6 +20,7 @@ Enables:
   - "[[Tooling Card - AlexNet]]"
 Threads:
   - "[[Thread - Machine Learning]]"
+  - "[[Thread - The Open Reservoir]]"
 ---
 *Model · Princeton and Stanford, USA · 2009*
 **Fei-Fei Li** · the labeled image dataset

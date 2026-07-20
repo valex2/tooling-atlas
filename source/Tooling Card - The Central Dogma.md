@@ -18,6 +18,7 @@ Significance: "The rule that genetic information flows one way, from DNA to prot
 BuildsOn:
   - "[[Tooling Card - The Wet-Fibre X-ray Camera]]"
 Enables:
+  - "[[Tooling Card - The Restriction Enzyme]]"
   - "[[Tooling Card - Recombinant DNA]]"
   - "[[Tooling Card - The Modified RNA Letter]]"
 Threads:

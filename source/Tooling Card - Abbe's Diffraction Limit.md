@@ -22,9 +22,10 @@ Enables:
   - "[[Tooling Card - The Matter Wave]]"
   - "[[Tooling Card - Photolithography]]"
   - "[[Tooling Card - The Foldscope]]"
+  - "[[Tooling Card - Optical Proximity Correction]]"
 Threads:
   - "[[Thread - Precision Optics]]"
-  - "[[Thread - Microscopy]]"
+  - "[[Thread - Seeing Smaller]]"
 ---
 *Model · Jena, Germany · 1873*
 **Ernst Abbe** · a wave theory of the lens

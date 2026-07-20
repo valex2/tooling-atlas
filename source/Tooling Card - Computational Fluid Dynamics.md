@@ -20,7 +20,6 @@ BuildsOn:
 Enables:
 Threads:
   - "[[Thread - Predict Before Building]]"
-  - "[[Thread - Flight]]"
 ---
 *Model · NASA Ames, California · 1970s-80s*
 **Dean Chapman** · solving the air on a computer

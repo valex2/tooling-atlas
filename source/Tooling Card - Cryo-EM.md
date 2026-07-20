@@ -22,7 +22,7 @@ Enables:
   - "[[Tooling Card - AlphaFold]]"
 Threads:
   - "[[Thread - Materials Characterization]]"
-  - "[[Thread - Microscopy]]"
+  - "[[Thread - Seeing Smaller]]"
 ---
 *Measure · Heidelberg, Germany · 1980s*
 **Jacques Dubochet, Joachim Frank, Richard Henderson** · a molecule frozen mid-life

@@ -22,7 +22,7 @@ Enables:
   - "[[Tooling Card - The Scanning Tunneling Microscope]]"
   - "[[Tooling Card - Cryo-EM]]"
 Threads:
-  - "[[Thread - Microscopy]]"
+  - "[[Thread - Seeing Smaller]]"
   - "[[Thread - Materials Characterization]]"
 ---
 *Measure · Berlin, Germany · 1931*

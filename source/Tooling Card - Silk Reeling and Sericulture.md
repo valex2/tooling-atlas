@@ -19,7 +19,7 @@ BuildsOn: []
 Enables:
   - "[[Tooling Card - Arkwright's Water Frame]]"
 Threads:
-  - "[[Thread - Machine Tools]]"
+  - "[[Thread - Production Systems]]"
 ---
 *Manufacture · Chang'an, China · 6th century*
 **Two Nestorian monks (under Justinian I)** · raising silkworms and reeling cocoon filament

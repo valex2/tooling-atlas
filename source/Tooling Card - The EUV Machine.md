@@ -21,6 +21,8 @@ BuildsOn:
   - "[[Tooling Card - The Laser]]"
   - "[[Tooling Card - The Wafer Stepper]]"
   - "[[Tooling Card - Immersion Lithography]]"
+  - "[[Tooling Card - Ion Beam Figuring]]"
+  - "[[Tooling Card - The Measure Station]]"
 Enables:
   - "[[Tooling Card - The High-Yield Process Recipe]]"
 Threads:

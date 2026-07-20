@@ -18,7 +18,8 @@ Significance: "Shewhart's chart split a process's wobble into normal noise to ig
 Enables:
   - "[[Tooling Card - The Toyota Production System]]"
 Threads:
-  - "[[Thread - Machine Tools]]"
+  - "[[Thread - Production Systems]]"
+  - "[[Thread - Measure and Correct]]"
 ---
 *Model · Cicero, USA · 1920s*
 **Walter Shewhart** · noise told apart from a fault

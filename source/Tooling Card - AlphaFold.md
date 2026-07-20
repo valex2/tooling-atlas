@@ -20,10 +20,12 @@ BuildsOn:
   - "[[Tooling Card - Cryo-EM]]"
   - "[[Tooling Card - The Deep-Learning Framework]]"
   - "[[Tooling Card - The Transformer]]"
+  - "[[Tooling Card - The Protein Data Bank]]"
 Enables:
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
   - "[[Thread - Predict Before Building]]"
+  - "[[Thread - The Open Reservoir]]"
 ---
 *Model · London, England · 2020s*
 **Demis Hassabis and John Jumper** · an AI that guesses a protein's shape

@@ -19,8 +19,10 @@ BuildsOn:
   - "[[Tooling Card - Arkwright's Water Frame]]"
 Enables:
   - "[[Tooling Card - The Factory Machine Shop]]"
+  - "[[Tooling Card - The Three-Plate Method]]"
 Threads:
   - "[[Thread - Machine Tools]]"
+  - "[[Thread - Measure and Correct]]"
 ---
 *Make · London, Britain · 1800s*
 **Henry Maudslay** · screw-cutting lathe

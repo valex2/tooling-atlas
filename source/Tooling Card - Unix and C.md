@@ -20,6 +20,7 @@ BuildsOn:
   - "[[Tooling Card - The Punch Card]]"
   - "[[Tooling Card - FORTRAN]]"
   - "[[Tooling Card - The Integrated Circuit]]"
+  - "[[Tooling Card - The Self-Hosting Compiler]]"
 Enables:
   - "[[Tooling Card - The Deep-Learning Framework]]"
 Threads:

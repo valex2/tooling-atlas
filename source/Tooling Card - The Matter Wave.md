@@ -20,7 +20,7 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - The Electron Microscope]]"
 Threads:
-  - "[[Thread - Microscopy]]"
+  - "[[Thread - Seeing Smaller]]"
 ---
 *Model · Paris, France · 1924*
 **Louis de Broglie** · the matter-wave idea

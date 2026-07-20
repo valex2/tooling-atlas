@@ -19,8 +19,9 @@ BuildsOn:
   - "[[Tooling Card - The Go-No-Go Gauge]]"
 Enables:
   - "[[Tooling Card - The Toyota Production System]]"
+  - "[[Tooling Card - The Magnetron Stamping Line]]"
 Threads:
-  - "[[Thread - Machine Tools]]"
+  - "[[Thread - Production Systems]]"
 ---
 *Manufacture · Highland Park, USA · 1910s*
 **Henry Ford** · the work moves, the worker stands still

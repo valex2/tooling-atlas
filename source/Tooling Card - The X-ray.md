@@ -21,6 +21,7 @@ Enables:
   - "[[Tooling Card - The CT Scanner]]"
 Threads:
   - "[[Thread - Therapeutics]]"
+  - "[[Thread - Materials Characterization]]"
 ---
 *Measure · Würzburg, Germany · 1890s*
 **Wilhelm Röntgen** · rays that print bone through skin

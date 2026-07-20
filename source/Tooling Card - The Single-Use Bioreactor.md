@@ -21,6 +21,7 @@ BuildsOn:
 Enables:
 Threads:
   - "[[Thread - Therapeutics]]"
+  - "[[Thread - Engineering Biology]]"
 ---
 *Manufacture · Union, New Jersey, USA · 1990s*
 **Vijay Singh** · a sterile plastic bag grown as a culture tank

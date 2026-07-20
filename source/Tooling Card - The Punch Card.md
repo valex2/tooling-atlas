@@ -7,7 +7,7 @@ Person: an IBM 704 programmer
 Place: Poughkeepsie, New York, USA
 Lat: 41.7
 Lon: -73.93
-City:
+City: Poughkeepsie
 Era: 1950s-60s
 Year: 1954
 Goal: 1
@@ -19,6 +19,7 @@ Enables:
   - "[[Tooling Card - FORTRAN]]"
   - "[[Tooling Card - Unix and C]]"
   - "[[Tooling Card - The Relational Model]]"
+  - "[[Tooling Card - The Protein Data Bank]]"
 BuildsOn:
   - "[[Tooling Card - The Bombe]]"
 Threads:

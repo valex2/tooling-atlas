@@ -21,6 +21,7 @@ Enables:
   - "[[Tooling Card - The Single-Use Bioreactor]]"
 Threads:
   - "[[Thread - Therapeutics]]"
+  - "[[Thread - Engineering Biology]]"
 ---
 *Manufacture · Peoria, Illinois, USA · 1940s*
 **Andrew Moyer and the Peoria lab** · grow mold by the thousand-gallon batch

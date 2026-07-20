@@ -18,10 +18,12 @@ Significance: "The laser turned light into a tool you could point, time, and tun
 BuildsOn: []
 Enables:
   - "[[Tooling Card - Next-Generation Sequencing]]"
+  - "[[Tooling Card - The Measure Station]]"
   - "[[Tooling Card - The EUV Machine]]"
 Threads:
   - "[[Thread - Precision Optics]]"
   - "[[Thread - Long-Distance Comms]]"
+  - "[[Thread - Chip Lithography]]"
 ---
 *Make · Malibu, USA · 1960s*
 **Theodore Maiman** · a ruby rod that makes one-colour light

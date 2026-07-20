@@ -20,6 +20,7 @@ BuildsOn:
   - "[[Tooling Card - Sketchpad]]"
 Enables:
   - "[[Tooling Card - The High-Yield Process Recipe]]"
+  - "[[Tooling Card - Optical Proximity Correction]]"
 Threads:
   - "[[Thread - Prototyping & CAD]]"
   - "[[Thread - Chip Lithography]]"

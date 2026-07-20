@@ -21,7 +21,6 @@ BuildsOn:
 Enables:
 Threads:
   - "[[Thread - Energy]]"
-  - "[[Thread - Flight]]"
 ---
 *Make · Rugby, England · 1930s*
 **Frank Whittle** · a gas turbine that pushes a plane

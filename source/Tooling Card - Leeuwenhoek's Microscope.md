@@ -23,7 +23,7 @@ Enables:
   - "[[Tooling Card - Einstein's Displacement Equation]]"
 Threads:
   - "[[Thread - Precision Optics]]"
-  - "[[Thread - Microscopy]]"
+  - "[[Thread - Seeing Smaller]]"
 ---
 *Measure · Delft, Netherlands · 1670s*
 **Antonie van Leeuwenhoek** · a single tiny glass-bead lens

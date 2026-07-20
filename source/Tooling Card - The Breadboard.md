@@ -17,8 +17,10 @@ Unlocked: build and change a circuit by hand in minutes, no solder
 Significance: "The solderless breadboard made the first try of any circuit nearly free and instant, the cheap zero-to-one step where a lot of electronics begins."
 BuildsOn:
   - "[[Tooling Card - The Integrated Circuit]]"
+  - "[[Tooling Card - The Triggered-Sweep Oscilloscope]]"
 Threads:
   - "[[Thread - Prototyping & CAD]]"
+  - "[[Thread - Electronic Instruments]]"
 ---
 *Make · Derby, USA · 1970s*
 **Ronald Portugal** · push-in board, no solder

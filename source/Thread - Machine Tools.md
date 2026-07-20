@@ -2,7 +2,9 @@
 Tags: tooling-thread
 Name: Machine Tools
 ---
-A throughline through [[Tooling Leadership Home]]. The trade in machines that cut metal to a fixed size, the tools that make all the other tools. It starts from an empty bench around 1820, is carried out of Britain and grown in the American Northeast through arms, textiles, sewing machines, and bicycles, then moves again: west to Detroit with the automobile, across the Pacific to Japan with cheap CNC, and on to China, which now builds the machine bodies but still buys the brain. Watching this one craft move is the clearest case of the second claim, that tool leadership does not stay put.
+A throughline through [[Tooling Leadership Home]]. The trade in machines that cut metal to a fixed size, the tools that make all the other tools. It starts on a clockmaker's bench, where an escapement and a pendulum were the first mechanisms that had to be cut to a number rather than fitted by eye, then moves to an empty bench around 1820 with Maudslay's lathe. It is carried out of Britain and grown in the American Northeast through arms, textiles, sewing machines, and bicycles, then moves again: west to Detroit with the automobile, across the Pacific to Japan with cheap CNC, and on to China, which now builds the machine bodies but still buys the brain. That last split is where the thread ends: the brain is [[Tooling Card - The Microcontroller]], a chip, so the trade that made all the other tools now depends on a tool it does not make. Watching this one craft move is the clearest case of the second claim, that tool leadership does not stay put.
+
+How one working machine becomes a million identical parts is a separate craft, and it has its own thread: [[Thread - Production Systems]]. The self-referential accuracy loop that Maudslay and Whitworth started runs on to [[Thread - Measure and Correct]].
 
 Cards on this thread, oldest first:
 

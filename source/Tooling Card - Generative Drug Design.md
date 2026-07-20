@@ -17,6 +17,7 @@ Unlocked: software that draws new drug molecules to order
 Significance: "A model that invents new molecules to fit a target turns drug discovery from a search into a design problem."
 BuildsOn:
   - "[[Tooling Card - The Deep-Learning Framework]]"
+  - "[[Tooling Card - The Protein Data Bank]]"
 Enables: []
 Threads:
   - "[[Thread - Therapeutics]]"

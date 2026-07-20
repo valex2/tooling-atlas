@@ -21,6 +21,7 @@ Enables:
   - "[[Tooling Card - The Gaseous Diffusion Barrier]]"
 Threads:
   - "[[Thread - Materials Characterization]]"
+  - "[[Thread - Critical Materials]]"
 ---
 *Manufacture · Oak Ridge, Tennessee, USA · 1940s*
 **Ernest Lawrence** · bend a uranium beam to sort isotopes

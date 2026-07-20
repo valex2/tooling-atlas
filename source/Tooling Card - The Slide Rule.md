@@ -15,10 +15,9 @@ Mechanism: Convergence
 Confidence: Direct
 Unlocked: Multiply by eye, no tables
 Significance: "It turned a multiplication into a sliding distance you could read off a ruler, the first calculating instrument anyone could carry."
-BuildsOn: []
-Enables: []
 BuildsOn:
   - "[[Tooling Card - Hindu-Arabic Numerals]]"
+Enables: []
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---

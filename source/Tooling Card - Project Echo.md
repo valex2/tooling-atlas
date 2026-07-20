@@ -7,7 +7,7 @@ Person: John R. Pierce
 Place: Murray Hill, New Jersey, USA
 Lat: 40.68
 Lon: -74.4
-City:
+City: Murray Hill
 Era: 1960s
 Year: 1960
 Goal: 1

@@ -22,6 +22,7 @@ Enables:
   - "[[Tooling Card - The Machine-Tool VRA]]"
 Threads:
   - "[[Thread - Machine Tools]]"
+  - "[[Thread - Production Systems]]"
 ---
 *Manufacture · Tokyo, Japan · 1956-82*
 **Seiuemon Inaba, Fujitsu FANUC** · cheap off-the-shelf machine brain

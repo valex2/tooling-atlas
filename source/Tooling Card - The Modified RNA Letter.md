@@ -20,8 +20,8 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - Lipid Nanoparticles]]"
 Threads:
-  - "[[Thread - Reading & Writing DNA]]"
   - "[[Thread - Engineering Biology]]"
+  - "[[Thread - Therapeutics]]"
 ---
 *Make · Philadelphia, USA · 2000s*
 **Katalin Karikó** · one swapped RNA letter

@@ -7,7 +7,7 @@ Person: Lee de Forest and Harold Arnold
 Place: New York, New York, USA
 Lat: 40.71
 Lon: -74.01
-City:
+City: New York
 Era: 1910s
 Year: 1915
 Goal: Both
@@ -21,6 +21,9 @@ Enables:
   - "[[Tooling Card - The Transistor]]"
   - "[[Tooling Card - Negative Feedback]]"
   - "[[Tooling Card - The Cavity Magnetron]]"
+  - "[[Tooling Card - The Sea-Floor Repeater]]"
+  - "[[Tooling Card - The Triggered-Sweep Oscilloscope]]"
+  - "[[Tooling Card - The HP 200A Audio Oscillator]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Long-Distance Comms]]"

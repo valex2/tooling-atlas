@@ -24,6 +24,7 @@ Enables:
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Energy]]"
+  - "[[Thread - Critical Materials]]"
 ---
 *Manufacture · Berlin, Germany · 1910s*
 **Jan Czochralski, Gordon Teal** · a crystal puller that grows one silicon crystal

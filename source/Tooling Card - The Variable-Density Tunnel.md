@@ -19,7 +19,6 @@ Enables:
   - "[[Tooling Card - Computational Fluid Dynamics]]"
 Threads:
   - "[[Thread - Predict Before Building]]"
-  - "[[Thread - Flight]]"
 ---
 *Measure · Langley, Virginia · 1930s*
 **Eastman Jacobs, Kenneth Ward, and Robert Pinkerton** · a wind tunnel squeezed to 20 atmospheres

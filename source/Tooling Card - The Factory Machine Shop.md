@@ -19,6 +19,7 @@ BuildsOn:
   - "[[Tooling Card - The Screw-Cutting Lathe]]"
 Threads:
   - "[[Thread - Machine Tools]]"
+  - "[[Thread - Production Systems]]"
 ---
 *Make · Waltham and Lowell, Massachusetts, USA · 1810s-40s*
 **Paul Moody, Boston Manufacturing Co** · the factory machine shop

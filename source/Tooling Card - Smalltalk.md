@@ -18,6 +18,7 @@ Significance: "Smalltalk made the object, a small bundle of data plus the code t
 BuildsOn:
   - "[[Tooling Card - FORTRAN]]"
   - "[[Tooling Card - Sketchpad]]"
+  - "[[Tooling Card - The Self-Hosting Compiler]]"
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---

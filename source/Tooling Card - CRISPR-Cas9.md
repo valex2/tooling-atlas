@@ -20,6 +20,7 @@ BuildsOn:
   - "[[Tooling Card - DNA Synthesis]]"
   - "[[Tooling Card - PCR]]"
 Enables:
+  - "[[Tooling Card - The Base Editor]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
   - "[[Thread - Engineering Biology]]"

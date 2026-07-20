@@ -17,6 +17,8 @@ Unlocked: electricity made from motion
 Significance: "Faraday's iron ring showed that a changing magnetic field makes a current, the principle every generator, motor, and transformer on Earth is built from."
 BuildsOn:
   - "[[Tooling Card - Volta's Pile]]"
+Enables:
+  - "[[Tooling Card - The Mie Solution]]"
 Threads:
   - "[[Thread - Electricity & Batteries]]"
 ---

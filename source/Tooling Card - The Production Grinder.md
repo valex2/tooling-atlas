@@ -17,10 +17,12 @@ Unlocked: the grinder as a heavy production machine
 Significance: "The automobile demanded hardened-steel parts by the thousand, and the only tool that could cut them was Norton's heavy grinder, pulling the machine-tool trade's center from New England to Detroit and Cincinnati."
 BuildsOn:
   - "[[Tooling Card - The Universal Miller]]"
+  - "[[Tooling Card - The Three-Plate Method]]"
 Enables:
   - "[[Tooling Card - Numerical Control]]"
 Threads:
   - "[[Thread - Machine Tools]]"
+  - "[[Thread - Measure and Correct]]"
 ---
 *Make · Detroit and the Midwest, USA · 1900s-20s*
 **Charles Norton, the auto industry** · the heavy production grinder

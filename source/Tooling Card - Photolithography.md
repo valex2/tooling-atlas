@@ -7,7 +7,7 @@ Person: Jay Lathrop and James Nall
 Place: Washington, D.C., USA
 Lat: 38.89
 Lon: -77.03
-City:
+City: Washington
 Era: 1950s
 Year: 1957
 Goal: Both
@@ -22,8 +22,10 @@ Enables:
   - "[[Tooling Card - The EUV Machine]]"
   - "[[Tooling Card - The Integrated Circuit]]"
   - "[[Tooling Card - The Wafer Stepper]]"
+  - "[[Tooling Card - Optical Proximity Correction]]"
 Threads:
   - "[[Thread - Chip Lithography]]"
+  - "[[Thread - Precision Optics]]"
 ---
 *Make · United States · 1950s*
 **Jay Lathrop and James Nall** · printing circuits with light

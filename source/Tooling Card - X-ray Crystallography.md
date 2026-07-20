@@ -22,6 +22,7 @@ Enables:
   - "[[Tooling Card - The Wet-Fibre X-ray Camera]]"
   - "[[Tooling Card - AlphaFold]]"
   - "[[Tooling Card - GNoME]]"
+  - "[[Tooling Card - The Protein Data Bank]]"
 Threads:
   - "[[Thread - Materials Characterization]]"
 ---

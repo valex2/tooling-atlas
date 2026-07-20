@@ -22,6 +22,7 @@ Enables:
   - "[[Tooling Card - TCP-IP]]"
 Threads:
   - "[[Thread - Long-Distance Comms]]"
+  - "[[Thread - Software Abstraction]]"
 ---
 *Model · Murray Hill, New Jersey · 1940s*
 **Claude Shannon** · a mathematical theory of communication

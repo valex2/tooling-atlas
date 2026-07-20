@@ -23,6 +23,7 @@ Enables:
   - "[[Tooling Card - DNA-Encoded Libraries]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
+  - "[[Thread - The Open Reservoir]]"
 ---
 *Measure · Cambridge, England · 2000s*
 **Shankar Balasubramanian and David Klenerman** · read millions of DNA strands at once on a glass chip

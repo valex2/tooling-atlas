@@ -19,8 +19,11 @@ BuildsOn:
   - "[[Tooling Card - The Triode]]"
 Enables:
   - "[[Tooling Card - Numerical Control]]"
+  - "[[Tooling Card - The HP 200A Audio Oscillator]]"
+  - "[[Tooling Card - The Sea-Floor Repeater]]"
 Threads:
   - "[[Thread - Long-Distance Comms]]"
+  - "[[Thread - Electronic Instruments]]"
 ---
 *Model · New York, USA · 1920s*
 **Harold Black** · output fed back to cancel its own error

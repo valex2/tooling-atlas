@@ -19,8 +19,8 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - The Jet Engine]]"
 Threads:
-  - "[[Thread - Flight]]"
-  - "[[Thread - Machine Tools]]"
+  - "[[Thread - Production Systems]]"
+  - "[[Thread - Critical Materials]]"
 ---
 *Manufacture · East Hartford, USA · 1980s*
 **Frank VerSnyder and the Pratt & Whitney foundry team** · growing a turbine blade as one crystal

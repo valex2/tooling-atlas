@@ -18,7 +18,7 @@ Significance: "The wootz recipe was never written down, so when the right ore ra
 BuildsOn:
   - "[[Tooling Card - The Blast Furnace]]"
 Threads:
-  - "[[Thread - Machine Tools]]"
+  - "[[Thread - Critical Materials]]"
 ---
 *Manufacture · Deccan, India · 1700s*
 **Deccan crucible smiths** · iron and carbon cooked slowly in sealed clay

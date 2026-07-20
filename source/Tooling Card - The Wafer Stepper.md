@@ -19,9 +19,11 @@ BuildsOn:
   - "[[Tooling Card - Photolithography]]"
 Enables:
   - "[[Tooling Card - Immersion Lithography]]"
+  - "[[Tooling Card - The Measure Station]]"
   - "[[Tooling Card - The EUV Machine]]"
 Threads:
   - "[[Thread - Chip Lithography]]"
+  - "[[Thread - Precision Optics]]"
 ---
 *Manufacture · Bedford, USA · 1970s*
 **GCA's engineers** · print one field, step, repeat

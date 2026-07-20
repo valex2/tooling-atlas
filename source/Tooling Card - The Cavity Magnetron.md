@@ -18,6 +18,8 @@ Significance: "A palm-sized copper block that produced enough microwave power fo
 BuildsOn:
   - "[[Tooling Card - The Triode]]"
 Enables:
+  - "[[Tooling Card - The Triggered-Sweep Oscilloscope]]"
+  - "[[Tooling Card - The Magnetron Stamping Line]]"
 Threads:
   - "[[Thread - Long-Distance Comms]]"
 ---

@@ -1,6 +1,6 @@
 ---
 Tags: tooling-thread
-Name: Microscopy
+Name: Seeing Smaller
 ---
 A throughline that runs through [[Tooling Leadership Home]]: the race to resolve ever finer detail. It starts with a single glass bead and runs until glass runs out. Abbe proves that light has a hard floor, and to go below it the tool has to stop being glass and start being something with a shorter wave. The thread deliberately crosses kinds, a lens then a law then a matter-wave then a beam of electrons, because the goal of seeing smaller outlives any one tool. Where [[Thread - Precision Optics]] is about the glass-craft itself, this thread is about the resolution it chases, and the two split apart exactly at Abbe's wall.
 

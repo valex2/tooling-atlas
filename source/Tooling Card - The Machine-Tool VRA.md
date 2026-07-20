@@ -8,7 +8,7 @@ Person: Houdaille, the NMTBA, Reagan administration
 Place: Washington, D.C., USA
 Lat: 38.9
 Lon: -77.04
-City:
+City: Washington
 Era: 1980s
 Year: 1982
 Goal: 2

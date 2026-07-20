@@ -7,7 +7,7 @@ Person: the wartime crystal-rectifier program
 Place: West Lafayette, Indiana, USA
 Lat: 40.43
 Lon: -86.91
-City:
+City: West Lafayette
 Era: 1940s
 Year: 1945
 Goal: Both
@@ -17,9 +17,11 @@ Unlocked: the transistor
 Significance: "Wartime radar forced the US to grow ultra-pure germanium and silicon crystals at scale, and that purification craft was already waiting when Bell Labs built the first transistor in 1947."
 BuildsOn:
 Enables:
+  - "[[Tooling Card - Zone Refining]]"
   - "[[Tooling Card - The Transistor]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
+  - "[[Thread - Critical Materials]]"
 ---
 *Make · United States (Purdue, Bell, DuPont) · 1940s*
 **the wartime crystal-rectifier program** · pure silicon and germanium crystals

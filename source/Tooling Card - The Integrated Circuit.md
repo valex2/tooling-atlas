@@ -16,9 +16,11 @@ Confidence: Direct
 Unlocked: every computer chip
 Significance: "Printing all parts and wires onto one flat silicon chip eliminated hand-wiring and let photolithography manufacture millions of circuits in parallel, starting 60 years of compounding compute leadership in the US."
 BuildsOn:
+  - "[[Tooling Card - Zone Refining]]"
   - "[[Tooling Card - The Czochralski Puller]]"
   - "[[Tooling Card - The Transistor]]"
   - "[[Tooling Card - Photolithography]]"
+  - "[[Tooling Card - The Triggered-Sweep Oscilloscope]]"
 Enables:
   - "[[Tooling Card - The MOSFET]]"
   - "[[Tooling Card - Unix and C]]"

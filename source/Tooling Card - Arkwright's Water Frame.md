@@ -20,7 +20,7 @@ Enables:
 BuildsOn:
   - "[[Tooling Card - Silk Reeling and Sericulture]]"
 Threads:
-  - "[[Thread - Machine Tools]]"
+  - "[[Thread - Production Systems]]"
 ---
 *Make · Cromford, England · 1760s*
 **Richard Arkwright** · water-powered warp-spinning frame

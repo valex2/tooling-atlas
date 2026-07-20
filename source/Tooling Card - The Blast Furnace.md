@@ -20,7 +20,7 @@ Enables:
   - "[[Tooling Card - Watt's Steam Engine]]"
   - "[[Tooling Card - Wootz Steel]]"
 Threads:
-  - "[[Thread - Machine Tools]]"
+  - "[[Thread - Critical Materials]]"
 ---
 *Manufacture · Norberg, Sweden · 1150s*
 **The Bergslagen ironmasters of Lapphyttan** · tall furnace, water-driven blast, melted iron

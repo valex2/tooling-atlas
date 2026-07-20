@@ -21,7 +21,7 @@ Enables:
   - "[[Tooling Card - Cryo-EM]]"
 Threads:
   - "[[Thread - Materials Characterization]]"
-  - "[[Thread - Microscopy]]"
+  - "[[Thread - Seeing Smaller]]"
 ---
 *Measure · Zurich, Switzerland · 1980s*
 **Gerd Binnig and Heinrich Rohrer** · a one-atom needle feeling atoms
