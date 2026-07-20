@@ -4,11 +4,10 @@
     KGLY = window.KGLY; // single source of truth (shared.js)
   // legend glyphs: kind is never carried by colour alone (matches atlas.html / table.js)
   document.querySelectorAll(".legend .gly").forEach(e => (e.textContent = KGLY[e.dataset.k] || ""));
-  const D2R = Math.PI / 180,
-    YR0 = 1600,
-    YR1 = 2025;
-  const tfrac = y => Math.max(0, Math.min(1, (y - YR0) / (YR1 - YR0)));
-  const byId = Object.fromEntries(CARDS.map(c => [c.id, c]));
+  const D2R = Math.PI / 180;
+  // Linear recency ramp for opacity (not an x-axis): TA.timeScale in "linear" mode.
+  const tfrac = TA.timeScale({ minY: 1600, maxY: 2025, mode: "linear" }).frac;
+  const byId = TA.byId(CARDS);
   const YS = CARDS.map(c => c.year)
     .filter(y => y)
     .sort((a, b) => a - b);
@@ -385,8 +384,7 @@
     }
     const bk = {};
     inC.forEach(c => (bk[c.kind] = (bk[c.kind] || 0) + 1));
-    const bars = ["Measure", "Model", "Make", "Manufacture"]
-      .filter(k => bk[k])
+    const bars = window.KINDS.filter(k => bk[k])
       .map(
         k =>
           '<span style="display:inline-block;background:' +
@@ -506,14 +504,7 @@
       kbd(d, () => d.onclick(), _c && _c.name);
     });
   }
-  function showTip(id, e) {
-    const c = byId[id];
-    tip.style.borderLeftColor = KC[c.kind];
-    tip.innerHTML = `<div class="t" style="color:${KINK[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig || ""}</div>`;
-    tip.style.display = "block";
-    tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 270) + "px";
-    tip.style.top = e.clientY + 14 + "px";
-  }
+  const showTip = TA.tooltip(tip, byId);
   // interaction
   let dn = false,
     lx,
@@ -635,9 +626,14 @@
       // wholesale — so activating a row destroyed the focused element and dropped focus
       // to <body>, making the list untraversable by keyboard. Remember and restore.
       const act = document.activeElement,
-        keep = act && act.closest && act.closest("#threadpanel")
-          ? (act.id === "tclr" ? "#tclr" : act.classList.contains("trow") ? `.trow[data-t="${act.dataset.t}"]` : null)
-          : null;
+        keep =
+          act && act.closest && act.closest("#threadpanel")
+            ? act.id === "tclr"
+              ? "#tclr"
+              : act.classList.contains("trow")
+                ? `.trow[data-t="${act.dataset.t}"]`
+                : null
+            : null;
       pan.innerHTML =
         ths
           .map(t => {
@@ -680,7 +676,10 @@
         };
         kbd(clr, () => clr.onclick(), "Clear all selected threads");
       }
-      if (keep) { const back = pan.querySelector(keep); if (back) back.focus(); }
+      if (keep) {
+        const back = pan.querySelector(keep);
+        if (back) back.focus();
+      }
     }
     // aria-expanded on the button is the only thing that tells AT whether the panel is
     // open — the label ("3 threads") is identical in both states.

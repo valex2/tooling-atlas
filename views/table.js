@@ -2,7 +2,7 @@
   const KC = window.KCOL,
     KINK = window.KINK,
     KGLY = window.KGLY; // single source of truth (shared.js)
-  const KINDS = ["Measure", "Model", "Make", "Manufacture"];
+  const KINDS = window.KINDS;
   const COLS = [
     ["name", "Tool"],
     ["kind", "Kind"],
@@ -66,7 +66,10 @@
       // would be read out on all 161 rows. The header text names it; aria-sort carries
       // the state; role + tabindex carry the affordance.
       th.addEventListener("keydown", e => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sort(); }
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          sort();
+        }
       });
     });
     if (refocusK) document.querySelector(`#head th[data-k="${refocusK}"]`).focus();
@@ -148,7 +151,17 @@
     document.querySelectorAll("#body tr").forEach((tr, ix) => {
       tr.style.cursor = "pointer";
       tr.onclick = () => showDetail(r[ix]);
-      kbd(tr, () => showDetail(r[ix]), r[ix].name);
+      // NOT kbd(): it sets role="button", which makes the row's <td>s presentational,
+      // so a screen reader would read only the card name and drop Year/Place/Threads —
+      // the whole point of a data table. Focusable + Enter/Space by hand keeps the row a
+      // row. Pixel-neutral (tabindex/keydown don't render), same pattern as the <th>s.
+      tr.setAttribute("tabindex", "0");
+      tr.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          showDetail(r[ix]);
+        }
+      });
     });
     try {
       setState({

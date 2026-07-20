@@ -57,6 +57,7 @@
   .readout{margin:24px -24px 0}.gauge{min-width:50%;flex-basis:50%}
   .m{grid-template-columns:28px 20px 1fr;grid-auto-flow:row}.m .md{grid-column:1/-1}}
 </style></head><body>
+<script src="ta.js"></script>
 <script src="shared.js"></script>
 <div id="appnav" style="position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap"></div>
 <div class="hwrap">
@@ -76,11 +77,12 @@
   <div class="m"><span class="ix">04</span><span class="gl" style="color:var(--Manufacture-ink)">▦</span><b>Manufacture</b><span class="md">build a billion, cheap and identical, on a factory floor</span></div>
  </div>
  <p class="tagline">See it, understand it, build one, build a million.</p>
- <h2>Six ways to read it</h2>
+ <h2>Seven ways to read it</h2>
  <div class="views">
   <a class="vc" href="views/map.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="16" cy="16" r="11"/><ellipse cx="16" cy="16" rx="5" ry="11"/><path d="M5 16h22M7 10h18M7 22h18"/></svg><span class="vn">Globe</span></a>
   <a class="vc" href="views/atlas.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 8h24M4 16h24M4 24h24"/><circle cx="10" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="20" cy="16" r="2" fill="currentColor" stroke="none"/><circle cx="14" cy="24" r="2" fill="currentColor" stroke="none"/></svg><span class="vn">Timeline</span></a>
   <a class="vc" href="views/tree.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="16" r="2.4"/><circle cx="22" cy="8" r="2.4"/><circle cx="22" cy="24" r="2.4"/><path d="M9 15l11-6M9 17l11 6"/></svg><span class="vn">Tree</span></a>
+  <a class="vc" href="views/relay.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="5" y="7" width="22" height="5" rx="1"/><rect x="5" y="14" width="22" height="5" rx="1"/><rect x="5" y="21" width="22" height="5" rx="1"/></svg><span class="vn">Relay</span></a>
   <a class="vc" href="views/deck.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="9" y="6" width="17" height="21" rx="2"/><rect x="5" y="9" width="15" height="18" rx="2" fill="var(--card)"/></svg><span class="vn">Deck</span></a>
   <a class="vc" href="views/table.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="5" y="6" width="22" height="20" rx="1.5"/><path d="M5 12h22M13 6v20M20 6v20"/></svg><span class="vn">Table</span></a>
   <a class="vc" href="views/dashboard.html"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 26V6"/><rect x="9" y="18" width="4" height="8"/><rect x="15" y="12" width="4" height="14"/><rect x="21" y="15" width="4" height="11"/></svg><span class="vn">Dashboard</span></a>

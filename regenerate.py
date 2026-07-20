@@ -87,8 +87,7 @@ for p in sorted(glob.glob(os.path.join(SRC, "Tooling Card - *.md"))):
         front=front, back=back,
         threads=th, primary=th[0] if th else "—",
         lat=float(lat) if lat else None, lon=float(lon) if lon else None,
-        bo=clist(fm,"BuildsOn"), en=clist(fm,"Enables"), country="",
-        region="", regionOrd=0))   # both filled by the geography pass below
+        bo=clist(fm,"BuildsOn"), en=clist(fm,"Enables"), country=""))
 
 # Validate cross-references resolve to real cards (a typo'd [[link]] is silently broken otherwise).
 ids = {c["id"] for c in cards}
@@ -268,10 +267,21 @@ USSUB=[("US Northeast",["New Jersey","Murray Hill","Massachusetts","Cambridge, U
 LANE_ORDER=["Netherlands","Britain","France","Continental Europe","US Northeast","US Midwest",
  "Silicon Valley / California","US (other)","Canada","Russia","India","Japan","Taiwan","China",
  "South Korea","Other"]
+# The US-band grouping and its short sub-labels. These used to live in the Timeline view
+# (GEOGROUP/SUBLABEL); they are geography, so they belong here with the rest of it. Emitted
+# per card as regionGroup/regionSub so the view derives no geography of its own.
+US_SUB={"US Northeast":"Northeast","US Midwest":"Midwest",
+ "Silicon Valley / California":"Silicon Valley","US (other)":"Other"}
+def region_group(region): return "United States" if region in US_SUB else region
+def region_sub(region): return US_SUB.get(region, region)
 def region_of(c):
-    lane=COUNTRY_LANE.get(c["country"])
+    # Prefer the polygon/override country; fall back to the country the Place string itself
+    # names so a card that lacks coordinates but states its country is not mislabelled
+    # "Other" (0 cards today, but the failure mode is silent, so close it).
+    country=c["country"] or stated_country(c.get("place"))
+    lane=COUNTRY_LANE.get(country)
     if lane: return lane
-    if c["country"]=="United States of America":
+    if country=="United States of America":
         for lab,keys in USSUB:
             for k in keys:
                 if k in (c["place"] or ""): return lab
@@ -280,6 +290,8 @@ def region_of(c):
 for c in cards:
     c["region"]=region_of(c)
     c["regionOrd"]=LANE_ORDER.index(c["region"])
+    c["regionGroup"]=region_group(c["region"])
+    c["regionSub"]=region_sub(c["region"])
 
 cards_json = json.dumps(cards, ensure_ascii=False)
 open(os.path.join(HERE,"data/cards.js"),"w",encoding="utf-8").write("window.CARDS="+cards_json+";")

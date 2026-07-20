@@ -52,6 +52,7 @@ h1{font-size:24px;font-weight:600;margin:0 0 2px;}
 .count{color:var(--mut);font-size:13px;margin:6px 0 0;}
 .hint{font-size:11px;color:#b9b4ab;margin-top:8px;}
 </style></head><body>
+<script src="../ta.js"></script>
 <script src="../data/cards.js"></script>
 <script src="../shared.js"></script>
 <div id="appnav"></div><div class="wrap">
@@ -66,7 +67,7 @@ h1{font-size:24px;font-weight:600;margin:0 0 2px;}
 </div>
 <script>
 const DATA=window.CARDS||[];
-const KINDS=["Measure","Model","Make","Manufacture"];
+const KINDS=window.KINDS;
 const KC={Measure:"var(--Measure)",Model:"var(--Model)",Make:"var(--Make)",Manufacture:"var(--Manufacture)"};
 const KINK=window.KINK, KGLY=window.KGLY;   // contrast-safe ink + non-colour glyph (shared.js)
 const allThreads=[...new Set(DATA.flatMap(c=>c.threads))].sort();

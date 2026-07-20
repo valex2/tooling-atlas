@@ -60,8 +60,8 @@ const NO_PLATFORM_BASELINE = !UPDATE && !SELFCHECK && !fs.existsSync(BASE);
 
 const VIEWS = [
   ['home', 'index.html'], ['globe', 'views/map.html'], ['timeline', 'views/atlas.html'],
-  ['tree', 'views/tree.html'], ['deck', 'views/deck.html'], ['table', 'views/table.html'],
-  ['dashboard', 'views/dashboard.html'],
+  ['tree', 'views/tree.html'], ['relay', 'views/relay.html'], ['deck', 'views/deck.html'],
+  ['table', 'views/table.html'], ['dashboard', 'views/dashboard.html'],
 ];
 
 // Viewports are pinned (including deviceScaleFactor) so a capture is reproducible across

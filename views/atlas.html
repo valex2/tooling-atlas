@@ -60,6 +60,7 @@ input[type=range]{accent-color:var(--ink);width:90px;}
 #stage .lanelab{background:rgba(252,251,249,.93);z-index:7;padding:1px 6px 1px 3px;border-radius:0 5px 5px 0}
 </style>
 </head><body>
+<script src="../ta.js"></script>
 <script src="../data/cards.js"></script>
 <script src="../shared.js"></script>
 <div id="appnav"></div>
@@ -82,15 +83,17 @@ const DATA=(window.CARDS||[]).filter(function(c){return c.year;});
 const KC=window.KCOL, KINK=window.KINK, KGLY=window.KGLY;   // single source of truth (shared.js)
 // legend glyphs: kind is never carried by colour alone (matches table.js / deck.html)
 document.querySelectorAll(".legend .gly").forEach(e=>e.textContent=KGLY[e.dataset.k]||"");
-const byId=Object.fromEntries(DATA.map(c=>[c.id,c]));
+const byId=TA.byId(DATA);
 // Geography is DATA, not view logic: regenerate.py derives `region` (the swimlane)
 // and `regionOrd` (its position in the canonical lane order) once, for every card.
-// This view used to own the country->lane table and keyword-match `place` itself,
-// which made it a SECOND, parallel geography database — and the two disagreed (CERN
-// was "Continental Europe" here and "France" on the globe). Read, never re-derive.
-const GEOGROUP={"US Northeast":"United States","US Midwest":"United States","Silicon Valley / California":"United States","US (other)":"United States"};
-const SUBLABEL={"US Northeast":"Northeast","US Midwest":"Midwest","Silicon Valley / California":"Silicon Valley","US (other)":"Other"};
-const groupOf=l=>GEOGROUP[l]||l;
+// This view used to own the country->lane table, the US-band grouping and its short lane
+// labels, and keyword-match `place` itself — a SECOND, parallel geography database that
+// disagreed with the globe (Geneva was continental here and France there). All of it is DATA now:
+// regenerate.py emits region, regionOrd, regionGroup and regionSub per card. Read, never
+// re-derive. The two tiny lookups below are just those per-card fields collated by region.
+const REGION_GROUP={},REGION_SUB={};
+DATA.forEach(c=>{REGION_GROUP[c.region]=c.regionGroup;REGION_SUB[c.region]=c.regionSub;});
+const groupOf=l=>REGION_GROUP[l]||l;
 let axis="thread",size="overview",selThreads=[],selCard=null,q="",zoom=1;try{selThreads=getThreads();}catch(e){}
 const expanded=new Set();
 // Thread traces use the shared palette in shared.js so a thread keeps the same
@@ -100,19 +103,17 @@ const TRACE=window.TPAL;
 const slotOf=new Map();   // thread -> slot, held for as long as it stays selected
 const claimSlot=()=>window.threadSlots(slotOf,selThreads);
 const traceColor=t=>window.threadColor(slotOf,t);
-const xesc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 claimSlot();
 const DIM={overview:{w:13,h:14,gh:3,gv:5,dot:true},chip:{w:120,h:38,gh:12,gv:8},medium:{w:158,h:96,gh:14,gv:12},full:{w:158,h:150,gh:14,gv:12}};
 const x0=200,minY=540,maxY=2030,WIDTH=3400,LOGK=35;
 const YEARS=DATA.map(c=>c.year).filter(y=>y).sort((a,b)=>a-b);
 // Log-in-time scale (the default and only axis): compresses the sparse pre-1800 range and
-// expands the dense 20th–21st c. x grows with log of "years before the present edge".
-function logFrac(y){const A=maxY-minY;return 1-Math.log(1+(maxY-y)/LOGK)/Math.log(1+A/LOGK);}
+// expands the dense 20th–21st c. See TA.timeScale in ta.js.
+const xs=TA.timeScale({x0,width:WIDTH,minY,maxY,k:LOGK}).xs;
 const ERAS=window.ERAS;
-const EVENTS=[[1769,"Watt steam engine"],[1776,"American Revolution"],[1957,"Sputnik"],[1969,"Moon landing"],[1971,"Microprocessor"],[1989,"World Wide Web"],[2003,"Iraq War"],[2007,"iPhone"],[2012,"Deep learning"],[2020,"COVID-19"]];
-function xs(y){y=Math.max(minY,Math.min(maxY,y));return x0+WIDTH*logFrac(y);}
+const EVENTS=window.EVENTS;
 function laneOrder(){
- if(axis==="kind")return ["Measure","Model","Make","Manufacture"].filter(k=>DATA.some(c=>c.kind===k));
+ if(axis==="kind")return window.KINDS.filter(k=>DATA.some(c=>c.kind===k));
  if(axis==="geo"){const p=new Map();DATA.forEach(c=>p.set(c.region,c.regionOrd));return [...p.keys()].sort((a,b)=>p.get(a)-p.get(b));}
  const ts={};DATA.forEach(c=>c.threads.forEach(t=>{ts[t]=Math.min(ts[t]??9999,c.year);}));
  return Object.keys(ts).sort((a,b)=>ts[a]-ts[b]);
@@ -121,16 +122,9 @@ const laneKey=c=>axis==="kind"?c.kind:axis==="geo"?c.region:c.primary;
 const laneMode=l=>expanded.has(l)?"medium":size;
 let pos={},layoutW=0,layoutH=0,lanes=[],LM={},LSEP=[],LCOUNT={},LTOP={},LBOT={};
 const ERABAND=28; // dedicated top band for era labels (pushes everything below down)
-// lay era labels left-to-right, bumping to a lower sub-row when one would overlap the previous on its row
-function eraBandHtml(){const SUB=[1,10,19];const rightEdge=[-1e9,-1e9,-1e9];let h="";
- ERAS.forEach(e=>{const a=xs(e[1]),b=xs(e[2]);
-  h+=`<div style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div>`;
-  const cx=(a+b)/2,w=e[0].length*5.6+12;let left=cx-w/2;
-  let r=0;for(;r<SUB.length;r++){if(left>=rightEdge[r]+4)break;}
-  if(r>=SUB.length){r=0;for(let i=1;i<SUB.length;i++)if(rightEdge[i]<rightEdge[r])r=i;}
-  rightEdge[r]=Math.max(rightEdge[r],left+w);
-  h+=`<div style="position:absolute;left:${cx}px;top:${SUB[r]}px;transform:translateX(-50%);font-size:9px;font-weight:600;color:rgba(0,0,0,.32);z-index:4;white-space:nowrap;background:rgba(252,251,249,.9);padding:0 3px;border-radius:3px">${e[0]}</div>`;});
- return h;}
+// Era gridlines + labels (TA.eraBand in ta.js). No class on the gridline divs here; layoutH
+// is read fresh at each call.
+function eraBandHtml(){return TA.eraBand(xs,layoutH,"");}
 function layout(){
  pos={};lanes=laneOrder();LM={};LSEP=[];LCOUNT={};LTOP={};LBOT={};
  const laneItems={};lanes.forEach(l=>laneItems[l]=[]);
@@ -145,8 +139,7 @@ function layout(){
  layoutH=curY+8;layoutW=xs(maxY)+170;
  return laneItems;
 }
-function anc(id,s){for(const p of (byId[id].bo||[]))if(byId[p]&&!s.has(p)){s.add(p);anc(p,s);}return s;}
-function desc(id,s){for(const e of (byId[id].en||[]))if(byId[e]&&!s.has(e)){s.add(e);desc(e,s);}return s;}
+const {anc,desc}=TA.lineage(byId);
 const scroll=document.getElementById("scroll"),zoomwrap=document.getElementById("zoomwrap"),stage=document.getElementById("stage"),svg=document.getElementById("edges"),fc=document.getElementById("fc");
 // data-bl is the label's PIN BASE in stage coordinates, emitted by render() alongside the
 // label itself: 0 for a top-level lane (flush to the viewport edge) and 92 for a sub-lane
@@ -172,7 +165,7 @@ function render(){
      html+=`<div style="position:absolute;left:0;top:${top-2}px;height:${bot-top}px;width:${layoutW}px;background:rgba(176,106,30,0.04);z-index:0"></div>`;
      html+=`<div style="position:absolute;left:8px;top:${top-2}px;height:${bot-top}px;border-left:2px solid rgba(0,0,0,.28);z-index:3"></div>`;
      html+=`<div style="position:absolute;left:14px;top:${(top+bot)/2}px;transform:translateY(-50%);font-size:11.5px;font-weight:600;color:var(--ink);width:80px;z-index:3">${g}</div>`;
-     for(let k=gi;k<=gj;k++){const l=lanes[k];html+=`<div class="lanelab" data-lane="${enc(l)}" data-bl="92" style="top:${LM[l]}px;left:92px;width:110px">${SUBLABEL[l]||l} <span class="car">${LCOUNT[l]}${expanded.has(l)?" ▾":""}</span></div>`;}
+     for(let k=gi;k<=gj;k++){const l=lanes[k];html+=`<div class="lanelab" data-lane="${enc(l)}" data-bl="92" style="top:${LM[l]}px;left:92px;width:110px">${REGION_SUB[l]||l} <span class="car">${LCOUNT[l]}${expanded.has(l)?" ▾":""}</span></div>`;}
    } else {const l=lanes[gi];html+=`<div class="lanelab" data-lane="${enc(l)}" data-bl="0" style="top:${LM[l]}px">${l} <span class="car">${LCOUNT[l]}${expanded.has(l)?" ▾":""}</span></div>`;}
    gi=gj+1;}
 lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute;left:0;top:${LTOP[l]}px;width:${layoutW}px;height:${(LBOT[l]-LTOP[l])}px;background:rgba(0,0,0,.03);z-index:0"></div>`;});
@@ -197,7 +190,7 @@ lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute
  if(selThreads.length){let ee="";selThreads.forEach(function(stt){const col=traceColor(stt);if(!col)return;const mem=DATA.filter(c=>c.threads.includes(stt)&&pos[c.id]).sort((a,b)=>a.year-b.year);if(mem.length>1){const h=pos[mem[0].id];let d="M"+(h.x+h.w/2)+" "+(h.y+h.h/2);for(let i=1;i<mem.length;i++){const p=pos[mem[i].id];d+=" L"+(p.x+p.w/2)+" "+(p.y+p.h/2);}
    // direct label at the head of the trace: identity is never colour-alone (the
    // line is the coloured mark, the name stays in ink with a surface halo).
-   ee+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="7" stroke-opacity="0.18" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${col}" stroke-width="1.8" stroke-opacity="0.9"/><text x="${h.x+h.w/2}" y="${h.y+h.h/2-9}" font-size="10" font-weight="600" fill="#1c1c1c" stroke="#fcfbf9" stroke-width="3.5" paint-order="stroke" style="pointer-events:none">${xesc(stt)}</text>`;
+   ee+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="7" stroke-opacity="0.18" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${col}" stroke-width="1.8" stroke-opacity="0.9"/><text x="${h.x+h.w/2}" y="${h.y+h.h/2-9}" font-size="10" font-weight="600" fill="#1c1c1c" stroke="#fcfbf9" stroke-width="3.5" paint-order="stroke" style="pointer-events:none">${TA.esc(stt)}</text>`;
    // The handoff needs no new field: on the geography axis a change of lane IS
    // the lead changing hands. Mark it with an arrowhead in the trace's own
    // colour (shape, not a new hue — the canvas has no colour channel left).
@@ -213,7 +206,7 @@ lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute
      // it inherits, so without this override the <title> tooltip below never fires and
      // the "hover it" hint in the status line is a lie. The arrowheads are the only
      // thing in this SVG meant to be hoverable.
-     ee+=`<polygon points="${pts}" fill="${col}" stroke="#fcfbf9" stroke-width="1.5" style="pointer-events:auto"><title>${xesc(stt)}: ${xesc(groupOf(laneKey(A)))} → ${xesc(groupOf(laneKey(B)))} (${A.year}→${B.year}, ${xesc(B.name)})</title></polygon>`;
+     ee+=`<polygon points="${pts}" fill="${col}" stroke="#fcfbf9" stroke-width="1.5" style="pointer-events:auto"><title>${TA.esc(stt)}: ${TA.esc(groupOf(laneKey(A)))} → ${TA.esc(groupOf(laneKey(B)))} (${A.year}→${B.year}, ${TA.esc(B.name)})</title></polygon>`;
      handoffs++;}
   }});e=ee+e;}
  svg.innerHTML=e;stage.appendChild(fc);

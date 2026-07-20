@@ -34,10 +34,10 @@ td.gap{background:#fbe7e7;color:#a83232;font-weight:600}td.era{text-align:left;c
  <div class="card full"><h2>Threads by size</h2><div id="bythread"></div></div>
  <div class="card full"><h2>Coverage — era × kind <span style="font-weight:400;color:var(--mut)">(red = gap, nothing written yet)</span></h2><div id="matrix"></div></div>
 </div></div>
-<script src="../data/cards.js"></script><script src="../shared.js"></script>
+<script src="../ta.js"></script><script src="../data/cards.js"></script><script src="../shared.js"></script>
 <script>
 const KC=window.KCOL;                 // single source of truth (shared.js)
-const KINDS=["Measure","Model","Make","Manufacture"];
+const KINDS=window.KINDS;
 const ERAS=window.ERAS;
 const threads=[...new Set(CARDS.flatMap(c=>c.threads))];
 document.getElementById("sub").textContent=CARDS.length+" tools · "+threads.length+" threads · "+new Set(CARDS.map(c=>c.country).filter(Boolean)).size+" countries";

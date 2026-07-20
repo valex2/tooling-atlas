@@ -97,8 +97,9 @@ FORK_NAME = re.compile(
 def forked(text):
     return FORK_SHAPE.search(text) or FORK_NAME.search(text)
 # shared.js is loaded by every view and is where a fork would do the most damage, yet it
-# was excluded — scan it too. index.html plus every views/* html+js plus shared.js.
-SCANNED = ["index.html", "shared.js"] + sorted(
+# was excluded — scan it too. ta.js is the new first-loaded primitives file (same blast
+# radius). index.html plus every views/* html+js plus shared.js plus ta.js.
+SCANNED = ["index.html", "shared.js", "ta.js"] + sorted(
     os.path.relpath(p, ROOT) for p in glob.glob(os.path.join(ROOT, "views", "*.html"))
     + glob.glob(os.path.join(ROOT, "views", "*.js"))
 )
@@ -109,9 +110,49 @@ for v in SCANNED:
 
 # 3) the data-driven views actually reference the canonical cards
 for v in ["views/map.html", "views/table.html", "views/dashboard.html",
-          "views/atlas.html", "views/tree.html", "views/deck.html"]:
+          "views/atlas.html", "views/tree.html", "views/deck.html", "views/relay.html"]:
     t = open(os.path.join(ROOT, v), encoding="utf-8").read()
     check("cards.js" in t, "%s loads data/cards.js" % v)
+
+# 3a) every view loads ta.js FIRST — shared.js's rebuildById builds on window.TA.byId, so a
+# view that pulls shared.js without ta.js ahead of it throws at load. Order matters, so assert
+# the ta.js <script> tag precedes the shared.js one. Match the tag, not the bare filename:
+# "shared.js" also appears in prose comments (map.html), which a substring search misreads.
+TA_TAG = re.compile(r'<script src="[^"]*\bta\.js"')
+SHARED_TAG = re.compile(r'<script src="[^"]*\bshared\.js"')
+for v in ["index.html", "views/map.html", "views/table.html", "views/dashboard.html",
+          "views/atlas.html", "views/tree.html", "views/deck.html", "views/relay.html"]:
+    t = open(os.path.join(ROOT, v), encoding="utf-8").read()
+    mta, msh = TA_TAG.search(t), SHARED_TAG.search(t)
+    check(bool(mta) and bool(msh) and mta.start() < msh.start(),
+          "%s loads ta.js before shared.js" % v)
+
+# 3b) the region invariant. Geography is derived exactly once, in regenerate.py, and emitted
+# per card. Assert the emitted shape so a pipeline change that drops or empties it fails here
+# rather than as a blank swimlane in the Timeline.
+import json
+cards_data = json.loads(open(os.path.join(ROOT, "data/cards.json"), encoding="utf-8").read())
+check(all(isinstance(c.get("region"), str) and c["region"] for c in cards_data),
+      "every card in cards.json carries a non-empty region")
+check(all(isinstance(c.get("regionOrd"), int) and not isinstance(c.get("regionOrd"), bool)
+          for c in cards_data),
+      "every card in cards.json carries an integer regionOrd")
+check(all(c.get("regionGroup") and c.get("regionSub") for c in cards_data),
+      "every card in cards.json carries regionGroup and regionSub")
+
+# 3c) no view re-derives geography. region/regionGroup/regionSub are DATA; a view that reads
+# them never needs a country->lane table or a US-subdivision keyword match. These markers only
+# appear in such a table (they used to, in the Timeline), so their presence in any view file is
+# a re-fork of the geography database this split exists to prevent. Grep-guard, like the fork
+# guard above.
+GEO_MARKERS = re.compile(
+    r"GEOGROUP|SUBLABEL|COUNTRY_LANE|Continental Europe|US Northeast|US Midwest"
+    r"|Silicon Valley / California|US \(other\)")
+for v in sorted(glob.glob(os.path.join(ROOT, "views", "*.html"))
+                + glob.glob(os.path.join(ROOT, "views", "*.js"))):
+    rel = os.path.relpath(v, ROOT)
+    t = open(v, encoding="utf-8").read()
+    check(not GEO_MARKERS.search(t), "%s does not re-derive geography (region is data)" % rel)
 
 # 4) the single-file bundle reflects the same card count.
 #

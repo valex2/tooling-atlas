@@ -20,6 +20,9 @@ window.VAULT = "Obsidian Vault";
 window.KCOL = { Measure: "#3266ad", Model: "#8a4fb3", Make: "#b06a1e", Manufacture: "#2f8f6b" };
 window.KINK = { Measure: "#2b5896", Model: "#7a429e", Make: "#8a5212", Manufacture: "#1d7350" };
 window.KGLY = { Measure: "◇", Model: "◯", Make: "△", Manufacture: "▦" };
+// The four Ms, in order, derived from KCOL so the sequence has one source. Was hardcoded as
+// a literal in five places.
+window.KINDS = Object.keys(window.KCOL);
 
 // TPAL = the thread palette, shared by every view so a thread keeps ONE colour
 // across the globe and the timeline. Five slots, validated all-pairs against the
@@ -101,7 +104,7 @@ window.kbd = function (el, fn, label) {
   });
 };
 window.rebuildById = function () {
-  window.__byId = window.CARDS ? Object.fromEntries(CARDS.map(c => [c.id, c])) : {};
+  window.__byId = window.TA.byId(window.CARDS);
   return window.__byId;
 };
 window.__byId = window.rebuildById();
@@ -251,6 +254,7 @@ const NAVITEMS = [
   ["Globe", "views/map.html"],
   ["Timeline", "views/atlas.html"],
   ["Tree", "views/tree.html"],
+  ["Relay", "views/relay.html"],
   ["Deck", "views/deck.html"],
   ["Table", "views/table.html"],
   ["Dashboard", "views/dashboard.html"],

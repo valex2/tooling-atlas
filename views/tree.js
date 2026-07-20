@@ -4,20 +4,9 @@
     KGLY = window.KGLY; // single source of truth (shared.js)
   // legend glyphs: kind is never carried by colour alone (matches atlas.html / table.js)
   document.querySelectorAll(".legend .gly").forEach(e => (e.textContent = KGLY[e.dataset.k] || ""));
-  const byId = Object.fromEntries(CARDS.map(c => [c.id, c]));
+  const byId = TA.byId(CARDS);
   const ERAS = window.ERAS;
-  const EVENTS = [
-    [1769, "Watt steam engine"],
-    [1776, "American Revolution"],
-    [1957, "Sputnik"],
-    [1969, "Moon landing"],
-    [1971, "Microprocessor"],
-    [1989, "World Wide Web"],
-    [2003, "Iraq War"],
-    [2007, "iPhone"],
-    [2012, "Deep learning"],
-    [2020, "COVID-19"],
-  ];
+  const EVENTS = window.EVENTS;
   const minY = 540,
     maxY = 2030,
     x0 = 170,
@@ -25,13 +14,9 @@
     H = 34,
     WIDTH = 4316,
     LOGK = 35;
-  // Log-in-time x-axis (default): compress the sparse pre-1800 range, expand the dense 20th–21st c.
-  const logFrac = y => {
-    const A = maxY - minY,
-      c = Math.max(minY, Math.min(maxY, y));
-    return 1 - Math.log(1 + (maxY - c) / LOGK) / Math.log(1 + A / LOGK);
-  };
-  const xs = y => x0 + WIDTH * logFrac(y);
+  // Log-in-time x-axis (default): compress the sparse pre-1800 range, expand the dense
+  // 20th–21st c. See TA.timeScale in ta.js.
+  const xs = TA.timeScale({ x0, width: WIDTH, minY, maxY, k: LOGK }).xs;
   // auto lanes by primary thread, ordered by earliest member
   const prim = c => (c.threads && c.threads.length ? c.threads[0] : "—");
   const tmin = {};
@@ -50,31 +35,9 @@
     if (st.q) q = st.q;
   } catch (e) {}
   const ERABAND = 28; // dedicated top band for era labels (pushes everything below down)
-  // lay era labels left-to-right, bumping to a lower sub-row when one would overlap the previous on its row
-  function eraBandHtml() {
-    const SUB = [1, 10, 19];
-    const rightEdge = [-1e9, -1e9, -1e9];
-    let h = "";
-    ERAS.forEach(e => {
-      const a = xs(e[1]),
-        b = xs(e[2]);
-      h += `<div class="bg" style="position:absolute;left:${a}px;top:0;height:${layoutH}px;border-left:1px solid rgba(0,0,0,.08);z-index:0"></div>`;
-      const cx = (a + b) / 2,
-        w = e[0].length * 5.6 + 12;
-      let left = cx - w / 2;
-      let r = 0;
-      for (; r < SUB.length; r++) {
-        if (left >= rightEdge[r] + 4) break;
-      }
-      if (r >= SUB.length) {
-        r = 0;
-        for (let i = 1; i < SUB.length; i++) if (rightEdge[i] < rightEdge[r]) r = i;
-      }
-      rightEdge[r] = Math.max(rightEdge[r], left + w);
-      h += `<div style="position:absolute;left:${cx}px;top:${SUB[r]}px;transform:translateX(-50%);font-size:9px;font-weight:600;color:rgba(0,0,0,.32);z-index:4;white-space:nowrap;background:rgba(252,251,249,.9);padding:0 3px;border-radius:3px">${e[0]}</div>`;
-    });
-    return h;
-  }
+  // Era gridlines + labels (TA.eraBand in ta.js). "bg" tags the gridline divs so render()'s
+  // sweep removes them; layoutH is read fresh at each call.
+  const eraBandHtml = () => TA.eraBand(xs, layoutH, "bg");
   const scroll = document.getElementById("scroll"),
     stage = document.getElementById("stage"),
     svg = document.getElementById("edges"),
@@ -119,22 +82,7 @@
     layoutW = xs(maxY) + W + 20;
     return meta;
   }
-  function anc(id, s) {
-    for (const p of byId[id].bo || [])
-      if (byId[p] && !s.has(p)) {
-        s.add(p);
-        anc(p, s);
-      }
-    return s;
-  }
-  function desc(id, s) {
-    for (const e of byId[id].en || [])
-      if (byId[e] && !s.has(e)) {
-        s.add(e);
-        desc(e, s);
-      }
-    return s;
-  }
+  const { anc, desc } = TA.lineage(byId);
   function pinLabels() {
     document.querySelectorAll("#stage .lanelab").forEach(e => {
       if (e.dataset.bl == null) e.dataset.bl = parseFloat(e.style.left) || 0;
@@ -213,14 +161,7 @@
     });
     pinLabels();
   }
-  function showTip(id, e) {
-    const c = byId[id];
-    tip.style.borderLeftColor = KC[c.kind];
-    tip.innerHTML = `<div class="t" style="color:${KINK[c.kind]}">${c.name}</div><div class="m">${c.kind} · ${c.place} · ${c.year}</div><div class="s">${c.sig || ""}</div>`;
-    tip.style.display = "block";
-    tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 270) + "px";
-    tip.style.top = e.clientY + 14 + "px";
-  }
+  const showTip = TA.tooltip(tip, byId);
   document.getElementById("q").oninput = e => {
     q = e.target.value.toLowerCase();
     try {
