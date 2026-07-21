@@ -87,6 +87,21 @@ const GOLDEN_SKIP = {};
 // waved through 1296 unflagged pixels at 1440x900, which is a whole label or a
 // collapsed lane. The comment above argued for zero and then didn't take it.
 const FAIL_RATIO = 0;
+// ...and an absolute floor of 20 pixels, which is NOT the ratio tolerance I removed above.
+//
+// Measured, not assumed: ubuntu renders tree-desktop 13px (0.001%) differently from a
+// baseline blessed on a DIFFERENT ubuntu runner. Within one run it is perfectly stable — the
+// bless job blesses and re-verifies clean in the same job, and the re-capture below agrees
+// with itself — so this is cross-machine rasteriser variance, not flakiness we can settle by
+// waiting or freezing more state. Baselines are already per-platform; they are not per-runner
+// and cannot be.
+//
+// 20px is chosen to be smaller than anything meaningful: a single glyph of body text inks
+// ~50-100px, and the regressions this file exists to catch measured 405,623px (a --bg shift),
+// 144,792px (a copy change) and 13,173px (one added button). The old 0.1% ratio would have
+// waved through 1,296px — a whole label — which is why it is gone. Anything at or above this
+// floor still fails at zero ratio.
+const MIN_PIXELS = 20;
 const PIXEL_THRESHOLD = 0;
 const INCLUDE_AA = true;
 
@@ -340,6 +355,13 @@ for (const [name, p] of VIEWS) {
         continue;
       }
       r = r2.error ? r : r2;
+    }
+    // Sub-floor difference that reproduced across two captures: cross-runner rasteriser
+    // variance (see MIN_PIXELS). Passed, but always printed — if this number ever climbs,
+    // it is a regression creeping up, not the noise floor moving.
+    if (r.pixels > 0 && r.pixels < MIN_PIXELS) {
+      notes.push(`${vp} ${r.pixels}px — under the ${MIN_PIXELS}px cross-runner floor, passing`);
+      continue;
     }
     const pct = (r.ratio * 100).toFixed(4);
     if (r.ratio > FAIL_RATIO) {
