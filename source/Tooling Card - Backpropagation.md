@@ -17,7 +17,7 @@ Unlocked: machines that learn their own features
 Significance: "Backpropagation let neural networks learn their own features from examples instead of hand-coded rules. The method then sat idle for 25 years until cheap GPUs made it practical, so the lead pooled in compute, not the equation."
 Enables:
   - "[[Tooling Card - The Deep-Learning Framework]]"
-  - "[[Tooling Card - AlexNet]]"
+  - "[[Tooling Card - cuda-convnet]]"
 Threads:
   - "[[Thread - Machine Learning]]"
 ---

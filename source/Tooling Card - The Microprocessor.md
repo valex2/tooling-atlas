@@ -16,6 +16,7 @@ Confidence: Direct
 Unlocked: the personal computer and the embedded chip
 Significance: "Putting a general-purpose CPU on one buyable chip gave any machine a programmable mind. The craft of laying that mind out in silicon spread to whoever could learn it; Masatoshi Shima carried it to Japan."
 BuildsOn:
+  - "[[Tooling Card - The Ion Implanter]]"
   - "[[Tooling Card - The MOSFET]]"
 Enables:
   - "[[Tooling Card - The GPU]]"

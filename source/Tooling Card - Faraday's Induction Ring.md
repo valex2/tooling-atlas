@@ -19,6 +19,7 @@ BuildsOn:
   - "[[Tooling Card - Volta's Pile]]"
 Enables:
   - "[[Tooling Card - The Mie Solution]]"
+  - "[[Tooling Card - The Cyclotron]]"
 Threads:
   - "[[Thread - Electricity & Batteries]]"
 ---

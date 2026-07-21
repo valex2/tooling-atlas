@@ -18,7 +18,8 @@ Significance: "TensorFlow and PyTorch let an ordinary programmer build a neural 
 BuildsOn:
   - "[[Tooling Card - Backpropagation]]"
   - "[[Tooling Card - Unix and C]]"
-  - "[[Tooling Card - The GPU]]"
+  - "[[Tooling Card - CUDA]]"
+  - "[[Tooling Card - cuda-convnet]]"
 Enables:
   - "[[Tooling Card - Generative Drug Design]]"
   - "[[Tooling Card - AlphaFold]]"

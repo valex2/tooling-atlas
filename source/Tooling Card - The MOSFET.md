@@ -18,6 +18,7 @@ Significance: "A transistor defined entirely by flat printed layers on a silicon
 BuildsOn:
   - "[[Tooling Card - The Integrated Circuit]]"
 Enables:
+  - "[[Tooling Card - The Ion Implanter]]"
   - "[[Tooling Card - DRAM]]"
   - "[[Tooling Card - The Microprocessor]]"
 Threads:

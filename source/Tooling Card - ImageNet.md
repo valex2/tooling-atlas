@@ -17,7 +17,7 @@ Unlocked: a shared benchmark for machine vision
 Significance: "ImageNet gave the whole field a single yardstick with 14 million labeled images, making supervised learning competitive and setting up the 2012 AlexNet result that opened the deep learning era."
 BuildsOn:
 Enables:
-  - "[[Tooling Card - AlexNet]]"
+  - "[[Tooling Card - cuda-convnet]]"
 Threads:
   - "[[Thread - Machine Learning]]"
   - "[[Thread - The Open Reservoir]]"

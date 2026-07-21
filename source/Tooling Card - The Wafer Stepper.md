@@ -21,6 +21,8 @@ Enables:
   - "[[Tooling Card - Immersion Lithography]]"
   - "[[Tooling Card - The Measure Station]]"
   - "[[Tooling Card - The EUV Machine]]"
+  - "[[Tooling Card - Chemical-Mechanical Planarization]]"
+  - "[[Tooling Card - The Chemically Amplified Resist]]"
 Threads:
   - "[[Thread - Chip Lithography]]"
   - "[[Thread - Precision Optics]]"

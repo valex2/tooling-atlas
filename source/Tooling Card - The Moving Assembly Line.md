@@ -20,6 +20,7 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - The Toyota Production System]]"
   - "[[Tooling Card - The Magnetron Stamping Line]]"
+  - "[[Tooling Card - The Mega-Block]]"
 Threads:
   - "[[Thread - Production Systems]]"
 ---

@@ -21,9 +21,10 @@ BuildsOn:
   - "[[Tooling Card - Immersion Lithography]]"
   - "[[Tooling Card - The EUV Machine]]"
   - "[[Tooling Card - Optical Proximity Correction]]"
+  - "[[Tooling Card - Chemical-Mechanical Planarization]]"
 Enables:
 Threads:
-  - "[[Thread - Chip Lithography]]"
+  - "[[Thread - Wafer Processing]]"
   - "[[Thread - Production Systems]]"
 ---
 *Manufacture · Hsinchu, Taiwan · 1980s onward*

@@ -21,6 +21,7 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - The Integrated Circuit]]"
   - "[[Tooling Card - The Breadboard]]"
+  - "[[Tooling Card - The HP Interface Bus]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Electronic Instruments]]"

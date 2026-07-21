@@ -22,6 +22,7 @@ Enables:
   - "[[Tooling Card - DNA Sequencing]]"
   - "[[Tooling Card - Directed Evolution]]"
   - "[[Tooling Card - The Lentiviral Vector]]"
+  - "[[Tooling Card - The Protein A Column]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
   - "[[Thread - Engineering Biology]]"

@@ -17,6 +17,7 @@ Unlocked: harvesting pounds of plutonium from tons of deadly irradiated fuel
 Significance: "One process hid two secrets: that element 94 existed at all, and the chemistry to pull it from tons of hot fuel. Both held through the war, because the work was tacit craft no spy could carry off in a notebook."
 BuildsOn:
   - "[[Tooling Card - The Nuclear Pile]]"
+  - "[[Tooling Card - The Cyclotron]]"
 Enables:
   - "[[Tooling Card - The Explosive Lens]]"
 Threads:

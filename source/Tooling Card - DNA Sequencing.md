@@ -22,6 +22,7 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - CRISPR-Cas9]]"
   - "[[Tooling Card - Next-Generation Sequencing]]"
+  - "[[Tooling Card - The DNA Nanoball Array]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
 ---

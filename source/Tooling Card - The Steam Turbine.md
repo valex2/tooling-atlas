@@ -17,6 +17,7 @@ Unlocked: smooth high-speed shaft power for dynamos
 Significance: "It turned heat into spinning motion smoothly enough and fast enough to drive an electric generator, and still spins most of the world's power plants."
 BuildsOn:
   - "[[Tooling Card - Watt's Steam Engine]]"
+  - "[[Tooling Card - The Bessemer Converter]]"
 Enables:
   - "[[Tooling Card - The Jet Engine]]"
 Threads:

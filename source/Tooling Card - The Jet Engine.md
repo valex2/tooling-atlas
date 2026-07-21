@@ -14,10 +14,10 @@ Goal: Both
 Mechanism: Convergence
 Confidence: Direct
 Unlocked: fast high-altitude flight made ordinary
-Significance: "A turbojet burns fuel near the melting point of its own blades, so leadership in jet flight became leadership in metal that survives heat, the limit investment casting would later push back."
+Significance: "A turbojet burns fuel near the melting point of its own blades, so leadership in jet flight became leadership in metal that survives heat, the limit single-crystal blade casting would later push back."
 BuildsOn:
   - "[[Tooling Card - The Steam Turbine]]"
-  - "[[Tooling Card - Investment Casting]]"
+  - "[[Tooling Card - The Single-Crystal Blade Furnace]]"
 Enables:
 Threads:
   - "[[Thread - Energy]]"

@@ -1,7 +1,7 @@
 ---
 Tags: tooling-card
 Name: The Production Grinder
-Kind: Make
+Kind: Manufacture
 Tool: the heavy production grinder
 Person: Charles Norton, the auto industry
 Place: Worcester, Massachusetts, USA
@@ -18,13 +18,14 @@ Significance: "The automobile demanded hardened-steel parts by the thousand, and
 BuildsOn:
   - "[[Tooling Card - The Universal Miller]]"
   - "[[Tooling Card - The Three-Plate Method]]"
+  - "[[Tooling Card - The Bessemer Converter]]"
 Enables:
   - "[[Tooling Card - Numerical Control]]"
 Threads:
   - "[[Thread - Machine Tools]]"
   - "[[Thread - Measure and Correct]]"
 ---
-*Make · Detroit and the Midwest, USA · 1900s-20s*
+*Manufacture · Detroit and the Midwest, USA · 1900s-20s*
 **Charles Norton, the auto industry** · the heavy production grinder
 
 **Front.** In the early 1900s a new machine came down the road, and it was hungry. The automobile needed parts by the thousand, all the same, all hard: crankshafts, camshafts, and gears cut from tough new alloy steels. That steel was too hard to cut on a lathe, and the spinning tool just wore out. So in 1900 a man named [Charles Norton](https://ledger.americanprecision.org/profile/charles-h-norton/), working in Worcester, Massachusetts, built a big heavy machine that pressed a fast-spinning [wheel of grit](https://en.wikipedia.org/wiki/Grinding_machine) hard against the steel and ground it to shape and size at once. Before Norton, a grinder was a light tool that only cleaned up work a lathe had already done. His did the whole job, and on hardened steel it was the only tool for the work. One [crankshaft job](https://www.thehenryford.org/collections/explore/artifact/252348) that had taken five hours now took fifteen minutes.

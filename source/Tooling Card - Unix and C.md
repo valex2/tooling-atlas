@@ -23,6 +23,7 @@ BuildsOn:
   - "[[Tooling Card - The Self-Hosting Compiler]]"
 Enables:
   - "[[Tooling Card - The Deep-Learning Framework]]"
+  - "[[Tooling Card - CUDA]]"
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---

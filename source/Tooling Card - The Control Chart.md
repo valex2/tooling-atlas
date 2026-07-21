@@ -17,6 +17,8 @@ Unlocked: knowing when to fix a process and when to leave it alone
 Significance: "Shewhart's chart split a process's wobble into normal noise to ignore and a real fault to chase, the published method that made mass production trustworthy and that Japan borrowed to take the manufacturing lead."
 Enables:
   - "[[Tooling Card - The Toyota Production System]]"
+  - "[[Tooling Card - The Mega-Block]]"
+  - "[[Tooling Card - The PAN Oxidation Line]]"
 Threads:
   - "[[Thread - Production Systems]]"
   - "[[Thread - Measure and Correct]]"

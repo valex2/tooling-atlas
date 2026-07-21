@@ -1,7 +1,7 @@
 ---
 Tags: tooling-card
 Name: The Factory Machine Shop
-Kind: Make
+Kind: Manufacture
 Tool: the factory machine shop
 Person: Paul Moody, Boston Manufacturing Co
 Place: Waltham, Massachusetts, USA
@@ -21,7 +21,7 @@ Threads:
   - "[[Thread - Machine Tools]]"
   - "[[Thread - Production Systems]]"
 ---
-*Make · Waltham and Lowell, Massachusetts, USA · 1810s-40s*
+*Manufacture · Waltham and Lowell, Massachusetts, USA · 1810s-40s*
 **Paul Moody, Boston Manufacturing Co** · the factory machine shop
 
 **Front.** In [1813](https://en.wikipedia.org/wiki/Boston_Manufacturing_Company) a Boston merchant named [Francis Cabot Lowell](https://www.britannica.com/biography/Francis-Cabot-Lowell) wanted to weave cotton by water power in Waltham, Massachusetts, the way he had seen done in England. The English would not sell him the machines, so he and his mechanic [Paul Moody](https://www.nps.gov/articles/lowell-handbook-machine-shop.htm) had to build their own. In the basement of the new mill they put a [machine shop](https://www.nps.gov/articles/lowell-handbook-machine-shop.htm): lathes and benches where Moody and his men cut the gears, shafts, and looms the floors above them needed. The cloth was beside the point. A factory had built the tools that built the factory.

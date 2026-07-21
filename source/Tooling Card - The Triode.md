@@ -24,6 +24,7 @@ Enables:
   - "[[Tooling Card - The Sea-Floor Repeater]]"
   - "[[Tooling Card - The Triggered-Sweep Oscilloscope]]"
   - "[[Tooling Card - The HP 200A Audio Oscillator]]"
+  - "[[Tooling Card - The Cyclotron]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Long-Distance Comms]]"

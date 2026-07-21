@@ -21,6 +21,8 @@ Enables:
   - "[[Tooling Card - The Transistor]]"
   - "[[Tooling Card - The Silicon Solar Cell]]"
   - "[[Tooling Card - The Integrated Circuit]]"
+  - "[[Tooling Card - The Diamond Wire]]"
+  - "[[Tooling Card - The Metal-Organic Vapor Reactor]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Energy]]"

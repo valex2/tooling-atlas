@@ -1,7 +1,7 @@
 ---
 Tags: tooling-card
 Name: Hybrid Rice
-Kind: Make
+Kind: Manufacture
 Tool: Three-line male-sterile seed system
 Person: Yuan Longping
 Place: Changsha, China
@@ -22,7 +22,7 @@ Threads:
   - "[[Thread - Engineering Biology]]"
 ---
 
-*Make · Changsha, China · 1970s*
+*Manufacture · Changsha, China · 1970s*
 **Yuan Longping** · a male-sterile rice that must be crossed
 
 **Front.** Most rice pollinates itself, so its seed breeds true and gains none of the [extra vigour](https://en.wikipedia.org/wiki/Hybrid_rice) you get by crossing two different parents. For a self-pollinating crop there is no easy way to make hybrid seed by the ton. In 1970 a team led by [Yuan Longping](https://en.wikipedia.org/wiki/Yuan_Longping) found a wild rice plant on Hainan island that was naturally male-sterile, unable to pollinate itself. Around that one plant they built a [three-line system](https://en.wikipedia.org/wiki/Hybrid_rice): a male-sterile line that cannot self-seed, a second line to keep it going, and a third to restore fertility in the crop, so hybrid seed could be made at scale.

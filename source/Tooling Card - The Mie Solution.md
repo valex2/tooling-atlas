@@ -17,6 +17,8 @@ Unlocked: particle size read from scattered light
 Significance: "Mie solved Maxwell's equations exactly for a sphere of any size, and once computers could run the sum it became the standard engine for reading a particle's size from the light it scatters."
 BuildsOn:
   - "[[Tooling Card - Faraday's Induction Ring]]"
+Enables:
+  - "[[Tooling Card - The Fluorescence-Activated Cell Sorter]]"
 Threads:
   - "[[Thread - Materials Characterization]]"
 ---

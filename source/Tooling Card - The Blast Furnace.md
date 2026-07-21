@@ -19,7 +19,9 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - Watt's Steam Engine]]"
   - "[[Tooling Card - Wootz Steel]]"
+  - "[[Tooling Card - The Bessemer Converter]]"
 Threads:
+  - "[[Thread - Bulk Materials]]"
   - "[[Thread - Critical Materials]]"
 ---
 *Manufacture · Norberg, Sweden · 1150s*

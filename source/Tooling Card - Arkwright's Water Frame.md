@@ -1,7 +1,7 @@
 ---
 Tags: tooling-card
 Name: Arkwright's Water Frame
-Kind: Make
+Kind: Manufacture
 Tool: water-powered warp-spinning frame
 Person: Richard Arkwright
 Place: Cromford, England
@@ -22,7 +22,7 @@ BuildsOn:
 Threads:
   - "[[Thread - Production Systems]]"
 ---
-*Make · Cromford, England · 1760s*
+*Manufacture · Cromford, England · 1760s*
 **Richard Arkwright** · water-powered warp-spinning frame
 
 **Front.** A former barber and wig-maker, Richard Arkwright patented a spinning frame in July [1769](https://www.nationalarchives.gov.uk/education/resources/georgian-britain-age-modernity/arkwrights-spinning-frame/) that pulled raw cotton through four pairs of rollers turning at rising speeds, drawing it out, then twisted it tight on a spindle. The machine did the one thing hand-spinning and the earlier jenny could not do well: it made cotton thread hard and even enough to serve as [warp](https://www.britannica.com/biography/Richard-Arkwright), the lengthwise threads strung tight on a loom, which until then had to be costly linen or wool. A single frame worked [many spindles at once](https://en.wikipedia.org/wiki/Water_frame), and the rollers, not a spinner's fingers, set the pace. By [1771](https://www.scienceandindustrymuseum.org.uk/objects-and-stories/richard-arkwright) Arkwright had a row of these frames driven off one water wheel at Cromford on the River Derwent, which is where the name water frame stuck.

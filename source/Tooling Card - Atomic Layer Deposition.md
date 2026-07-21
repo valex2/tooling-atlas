@@ -18,8 +18,9 @@ Significance: "Atomic layer deposition grows a film one atomic layer at a time u
 BuildsOn:
   - "[[Tooling Card - The Integrated Circuit]]"
 Enables:
+  - "[[Tooling Card - The Through-Silicon Via]]"
 Threads:
-  - "[[Thread - Chip Lithography]]"
+  - "[[Thread - Wafer Processing]]"
 ---
 *Manufacture · Helsinki, Finland · 1970s*
 **Tuomo Suntola** · a film laid one atom-layer at a time

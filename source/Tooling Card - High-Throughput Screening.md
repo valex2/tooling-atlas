@@ -5,7 +5,7 @@ Kind: Make
 Tool: Robotic microplate drug-screening line
 Person: Pharma HTS groups (microplate from Gyula Takatsy)
 Place: Pharma labs, USA and Europe
-City: 
+City: New Jersey
 Lat: 40.7
 Lon: -74.4
 Era: 1990s

@@ -18,6 +18,7 @@ Significance: "The wootz recipe was never written down, so when the right ore ra
 BuildsOn:
   - "[[Tooling Card - The Blast Furnace]]"
 Threads:
+  - "[[Thread - Bulk Materials]]"
   - "[[Thread - Critical Materials]]"
 ---
 *Manufacture · Deccan, India · 1700s*

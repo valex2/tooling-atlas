@@ -16,10 +16,11 @@ Confidence: Direct
 Unlocked: one model that does many tasks, and an AI race that resolves to who makes the chips
 Significance: "Growing a Transformer to internet scale, then tuning it to follow plain instructions, made one model that does many tasks. Because the recipe was published, the durable lead settled not in the model but in the chips and fabs that train and run it."
 BuildsOn:
-  - "[[Tooling Card - The GPU]]"
+  - "[[Tooling Card - CUDA]]"
   - "[[Tooling Card - TCP-IP]]"
   - "[[Tooling Card - The Deep-Learning Framework]]"
   - "[[Tooling Card - The Transformer]]"
+  - "[[Tooling Card - The Through-Silicon Via]]"
 Enables:
 Threads:
   - "[[Thread - Machine Learning]]"

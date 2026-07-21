@@ -17,6 +17,7 @@ Unlocked: weighing one kind of atom, revealing isotopes
 Significance: "Aston's mass spectrograph sorted atoms by weight by bending them through electric and magnetic fields, revealing that one element can come in several masses, the isotopes, and giving chemistry a balance for the unseen."
 BuildsOn:
 Enables:
+  - "[[Tooling Card - The Ion Implanter]]"
   - "[[Tooling Card - The Calutron]]"
   - "[[Tooling Card - The Gas Centrifuge]]"
   - "[[Tooling Card - The Electron Microscope]]"

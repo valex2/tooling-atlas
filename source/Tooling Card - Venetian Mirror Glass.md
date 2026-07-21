@@ -1,7 +1,7 @@
 ---
 Tags: tooling-card
 Name: Venetian Mirror Glass
-Kind: Make
+Kind: Manufacture
 Tool: cast clear glass silvered with tin and mercury
 Person: Murano mirror-makers and Jean-Baptiste Colbert
 Place: Murano, Venice, Italy
@@ -21,7 +21,7 @@ Enables:
 Threads:
   - "[[Thread - Precision Optics]]"
 ---
-*Make · Murano, Venice, Italy · 1600s*
+*Manufacture · Murano, Venice, Italy · 1600s*
 **Murano mirror-makers and Jean-Baptiste Colbert** · cast flat glass backed with tin-mercury
 
 **Front.** From 1291 Venice penned all its glass furnaces on one small island, [Murano](https://en.wikipedia.org/wiki/Venetian_glass), so the fires stayed off the wooden city and the craft stayed in one place it could watch. There the masters held two secrets the rest of Europe wanted: clear [cristallo](https://crystalglass.ca/the-hidden-story-of-cristallo-glass/) glass, cooked nearly colorless, and the flat mirror. To make the mirror they laid a sheet of [tin foil on a flat stone, flooded it with liquid mercury, then slid a glass plate over the top](https://cameo.mfa.org/wiki/Tin-mercury_mirror); the metals knit into a bright crystalline skin, about three parts tin to one part mercury, that gripped the glass and threw back a clean image. The result was a mirror truly flat and truly clear, not a dim spotted disk, and for a century only Murano hands knew how to cast it. A master who carried the trade abroad was branded a traitor; [leaving could be punished by death](https://en.wikipedia.org/wiki/Venetian_glass), and his family could be jailed to call him home.

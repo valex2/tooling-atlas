@@ -16,7 +16,10 @@ Confidence: Direct
 Unlocked: cheap memory printed by the million
 Significance: "DRAM stores each bit as a speck of charge held by one tiny transistor, the cheap memory in every computer, and the commodity whose manufacturing lead slid from America to Japan to Korea."
 BuildsOn:
+  - "[[Tooling Card - The Ion Implanter]]"
   - "[[Tooling Card - The MOSFET]]"
+Enables:
+  - "[[Tooling Card - The Through-Silicon Via]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
 ---

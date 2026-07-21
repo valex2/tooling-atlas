@@ -19,6 +19,7 @@ BuildsOn:
 Enables:
   - "[[Tooling Card - Hybrid Rice]]"
 Threads:
+  - "[[Thread - Bulk Materials]]"
   - "[[Thread - Critical Materials]]"
 ---
 

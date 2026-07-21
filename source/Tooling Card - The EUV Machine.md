@@ -23,6 +23,8 @@ BuildsOn:
   - "[[Tooling Card - Immersion Lithography]]"
   - "[[Tooling Card - Ion Beam Figuring]]"
   - "[[Tooling Card - The Measure Station]]"
+  - "[[Tooling Card - Chemical-Mechanical Planarization]]"
+  - "[[Tooling Card - The Chemically Amplified Resist]]"
 Enables:
   - "[[Tooling Card - The High-Yield Process Recipe]]"
 Threads:

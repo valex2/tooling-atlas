@@ -19,6 +19,7 @@ BuildsOn:
   - "[[Tooling Card - The Triode]]"
   - "[[Tooling Card - Negative Feedback]]"
 Enables:
+  - "[[Tooling Card - The HP Interface Bus]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Electronic Instruments]]"

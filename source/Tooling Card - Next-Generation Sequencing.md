@@ -21,6 +21,7 @@ BuildsOn:
   - "[[Tooling Card - DNA Sequencing]]"
 Enables:
   - "[[Tooling Card - DNA-Encoded Libraries]]"
+  - "[[Tooling Card - The DNA Nanoball Array]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
   - "[[Thread - The Open Reservoir]]"

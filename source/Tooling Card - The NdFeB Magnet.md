@@ -1,7 +1,7 @@
 ---
 Tags: tooling-card
 Name: The NdFeB Magnet
-Kind: Make
+Kind: Manufacture
 Tool: Sintered neodymium-iron-boron magnet
 Person: Masato Sagawa (Sumitomo Special Metals)
 Place: Osaka, Japan
@@ -20,7 +20,7 @@ BuildsOn:
 Threads:
   - "[[Thread - Critical Materials]]"
 ---
-*Make · Osaka, Japan · 1980s*
+*Manufacture · Osaka, Japan · 1980s*
 **Masato Sagawa** · sintered neodymium-iron-boron magnet
 
 **Front.** In 1982 **Masato Sagawa**, a metallurgist at [Sumitomo Special Metals](https://en.wikipedia.org/wiki/Masato_Sagawa) in Osaka, wanted a strong magnet that did not rely on costly cobalt and samarium. The best magnet of the day, samarium-cobalt, was strong but expensive, and the metals were scarce. Sagawa ground an alloy of neodymium, iron, and a little [boron](https://www.apexmagnets.com/news-how-tos/the-great-magnetic-race-invention-of-neodymium-iron-boron-permanent-magnet-apex-magnets/) into a fine powder, lined the grains up in a magnetic field, pressed them, and baked the block solid so every grain pointed the same way. The result was the [strongest permanent magnet ever made](https://qeprize.org/winners/the-worlds-strongest-permanent-magnet), reaching about 35 MGOe at first and over 50 today, from cheaper and more common metals. The same year **John Croat** at [General Motors](https://spectrum.ieee.org/the-men-who-made-the-magnet-that-made-the-modern-world) hit the same Nd2Fe14B compound by a different route, and both told the world in 1983.

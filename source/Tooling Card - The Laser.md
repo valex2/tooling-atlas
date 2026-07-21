@@ -20,6 +20,8 @@ Enables:
   - "[[Tooling Card - Next-Generation Sequencing]]"
   - "[[Tooling Card - The Measure Station]]"
   - "[[Tooling Card - The EUV Machine]]"
+  - "[[Tooling Card - Ajinomoto Build-up Film]]"
+  - "[[Tooling Card - The Fluorescence-Activated Cell Sorter]]"
 Threads:
   - "[[Thread - Precision Optics]]"
   - "[[Thread - Long-Distance Comms]]"
