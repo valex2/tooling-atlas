@@ -118,9 +118,15 @@ async function settle(page) {
     document.querySelectorAll('.tip').forEach(el => (el.style.display = 'none'));
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     window.scrollTo(0, 0);
+    // window.scrollTo does NOT reset a scrollable DIV. The Timeline, Tree and Relay all pan
+    // inside .scroll containers, and Tree/Timeline pin their lane labels off scroll.scrollLeft
+    // — so a container left even a pixel off origin shifts every pinned label and the capture
+    // stops being reproducible. Reset every scrollable element, not just the window.
     document.querySelectorAll('*').forEach(el => {
+      if (el.scrollLeft || el.scrollTop) { el.scrollLeft = 0; el.scrollTop = 0; }
       if (getComputedStyle(el).position === 'sticky') el.style.position = 'static';
     });
+    if (typeof pinLabels === 'function') { try { pinLabels(); } catch (e) {} }
   }).catch(() => {});
   await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))
     .catch(() => {});
