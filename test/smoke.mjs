@@ -317,11 +317,29 @@ for (const [name, p] of VIEWS) {
       fail++;
       continue;
     }
-    const r = compare(fs.readFileSync(golden), shot);
+    let r = compare(fs.readFileSync(golden), shot);
     if (r.error) {
       notes.push(`${vp} ${r.error}`);
       fail++;
       continue;
+    }
+    // RE-CAPTURE ONCE on any difference, and judge on the second capture.
+    //
+    // This is deliberately NOT a pixel tolerance. A tolerance is a permanent blind spot: it
+    // waves through every change under N pixels forever. A real regression is deterministic
+    // and reproduces on every capture, so it still fails here. What this absorbs is genuine
+    // one-shot rasteriser noise — ubuntu shows an intermittent 13px (0.001%) difference in
+    // tree-desktop that survives freezing animation, fonts, sticky and scroll, and that the
+    // bless job reproduces against a set it wrote seconds earlier. A flake is reported LOUDLY
+    // even when it passes, so it stays visible instead of quietly becoming the norm.
+    if (r.pixels > 0) {
+      const shot2 = await capture(page, url, viewport, errs);
+      const r2 = compare(fs.readFileSync(golden), shot2);
+      if (!r2.error && r2.pixels === 0) {
+        notes.push(`${vp} FLAKE ${r.pixels}px on capture 1, 0px on capture 2 — passing`);
+        continue;
+      }
+      r = r2.error ? r : r2;
     }
     const pct = (r.ratio * 100).toFixed(4);
     if (r.ratio > FAIL_RATIO) {
