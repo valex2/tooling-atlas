@@ -1,0 +1,46 @@
+# Manually-triggered helper: bless golden images for a platform CI runs on.
+#
+# Baselines are per-platform because the views use the system font stack, so a set
+# blessed on macOS cannot match ubuntu's rasterisation. They must be produced in the
+# SAME environment that will compare against them — hence this job rather than a
+# developer's laptop.
+#
+# It uploads the PNGs as an artifact; it does NOT commit them. Download the artifact
+# and commit test/baseline/linux/ yourself, so nothing writes to the repo unattended.
+#
+#   gh workflow run bless-baselines.yml
+#   gh run download <run-id> -n baseline-linux -D /tmp/bl
+name: Bless baselines
+on: workflow_dispatch
+
+jobs:
+  bless:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: pip install pyshp
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+        with:
+          chrome-version: stable
+      - run: npm ci --prefix test
+      - name: Capture and bless
+        env:
+          CHROME: ${{ steps.chrome.outputs.chrome-path }}
+          UPDATE_BASELINE: '1'
+        run: node test/smoke.mjs
+      - name: Verify the fresh set actually compares clean
+        env:
+          CHROME: ${{ steps.chrome.outputs.chrome-path }}
+        run: node test/smoke.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: baseline-linux
+          path: test/baseline/linux/
+          if-no-files-found: error
