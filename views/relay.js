@@ -719,7 +719,7 @@
       y += Math.max(lay.height, 104);
     }
     const divY = y + 2;
-    body +=
+    const divider =
       line(8, divY, AXW, divY, `stroke="rgba(0,0,0,.16)" stroke-width="1"`) +
       text(
         8,
@@ -735,9 +735,15 @@
       y += Math.max(lay.height, 56);
     }
     const h = y + 8;
-    const a1 = drawAxis(0, h),
+    // Each axis owns only the band BELOW it, down to where the next one takes over. Passing
+    // both the full height drew every gridline and every cut-out gutter twice below the
+    // second axis — double ink over ~half the canvas, and invisible to the golden test
+    // because the doubling was baked into the blessed baseline.
+    const a1 = drawAxis(0, axis2Top),
       a2 = drawAxis(axis2Top, h);
-    return { h, svg: a1.back + a2.back + body + a1.front + a2.front };
+    // Gutters (in `front`) are opaque and were painted over `body`, slicing the one long
+    // string that reaches past them — the index-strip heading. Divider goes in front of them.
+    return { h, svg: a1.back + a2.back + body + a1.front + a2.front + divider };
   }
 
   // ═══ 5 · COPY ═════════════════════════════════════════════════════════════
@@ -760,9 +766,10 @@
       "Japan held the steppers in between; no card here carries that, so the panel " +
       "cannot show it.",
     "The Network":
-      "The control case. Packet switching never migrated: the making stayed where the " +
-      "users and the money already were. If the lead always moved, this panel would " +
-      "not look like this.",
+      "The near-control. Packet switching starts British and the web is Swiss, so the " +
+      "lead did leave — but it came back both times, and after 1967 the making never " +
+      "stayed away. The users and the money were already here. If the lead always " +
+      "moved for good, this panel would not keep returning to one country.",
     Therapeutics:
       "Here the hardest making is half regulatory, and it is the one thread where a " +
       "country can lose the lead without losing any of the skill.",
