@@ -1,53 +1,74 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Relay · Tooling Atlas</title>
-<meta name="description" content="Small multiples per thread: the raw corpus of invention sites against the unreliable consecutive-card 'leadership' trace.">
+<meta name="description" content="How the lead is won and lost — and how little of it a corpus of invention sites can actually establish. Most turns rest on a single card.">
 <meta property="og:title" content="Relay · Tooling Atlas">
-<meta property="og:description" content="Small multiples per thread: the raw corpus of invention sites against the unreliable consecutive-card 'leadership' trace.">
+<meta property="og:description" content="How the lead is won and lost — and how little of it a corpus of invention sites can actually establish. Most turns rest on a single card.">
 <style>
 :root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--card:#fff;
 --Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 .top{padding:12px 16px 6px}h1{font-size:18px;font-weight:600;margin:0 0 4px}
-.sub{color:var(--mut);font-size:12px;margin:0 0 6px}
-.caption{background:#fbf6ee;border:.5px solid #e6d9c6;border-left:3px solid #b06a1e;border-radius:0 7px 7px 0;padding:7px 11px;font-size:11.5px;line-height:1.45;color:#5a4a34;max-width:900px;margin:2px 0 6px}
-.caption b{color:#8a5212}
+.sub{color:var(--mut);font-size:12px;line-height:1.5;margin:0 0 8px;max-width:860px}
+.finding{border-left:3px solid var(--ink);padding:1px 0 1px 12px;margin:0 0 7px;max-width:880px;
+ font-size:15px;line-height:1.45;color:#2a2620}
+.finding b{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.finding .second{display:block;font-size:12px;line-height:1.5;color:#5f594f;margin-top:4px}
+.finding .second b{font-size:12px}
+.method,.axnote{font-size:11.5px;line-height:1.5;color:#5f594f;max-width:900px;margin:0 0 5px}
+.axnote{color:#8a857c;font-size:11px}
 .legend{display:flex;gap:14px;font-size:11px;color:var(--mut);flex-wrap:wrap;align-items:center;margin-top:3px}
 .legend .grp{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.legend .grp span{display:flex;gap:4px;align-items:center}
 .legend .gly{font-size:12px}
-.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:4px}
-.legend .sw{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;margin-right:4px;border:.5px solid rgba(0,0,0,.18)}
-.legend .hatch{display:inline-block;width:13px;height:11px;vertical-align:-1px;margin-right:4px;border:.5px solid rgba(0,0,0,.25);background-image:repeating-linear-gradient(45deg,rgba(28,28,28,.35) 0 1.4px,transparent 1.4px 5px)}
-.reliab{font-size:11.5px;color:var(--ink);margin:5px 0 0}.reliab b{font-variant-numeric:tabular-nums}
-.scroll{overflow:auto;border-top:.5px solid var(--line);height:calc(100vh - 190px);background:#fcfbf9}
+.legend svg{vertical-align:-1px}
+.legend .sw{display:inline-block;width:11px;height:11px;border-radius:2px;border:.5px solid rgba(0,0,0,.18)}
+.scroll{overflow:auto;border-top:.5px solid var(--line);height:calc(100vh - 250px);min-height:420px;background:#fcfbf9}
 #stage{position:relative}
 .tip{position:fixed;pointer-events:none;background:#fff;border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:50}
 .tip .t{font-weight:600}.tip .m{color:var(--mut);font-size:10.5px;margin:2px 0 4px}.tip .s{font-size:11px;line-height:1.4}
 #chart [data-id]{cursor:pointer}
 #chart [data-id]:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
-.coda{max-width:1040px;padding:14px 20px 40px;font-size:12px;line-height:1.5}
+.ledger{max-width:1120px;padding:18px 20px 4px}
+.ledger h2{font-size:14px;margin:0 0 5px}
+.ledger .note{font-size:11.5px;line-height:1.5;color:#5f594f;margin:0 0 10px;max-width:880px}
+.ledger ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:0 28px}
+.ledger li{display:flex;align-items:center;gap:8px;font-size:11px;line-height:1;padding:3px 0;border-bottom:.5px solid rgba(0,0,0,.07)}
+.ledger .who{flex:0 0 auto;font-weight:600;border-left:3px solid #999;padding-left:5px;white-space:nowrap}
+.ledger .what{flex:1 1 auto;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ledger .what i{font-style:normal;color:#a8a297;font-variant-numeric:tabular-nums}
+.ledger .bar{flex:0 0 74px;height:6px;background:#e9e5dd;border-radius:3px;overflow:hidden}
+.ledger .bar b{display:block;height:6px;border-radius:3px}
+.ledger .len{flex:0 0 34px;text-align:right;font-variant-numeric:tabular-nums;color:#3a352d}
+.coda{max-width:1120px;padding:14px 20px 40px;font-size:12px;line-height:1.5}
 .coda h2{font-size:14px;margin:0 0 6px}
-.coda .formula{background:#f4f1ea;border:.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:11.5px;line-height:1.5;color:#3f3a31}
+.coda .formula{background:#f4f1ea;border:.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:11.5px;line-height:1.55;color:#3f3a31}
 .coda .formula code{font-family:"SF Mono","JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:11px;background:#eae5db;padding:0 3px;border-radius:3px}
 .coda table{border-collapse:collapse;margin-top:10px;font-size:11px;font-variant-numeric:tabular-nums}
 .coda th,.coda td{border-bottom:.5px solid var(--line);padding:3px 9px 3px 0;text-align:right}
 .coda th:first-child,.coda td:first-child{text-align:left;padding-right:16px}
 .coda thead th{color:var(--mut);font-weight:600;border-bottom:1px solid rgba(0,0,0,.22)}
 .coda tr.tot td{border-top:1px solid rgba(0,0,0,.22);font-weight:600}
-.coda .dist{color:var(--mut)}
+@media (max-width:640px){
+ .sub{font-size:11.5px}
+ .finding{font-size:13px;line-height:1.4}.finding b{font-size:16px}
+ .method{font-size:11px}.axnote{font-size:10.5px}
+ .scroll{height:calc(100vh - 150px)}
+}
 </style></head><body>
 <div id="appnav"></div>
 <div class="top"><h1>Relay</h1>
-<p class="sub">One panel per technology thread on a shared time axis. Each panel has two strips: the raw corpus, then what a naive trace would call the leadership path.</p>
-<div class="caption">This view shows <b>where each tool was invented</b>, not verified leadership tenure. The lower <b>proxy strip</b> is a naive consecutive-card trace — it hands a country the &ldquo;lead&rdquo; the instant a card happens to sit there (Finland 1974 ALD reads as lithography leadership). Runs backed by a single card are <b>hatched</b>: treat them as noise, not a handover. The authored tenure ribbon is <b>future work</b> (a later phase); nothing here is claimed as a measured lead.</div>
+<p class="sub">Leadership in a technology migrates. It moves country to country, and a country keeps it only for as long as it is doing the hardest making &mdash; because ideas travel freely and making stays put, in people and machines and places. The losses carry the argument, and the sharpest of them were self-inflicted. This page is the evidence for that claim, and the honest news is how little of it there is.</p>
+<p class="finding" id="finding"></p>
+<p class="method" id="method"></p>
 <div class="legend">
  <span class="grp" id="kindleg"></span>
+ <span class="grp" id="markleg"></span>
  <span class="grp" id="ctryleg"></span>
- <span class="grp"><span class="hatch"></span>lead backed by one card</span>
 </div>
-<p class="reliab" id="reliab"></p>
+<p class="axnote" id="axnote"></p>
 </div>
 <div class="scroll" id="scroll" tabindex="0" role="region" aria-label="Relay canvas — scroll to pan across time and threads">
- <div id="stage"><svg id="chart" role="img" aria-label="Small-multiple evidence rug and proxy leadership strip per thread"></svg><div class="coda" id="coda"></div></div>
+ <div id="stage"><svg id="chart" role="img" aria-label="One panel per technology thread: the corpus of invention sites, the holds the record can carry, and the silence between them"></svg><div class="ledger" id="ledger"></div><div class="coda" id="coda"></div></div>
 </div>
 <div class="tip" id="tip"></div>
 <script src="../ta.js"></script>

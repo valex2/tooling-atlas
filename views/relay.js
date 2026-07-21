@@ -1,55 +1,86 @@
+// Relay — the evidence layer for Report 1, "how the lead is won and lost".
+//
+// Structure. Six seams, top to bottom, each depending only on the ones above it:
+//
+//   0 CONFIG   the tunables, in one place, with the reason each number is what it is
+//   1 DERIVE   pure functions over the corpus: panels, runs, holds, silences, stats.
+//              No DOM, no SVG, no pixels. TENURE is the swappable seam: anything that
+//              answers holds(cards) can drive this view, so an authored-tenure layer
+//              drops in here without touching anything below.
+//   2 SCALE    year -> x. Composed out of TA.timeScale('linear') segments; nothing forked.
+//   3 LAYOUT   pure geometry: rows, offsets, heights. Returns numbers, never markup.
+//   4 RENDER   pure string emitters. Take a model + a layout, return SVG. No state.
+//   5 COPY     the argument, and the live sentences that state its limit.
+//   6 MOUNT    the only part that touches the document: inject, then wire interaction.
+//
+// Nothing above MOUNT reads or writes the DOM, so every number on this page can be
+// recomputed and asserted without a browser.
 (function () {
-  const KC = window.KCOL,
-    KINK = window.KINK,
+  const KINK = window.KINK,
     KGLY = window.KGLY,
     KINDS = window.KINDS; // single source of truth (shared.js)
-  const CARDS = window.CARDS || [];
-  const byId = TA.byId(CARDS);
+  const ALL = window.CARDS || [];
+  const CARDS = ALL.filter(c => c.year);
+  const byId = TA.byId(ALL);
+  const esc = TA.esc;
+  const enc = encodeURIComponent;
 
-  // ── panels ───────────────────────────────────────────────────────────────
-  // Six flagship panels above the fold, then every remaining thread in an index
-  // strip below. A panel is a label + a set of threads: usually one, but the
-  // machine-tools lineage is a continuous relay (Britain's tooling → the American
-  // system of manufactures → mass production), so its two threads share one panel.
+  // ═══ 0 · CONFIG ═══════════════════════════════════════════════════════════
+  const CFG = {
+    // A hold needs two cards no further apart than this. Not a taste call: the median
+    // gap between neighbouring cards in a panel is 6 years and the 75th percentile is
+    // 15, so 20 is "a bit more than three quarters of the time, one working stretch".
+    // The coda prints the sensitivity at 15/20/25/30 so the reader can check the pick.
+    HOLD_GAP: 20,
+    // A stretch with no card ANYWHERE in the atlas, this long, is cut out of the axis
+    // and labelled with what was removed. Must exceed HOLD_GAP, so a hold can never
+    // straddle a cut — the one mark that carries a duration is never broken.
+    FOLD_MIN: 120,
+    SIL_MIN: 25, // a gap worth naming, in years
+    CUTS: [1700, 1800], // authored subdivisions of the sparse era; see SCALE
+    YMAX: 2030,
+    GUT: 200, // left gutter: name, meter, counts, finding
+    BANDW: 990,
+    RPAD: 30,
+    FOLDW: 26, // width of a cut-out marker
+    SEG_MIN: 11, // no segment collapses to nothing
+    SEG_PAD: 3, // added to each segment's card count before sharing out width
+  };
+  const AX0 = CFG.GUT;
+  const AXW = AX0 + CFG.BANDW;
+  const FULLW = AXW + CFG.RPAD;
+
+  // ═══ 1 · DERIVE ═══════════════════════════════════════════════════════════
+  // Country level, not the Timeline's swimlane. That lane folds Germany, Switzerland
+  // and Finland into one European band, and this whole page is an argument about which
+  // NATION was doing the hardest making — Jena is not Delft. `country` already treats
+  // the US as one polity, so it avoids inventing handoffs inside America.
+  const ctryOf = c => (c.country === "United States of America" ? "USA" : c.country || "—");
+
+  // Editorial: which threads get a full-size panel, in the order the argument walks.
+  // Machine tools and production systems are one continuous relay (Britain's tooling ->
+  // the American system of manufactures -> flow), so they share a panel.
   const FLAGSHIP = [
     ["Precision Optics", ["Precision Optics"]],
     ["Machine Tools / Production Systems", ["Machine Tools", "Production Systems"]],
     ["Chip Lithography", ["Chip Lithography"]],
-    ["Reading & Writing DNA", ["Reading & Writing DNA"]],
-    ["Therapeutics", ["Therapeutics"]],
     ["The Network", ["The Network"]],
+    ["Therapeutics", ["Therapeutics"]],
+    ["Reading & Writing DNA", ["Reading & Writing DNA"]],
   ];
-  const flagThreads = new Set(FLAGSHIP.flatMap(f => f[1]));
-  const allThreads = [...new Set(CARDS.flatMap(c => c.threads || []))];
-  const tmin = {};
-  CARDS.forEach(c =>
-    (c.threads || []).forEach(t => (tmin[t] = Math.min(tmin[t] ?? 9999, c.year || 9999))),
-  );
-  const indexThreads = allThreads
-    .filter(t => !flagThreads.has(t))
-    .sort((a, b) => tmin[a] - tmin[b]);
 
-  // cards of a panel = union of its threads, deduped, sorted by year then id
-  function panelCards(threads) {
+  function cardsOf(threads) {
     const seen = {};
-    for (const c of CARDS)
-      if (c.year && (c.threads || []).some(t => threads.includes(t))) seen[c.id] = c;
+    for (const c of CARDS) if ((c.threads || []).some(t => threads.includes(t))) seen[c.id] = c;
     return Object.values(seen).sort((a, b) => a.year - b.year || (a.id < b.id ? -1 : 1));
   }
 
-  // Country runs at the COUNTRY level — the granularity Report 1's argument lives at
-  // (optics Delft->Jena->Japan->Netherlands; machine tools Britain->America->Japan).
-  // NOT regionGroup: that is the Timeline's swimlane, which folds Germany, Finland,
-  // Switzerland etc. into one continental-Europe band — so Finland 1974 (the caption's
-  // own example of the proxy misleading) could not even appear as Finland. `country`
-  // already keeps the US as one polity (no Northeast/Silicon-Valley split at this field),
-  // so it avoids the intra-US false handoffs without merging distinct European nations.
-  const shortCtry = c => (c.country === "United States of America" ? "USA" : c.country || "—");
-  const groupOf = shortCtry;
-  function runsOf(cs) {
+  // Runs: neighbouring cards that share a country. This is the sequence — who appears,
+  // in what order. It is NOT a tenure claim and nothing is drawn from it but the count.
+  function runsOf(cards) {
     const rr = [];
-    for (const c of cs) {
-      const g = groupOf(c);
+    for (const c of cards) {
+      const g = ctryOf(c);
       const last = rr[rr.length - 1];
       if (last && last.g === g) {
         last.n++;
@@ -60,18 +91,147 @@
     return rr;
   }
 
-  // ── country colour ───────────────────────────────────────────────────────
-  // Colour is a SECONDARY channel here (every proxy cell is labelled), but a stable
-  // country→hue map makes handoffs and round-trips (a country returning) read at a
-  // glance. Ranked by corpus frequency; the top four take the validated categorical
-  // slots (blue/green/magenta/yellow — pass all-pairs CVD + normal-vision on the cream
-  // surface #fcfbf9, see dataviz validator), the long tail folds to neutral. Never a
-  // hardcoded country name: the ranking is derived from the data.
+  // ── THE TENURE SEAM ───────────────────────────────────────────────────────
+  // The only thing on this page allowed to colour a span of years. Swap this object
+  // for an authored-tenure source and every count, meter, label, ledger row and coda
+  // figure follows, because nothing downstream knows where holds come from.
+  //
+  // A LINK joins two cards that are neighbours in the panel's own sequence, share a
+  // country, and sit no more than maxGap years apart. A HOLD is a maximal chain of
+  // links. Two properties fall out by construction, not by luck:
+  //   · every coloured year lies between two cards of the same country, and
+  //   · no coloured stretch contains a card-free gap longer than maxGap.
+  // So a single card can never claim a year. The 552 card in the machine-tools panel
+  // claims 552 and stops; the centuries after it are not the atlas's to give away.
+  const TENURE = {
+    id: "linked-cards",
+    maxGap: CFG.HOLD_GAP,
+    holds(cards) {
+      const out = [];
+      let cur = null;
+      for (let i = 1; i < cards.length; i++) {
+        const p = cards[i - 1],
+          c = cards[i];
+        const linked = ctryOf(c) === ctryOf(p) && c.year - p.year <= this.maxGap;
+        if (linked) {
+          if (cur) {
+            cur.b = c.year;
+            cur.cards.push(c);
+          } else cur = { g: ctryOf(c), a: p.year, b: c.year, cards: [p, c] };
+        } else if (cur) {
+          out.push(cur);
+          cur = null;
+        }
+      }
+      if (cur) out.push(cur);
+      out.forEach(h => (h.n = h.cards.length));
+      return out;
+    },
+  };
+
+  // Silences: card-free gaps inside a panel's own span. Absence of evidence, drawn as
+  // itself. Every silence this view draws prints its length in years — the axis is not
+  // asked to convey it (see SCALE).
+  function silencesOf(cards) {
+    const out = [];
+    for (let i = 1; i < cards.length; i++) {
+      const g = cards[i].year - cards[i - 1].year;
+      if (g >= CFG.SIL_MIN) out.push({ a: cards[i - 1].year, b: cards[i].year, g });
+    }
+    return out;
+  }
+
+  function buildModel(label, threads, tenure) {
+    const cards = cardsOf(threads);
+    const runs = runsOf(cards);
+    const holds = tenure.holds(cards);
+    const sil = silencesOf(cards);
+    const first = cards[0].year,
+      last = cards[cards.length - 1].year;
+    const span = last - first;
+    const held = holds.reduce((a, h) => a + (h.b - h.a), 0);
+    const seq = runs.map(r => r.g);
+    let rt = 0;
+    for (let i = 2; i < seq.length; i++) if (seq[i] === seq[i - 2]) rt++; // X->Y->X
+    return {
+      label,
+      threads,
+      cards,
+      runs,
+      holds,
+      sil,
+      first,
+      last,
+      span,
+      held,
+      rt,
+      single: runs.filter(r => r.n === 1).length,
+      cover: span ? held / span : 0,
+      longest: holds.slice().sort((a, b) => b.b - b.a - (a.b - a.a) || (a.g < b.g ? -1 : 1))[0],
+      widest: sil.slice().sort((a, b) => b.g - a.g || a.a - b.a)[0],
+    };
+  }
+
+  const flagSet = new Set(FLAGSHIP.flatMap(f => f[1]));
+  const restThreads = [...new Set(CARDS.flatMap(c => c.threads || []))]
+    .filter(t => !flagSet.has(t))
+    .sort();
+  const FLAGS = FLAGSHIP.map(([l, t]) => buildModel(l, t, TENURE));
+  // The index strip runs best-evidenced first and empties out as you scroll: the shape
+  // of the corpus, readable before a single mark is.
+  const INDEX = restThreads
+    .map(t => buildModel(t, [t], TENURE))
+    .sort((a, b) => b.cover - a.cover || (a.label < b.label ? -1 : 1));
+  const MODELS = FLAGS.concat(INDEX);
+
+  const HOLDS = MODELS.flatMap(m => m.holds.map(h => Object.assign({ panel: m.label }, h)));
+  const TOT = MODELS.reduce(
+    (a, m) => ({
+      cards: a.cards + m.cards.length,
+      runs: a.runs + m.runs.length,
+      single: a.single + m.single,
+      span: a.span + m.span,
+      held: a.held + m.held,
+      rt: a.rt + m.rt,
+    }),
+    { cards: 0, runs: 0, single: 0, span: 0, held: 0, rt: 0 },
+  );
+  const usaHolds = HOLDS.filter(h => h.g === "USA");
+  const TOPC = usaHolds.length
+    ? { g: "USA", n: usaHolds.length, y: usaHolds.reduce((a, h) => a + h.b - h.a, 0) }
+    : { g: "—", n: 0, y: 0 };
+
+  // What the rule this view refuses would have cost, measured on the panels actually
+  // drawn rather than asserted from memory: paint every turn forward to the next
+  // country's first card and find the single lone card that ends up claiming the most.
+  const WORST = MODELS.reduce(
+    (best, m) => {
+      m.runs.forEach((r, i) => {
+        if (r.n !== 1 || i >= m.runs.length - 1) return;
+        const claim = m.runs[i + 1].start - r.start;
+        if (claim > best.claim) best = { claim, g: r.g, year: r.start, panel: m.label };
+      });
+      return best;
+    },
+    { claim: 0, g: "—", year: 0, panel: "" },
+  );
+
+  // Sensitivity of the whole finding to the one parameter it rests on, computed live.
+  const SENS = [15, 20, 25, 30].map(t => {
+    const src = { maxGap: t, holds: TENURE.holds };
+    const hs = MODELS.flatMap(m => src.holds(m.cards));
+    return { t, n: hs.length, y: hs.reduce((a, h) => a + h.b - h.a, 0) };
+  });
+
+  // ── country colour ────────────────────────────────────────────────────────
+  // Ranked by corpus frequency; the top four take the validated categorical slots
+  // (blue/green/magenta/yellow — all-pairs CVD + normal vision on the cream surface,
+  // per the dataviz validator), the tail folds to neutral. Never a hardcoded name.
   const CTRY_PAL = ["#2a78d6", "#008300", "#e87ba4", "#eda100"];
   const CTRY_NEUTRAL = "#9b968c";
   const ctryCount = {};
   CARDS.forEach(c => {
-    const g = groupOf(c);
+    const g = ctryOf(c);
     if (g && g !== "—") ctryCount[g] = (ctryCount[g] || 0) + 1;
   });
   const ctryRank = Object.keys(ctryCount).sort(
@@ -81,167 +241,589 @@
   ctryRank.forEach((g, i) => (ctryColor[g] = i < CTRY_PAL.length ? CTRY_PAL[i] : CTRY_NEUTRAL));
   const colorOf = g => ctryColor[g] || CTRY_NEUTRAL;
 
-  // ── time axis: LINEAR with a visible break at 1700 ───────────────────────
-  // NOT the Timeline's log scale — that renders an 88-year hold starting before ~1775
-  // narrower than a modern 20-year one, inverting the exact comparison this view exists
-  // to make. ta.js's timeScale has a linear mode but only as ONE monotone segment; a
-  // broken axis is two of them composed (pre/post 1700), NOT a fourth forked scale.
-  const YMIN = Math.min(...CARDS.map(c => c.year).filter(Boolean));
-  const BREAK = 1700,
-    YMAX = 2030;
-  const LABW = 150,
-    PREW = 62,
-    GAP = 20,
-    MAINW = 880,
-    RPAD = 28;
-  const AX0 = LABW;
-  const preXs = TA.timeScale({ mode: "linear", minY: YMIN, maxY: BREAK, x0: AX0, width: PREW }).xs;
-  const postXs = TA.timeScale({
-    mode: "linear",
-    minY: BREAK,
-    maxY: YMAX,
-    x0: AX0 + PREW + GAP,
-    width: MAINW,
-  }).xs;
-  const xOf = y => (y <= BREAK ? preXs(y) : postXs(y));
-  const AXW = AX0 + PREW + GAP + MAINW;
-  const FULLW = AXW + RPAD;
-  const AXH = 44; // top band: year labels + break marker
+  // ═══ 2 · SCALE ════════════════════════════════════════════════════════════
+  // Year -> x. Three rules, all derived, all printed on the page:
+  //
+  //  (a) CUT OUT what is provably empty. A stretch with no card anywhere in the atlas
+  //      and longer than FOLD_MIN is removed and replaced by a marked gutter carrying
+  //      the exact number of years taken out. No year that has a card is ever elided.
+  //  (b) SHARE THE REST OUT BY EVIDENCE. Each segment's width is proportional to the
+  //      cards in it. The old axis spent 532 of 880px on 23 cards.
+  //  (c) FROM linFrom ONWARD, ONE LINEAR RATE. linFrom is the decade of the earliest
+  //      hold in the corpus, so every hold on this page necessarily sits inside a single
+  //      linear stretch and hold widths are exactly proportional to hold years — the
+  //      comparison this view exists to make cannot invert. That is the log scale's
+  //      failure closed by construction rather than by promise: add a card that creates
+  //      an earlier hold and linFrom moves back with it.
+  //
+  // Every segment is a TA.timeScale({mode:"linear"}); this composes them, it does not
+  // fork a fourth scale.
+  function buildScale(cards, holds) {
+    const yrs = [...new Set(cards.map(c => c.year))].sort((a, b) => a - b);
+    const ymin = yrs[0],
+      ymax = CFG.YMAX;
+    const holdFrom = holds.length ? Math.min(...holds.map(h => h.a)) : ymax;
+    const linFrom = Math.max(ymin, Math.min(ymax, Math.floor(holdFrom / 10) * 10));
 
-  const esc = TA.esc;
-  const enc = encodeURIComponent;
-  const tw = (s, fs) => String(s).length * fs * 0.56; // text-width estimate (deterministic)
+    const folds = [];
+    for (let i = 1; i < yrs.length; i++)
+      if (yrs[i] - yrs[i - 1] >= CFG.FOLD_MIN && yrs[i] <= linFrom)
+        folds.push({ a: yrs[i - 1], b: yrs[i] });
 
-  // ── build one panel; returns { html, height } laid out from y ─────────────
-  function panel(label, threads, y, D) {
-    const cs = panelCards(threads);
-    const rr = runsOf(cs);
-    const single = rr.filter(r => r.n === 1).length;
-    // evidence rug: one kind-glyph tick per card, collision-stacked into rows
+    // kept stretches = everything the folds did not take
+    const kept = [];
+    let cur = ymin;
+    for (const f of folds) {
+      kept.push([cur, f.a]);
+      cur = f.b;
+    }
+    kept.push([cur, ymax]);
+
+    const cuts = CFG.CUTS.concat([linFrom]);
+    const segs = [];
+    for (const [a, b] of kept) {
+      const ks = [a].concat(cuts.filter(c => c > a && c < b)).concat([b]);
+      if (ks.length === 2 && a === b) segs.push({ a, b: a });
+      else for (let i = 1; i < ks.length; i++) segs.push({ a: ks[i - 1], b: ks[i] });
+    }
+    segs.forEach((s, i) => {
+      const lastSeg = i === segs.length - 1;
+      s.n = cards.filter(c => c.year >= s.a && (c.year < s.b || (lastSeg && c.year <= s.b))).length;
+    });
+
+    // width by evidence, then lift anything under SEG_MIN and pay for it proportionally
+    const avail = CFG.BANDW - CFG.FOLDW * folds.length;
+    const wt = segs.map(s => s.n + CFG.SEG_PAD);
+    const sum = wt.reduce((a, b) => a + b, 0);
+    let w = wt.map(x => (avail * x) / sum);
+    for (let pass = 0; pass < 40; pass++) {
+      let owed = 0,
+        slack = 0;
+      w.forEach((x, i) => {
+        if (x < CFG.SEG_MIN) {
+          owed += CFG.SEG_MIN - x;
+          w[i] = CFG.SEG_MIN;
+        } else slack += x - CFG.SEG_MIN;
+      });
+      if (owed <= 0 || slack <= 0) break;
+      w = w.map(x => (x <= CFG.SEG_MIN ? CFG.SEG_MIN : x - (owed * (x - CFG.SEG_MIN)) / slack));
+    }
+
+    // lay the segments and the fold gutters out left to right
+    const items = [];
+    let acc = AX0;
+    for (let i = 0; i < segs.length; i++) {
+      const f = i > 0 && folds.find(f => f.a === segs[i - 1].b && f.b === segs[i].a);
+      if (f) {
+        items.push({ fold: true, a: f.a, b: f.b, x0: acc, w: CFG.FOLDW });
+        acc += CFG.FOLDW;
+      }
+      const s = segs[i];
+      const x0 = acc,
+        sw = w[i]; // bind per segment: `acc` keeps moving, a closure over it would not
+      items.push({
+        fold: false,
+        a: s.a,
+        b: s.b,
+        n: s.n,
+        x0,
+        w: sw,
+        // the one primitive, once per segment. A segment holding a single year (a card
+        // marooned between two cut-outs) has no interval to interpolate, so it is a point.
+        xs:
+          s.b > s.a
+            ? TA.timeScale({ mode: "linear", minY: s.a, maxY: s.b, x0, width: sw }).xs
+            : () => x0 + sw / 2,
+      });
+      acc += sw;
+    }
+    const xOf = y => {
+      for (const it of items) {
+        if (y <= it.a) return it.fold ? it.x0 : it.xs(it.a);
+        if (y < it.b) return it.fold ? it.x0 + it.w / 2 : it.xs(y);
+      }
+      const L = items[items.length - 1];
+      return L.fold ? L.x0 + L.w : L.xs(L.b);
+    };
+    const linSeg = items.filter(it => !it.fold && it.a >= linFrom);
+    const linRate = linSeg.length
+      ? linSeg.reduce((a, s) => a + s.w, 0) / linSeg.reduce((a, s) => a + (s.b - s.a), 0)
+      : 1;
+    return { xOf, items, folds, ymin, ymax, linFrom, holdFrom, linRate };
+  }
+  const SCALE = buildScale(CARDS, HOLDS);
+  const xOf = SCALE.xOf;
+
+  // ═══ 3 · LAYOUT ═══════════════════════════════════════════════════════════
+  // Metric sets. The rug grew (13px glyphs, 13px minimum separation) because the axis
+  // gave it the room: the 1950-2000 stretch went from 133px to ~258px.
+  const FLAG_M = {
+    rugRow: 17,
+    gly: 13,
+    minDx: 13,
+    bandH: 34,
+    lane: 13,
+    gap: 20,
+    sil: 9.5,
+    hold: 9,
+    barH: 8,
+    post: 2.5,
+  };
+  const IDX_M = {
+    rugRow: 12,
+    gly: 10.5,
+    minDx: 10,
+    bandH: 22,
+    lane: 10,
+    gap: 13,
+    sil: 8.5,
+    hold: 8,
+    barH: 6,
+    post: 2,
+  };
+
+  // Greedy word wrap against the same deterministic width estimate the renderer uses.
+  function wrap(s, width, fs) {
+    const out = [];
+    let ln = "";
+    for (const w of String(s).split(" ")) {
+      if (ln && tw(ln + " " + w, fs) > width) {
+        out.push(ln);
+        ln = w;
+      } else ln = ln ? ln + " " + w : w;
+    }
+    if (ln) out.push(ln);
+    return out;
+  }
+
+  function layoutPanel(model, M, y, flagship) {
+    // evidence rug: one kind-glyph per card, greedily packed into rows from the band up
     const rowEnd = [];
-    const ticks = cs.map(c => {
+    const ticks = model.cards.map(c => {
       const x = xOf(c.year);
       let r = -1;
       for (let i = 0; i < rowEnd.length; i++)
-        if (x - rowEnd[i] >= D.minDx) {
+        if (x - rowEnd[i] >= M.minDx) {
           r = i;
           break;
         }
       if (r < 0) {
         r = rowEnd.length;
-        rowEnd.push(0);
+        rowEnd.push(-1e9);
       }
       rowEnd[r] = x;
-      return { c, x, r };
+      return { c, x, r, dx: 0 };
     });
-    const nrows = Math.max(1, rowEnd.length);
-    const rugTop = y;
-    const rugH = nrows * D.rugRow;
-    const proxyTop = rugTop + rugH + 5;
-    const proxyBot = proxyTop + D.proxyH;
-    let h = "";
-    // left label (spans the panel)
-    h += `<text x="8" y="${rugTop + D.lab - 2}" font-size="${D.lab}" font-weight="600" fill="#1c1c1c">${esc(label)}</text>`;
-    h += `<text x="8" y="${rugTop + D.lab + 11}" font-size="9.5" fill="#8a857c">${cs.length} cards · ${rr.length} runs${single ? " · " + single + " single-card" : ""}</text>`;
-    // rug baseline
-    h += `<line x1="${AX0}" y1="${proxyTop - 3}" x2="${AXW}" y2="${proxyTop - 3}" stroke="rgba(0,0,0,.10)" stroke-width=".5"/>`;
-    // rug ticks (clickable → showDetail)
-    for (const t of ticks) {
-      const cy = rugTop + t.r * D.rugRow + D.rugRow - 3;
-      h +=
-        `<g data-id="${enc(t.c.id)}" tabindex="0" role="button" aria-label="${esc(t.c.name)} — ${esc(t.c.kind)}, ${esc(t.c.place || "")}, ${t.c.year}">` +
-        `<circle cx="${t.x.toFixed(1)}" cy="${cy}" r="6" fill="transparent"/>` +
-        `<text x="${t.x.toFixed(1)}" y="${cy + 3.5}" text-anchor="middle" font-size="${D.gly}" fill="${KINK[t.c.kind]}">${KGLY[t.c.kind]}</text>` +
+    // cards sharing a year would stack their posts on the identical pixel and hide a
+    // country. Fan them deterministically, by id, never more than 3px off true.
+    const bins = {};
+    ticks.forEach(t => (bins[t.c.year] = (bins[t.c.year] || []).concat([t])));
+    Object.keys(bins).forEach(k => {
+      const g = bins[k];
+      if (g.length > 1) g.forEach((t, i) => (t.dx = (i - (g.length - 1) / 2) * 3));
+    });
+    const rows = Math.max(1, rowEnd.length);
+    const rugH = rows * M.rugRow;
+    const bandTop = y + rugH + 4;
+    // the gutter is prose and can be taller than the chart; the panel is whichever is
+    // taller, so a long finding never runs into the next thread's name
+    const name = wrap(model.label, CFG.GUT - 12, flagship ? 12.5 : 10.5);
+    const prose = flagship ? wrap(PANEL_COPY[model.label] || "", CFG.GUT - 16, 10) : [];
+    const foot = flagship ? footLines(model) : [];
+    const head = (name.length - 1) * (flagship ? 14 : 12);
+    const gutH =
+      head + (flagship ? 38 : 34) + prose.length * 12 + foot.length * 12 + (flagship ? 8 : 0);
+    return {
+      ticks,
+      rows,
+      name,
+      head,
+      prose,
+      foot,
+      top: y,
+      bandTop,
+      bandBot: bandTop + M.bandH,
+      laneY: bandTop + M.bandH + M.lane,
+      height: Math.max(rugH + 4 + M.bandH + M.lane, gutH) + M.gap,
+    };
+  }
+
+  // ═══ 4 · RENDER ═══════════════════════════════════════════════════════════
+  const f = n => (Math.round(n * 10) / 10).toFixed(1);
+  const tw = (s, fs) => String(s).length * fs * 0.56; // deterministic width estimate
+  const num = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const rect = (x, y, w, h, a) =>
+    `<rect x="${f(x)}" y="${f(y)}" width="${f(Math.max(w, 0))}" height="${f(h)}" ${a}/>`;
+  const text = (x, y, s, a) => `<text x="${f(x)}" y="${f(y)}" ${a}>${s}</text>`;
+  const line = (x1, y1, x2, y2, a) =>
+    `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" ${a}/>`;
+
+  const SILENCE = "#e9e5dd";
+  const RULE = "#c2bbae";
+  const LABEL = "#5f594f";
+
+  // The axis band. Drawn twice: once at the top, once again above the index strip so
+  // the small panels are never orphaned from their scale.
+  // Returns two layers. `back` goes under the panels; `front` goes over them, because a
+  // cut-out has to interrupt every mark that would otherwise appear to run across it.
+  function drawAxis(top, chartH) {
+    const H = 54;
+    let back = "",
+      front = "";
+    // gridlines run the full chart; the decade comb only where the scale is linear, so
+    // a reader who wants to measure a stretch can count hairlines instead of guessing.
+    for (let yr = SCALE.linFrom; yr <= SCALE.ymax; yr += 10) {
+      const col = yr % 100 === 0 ? "rgba(0,0,0,.10)" : "rgba(0,0,0,.045)";
+      back += line(xOf(yr), top + H - 8, xOf(yr), chartH, `stroke="${col}" stroke-width="1"`);
+    }
+    for (const c of [1300, 1400, 1600, 1700, 1800])
+      if (c > SCALE.ymin && c < SCALE.linFrom)
+        back += line(
+          xOf(c),
+          top + H - 8,
+          xOf(c),
+          chartH,
+          `stroke="rgba(0,0,0,.06)" stroke-width="1"`,
+        );
+
+    // cut-out gutters: the years the axis refuses to draw, named
+    for (const fo of SCALE.folds) {
+      const gx = SCALE.items.find(i => i.fold && i.a === fo.a).x0;
+      front += rect(gx, top + H - 8, CFG.FOLDW, chartH - top - H + 8, `fill="#fcfbf9"`);
+      for (const oy of [0, 1])
+        front += `<path d="M${f(gx + 3)} ${f(top + H - 3 + oy * 9)} l${f(CFG.FOLDW - 6)} -8" stroke="${RULE}" stroke-width="1.3" fill="none"/>`;
+      front +=
+        text(
+          gx + CFG.FOLDW / 2,
+          top + H - 30,
+          `${num(fo.b - fo.a)} yr`,
+          `text-anchor="middle" font-size="8.5" font-weight="600" fill="${LABEL}"`,
+        ) +
+        text(
+          gx + CFG.FOLDW / 2,
+          top + H - 21,
+          `cut`,
+          `text-anchor="middle" font-size="8" fill="#9a948b"`,
+        );
+    }
+
+    // Year labels. Centuries and the corpus's own first year get first refusal; the
+    // halves only fill gaps the centuries left, so the axis never reads 1650·1750·1850
+    // with the round numbers missing.
+    const MAJOR = [SCALE.ymin, 1300, 1400, 1600, 1700, 1800, 1900, 1940, 1980, 2020];
+    const MINOR = [1500, 1650, 1750, 1850, 1920, 1960, 2000];
+    const placed = [];
+    const fits = x => placed.every(p => Math.abs(p - x) >= 34);
+    for (const list of [MAJOR, MINOR])
+      for (const yr of list) {
+        if (yr < SCALE.ymin || yr > SCALE.ymax) continue;
+        if (SCALE.folds.some(fo => yr > fo.a && yr < fo.b)) continue;
+        const x = xOf(yr);
+        if (!fits(x)) continue;
+        placed.push(x);
+        back += text(
+          x,
+          top + H - 8,
+          yr,
+          `text-anchor="middle" font-size="10" font-weight="600" fill="#8f8a82"`,
+        );
+      }
+    // and the one rate the reader is allowed to trust
+    back += text(
+      AXW,
+      top + 11,
+      `evidence-weighted before ${SCALE.linFrom} · plain linear after it, ${f(SCALE.linRate * 10)} px per decade`,
+      `text-anchor="end" font-size="9" fill="#9a948b"`,
+    );
+    return { back, front, h: H };
+  }
+
+  function drawGutter(m, lay, M, flagship) {
+    const x = 8;
+    let s = lay.name
+      .map((l, i) =>
+        text(
+          x,
+          lay.top + 11 + i * (flagship ? 14 : 12),
+          esc(l),
+          `font-size="${flagship ? 12.5 : 10.5}" font-weight="600" fill="#1c1c1c"`,
+        ),
+      )
+      .join("");
+    let ty = lay.top + lay.head + (flagship ? 25 : 23);
+    // coverage meter — the panel's whole finding, before any mark is read
+    const mw = flagship ? 116 : 92;
+    s += rect(x, ty - 6, mw, 5, `fill="#e2ddd3" rx="2.5"`);
+    if (m.cover > 0)
+      s += rect(x, ty - 6, Math.max(mw * m.cover, 1.5), 5, `fill="#3a352d" rx="2.5"`);
+    s += text(
+      x + mw + 6,
+      ty - 1.5,
+      `${Math.round(m.cover * 100)}% held`,
+      `font-size="9" fill="#6f695f"`,
+    );
+    ty += flagship ? 13 : 11;
+    s += text(
+      x,
+      ty,
+      `${m.cards.length} cards · ${m.runs.length} turns · ${m.single} on one card`,
+      `font-size="9.5" fill="#8a857c"`,
+    );
+    if (flagship) {
+      lay.prose.forEach((l, i) => {
+        s += text(x, ty + 14 + i * 12, esc(l), `font-size="10" fill="#5f594f"`);
+      });
+      // The two facts a reader would otherwise have to measure off a distorted axis, in
+      // words. Stated here whether or not either mark had room for its label.
+      lay.foot.forEach((l, i) => {
+        s += text(
+          x,
+          ty + 17 + lay.prose.length * 12 + i * 12,
+          esc(l),
+          `font-size="9.5" font-weight="600" fill="#3a352d"`,
+        );
+      });
+    }
+    return s;
+  }
+
+  function drawPanel(m, lay, M, flagship) {
+    const x1 = xOf(m.first),
+      x2 = xOf(m.last);
+    let s = "";
+    // 1 · the field: everything between this thread's first and last card that no hold
+    //     covers. Largest area on the page, lowest contrast on the page — it is ground,
+    //     not figure, and it is what the atlas actually has to say about those years.
+    s += rect(x1, lay.bandTop, Math.max(x2 - x1, 2), M.bandH, `fill="${SILENCE}"`);
+
+    // 2 · named silences. Ranked by YEARS, never by pixels: before 1900 the axis is
+    //     evidence-weighted, so a wide gap on screen is not the long one and ranking by
+    //     width would put the labels on the wrong holes. Every silence that gets a rule
+    //     also gets its length in figures; anything too narrow to letter is left as plain
+    //     wash and named in the gutter instead.
+    const named = m.sil
+      .map(g => Object.assign({ w: xOf(g.b) - xOf(g.a) }, g))
+      .sort((a, b) => b.g - a.g || a.a - b.a)
+      .slice(0, flagship ? 5 : 2);
+    // a cut-out is painted over the panels, so a numeral that lands under one would be
+    // sliced in half; those silences keep their wash and are named in the gutter instead
+    const cuts = SCALE.items.filter(i => i.fold).map(i => [i.x0, i.x0 + i.w]);
+    for (const g of named) {
+      const full = `${num(g.g)} years · no card`,
+        shortl = `${num(g.g)} yr`;
+      const lab =
+        g.w >= tw(full, M.sil) + 26 ? full : g.w >= tw(shortl, M.sil) + 16 ? shortl : null;
+      if (!lab) continue;
+      const gy = lay.bandTop + M.bandH * 0.44,
+        mid = (xOf(g.a) + xOf(g.b)) / 2,
+        half = tw(lab, M.sil) / 2 + 5;
+      if (cuts.some(c => mid - half - 3 < c[1] && mid + half + 3 > c[0])) continue;
+      const dash = `stroke="${RULE}" stroke-width="1" stroke-dasharray="1 3"`;
+      s +=
+        `<g><title>${g.a} → ${g.b} · ${num(g.g)} years with no card in this thread</title>` +
+        rect(xOf(g.a), lay.bandTop, g.w, M.bandH, `fill="transparent"`) +
+        line(xOf(g.a) + 3, gy, mid - half, gy, dash) +
+        line(mid + half, gy, xOf(g.b) - 3, gy, dash) +
+        text(
+          mid,
+          gy + M.sil * 0.36,
+          esc(lab),
+          `text-anchor="middle" font-size="${M.sil}" font-weight="600" fill="${LABEL}"`,
+        ) +
         `</g>`;
     }
-    // proxy strip: one abutting cell per country-run
-    rr.forEach((r, i) => {
-      const x1 = xOf(r.start);
-      const x2 = i < rr.length - 1 ? xOf(rr[i + 1].start) : Math.max(xOf(r.end), x1) + 10;
-      const w = Math.max(x2 - x1, 5);
-      const col = colorOf(r.g);
-      const yrs = r.start === r.end ? "" + r.start : r.start + "–" + r.end;
-      const xf = x1.toFixed(1),
-        wf = w.toFixed(1);
-      h += `<g><title>${esc(r.g)} — ${yrs} · ${r.n} card${r.n > 1 ? "s" : ""}${r.n === 1 ? " (a lead on a single card)" : ""}</title>`;
-      h += `<rect x="${xf}" y="${proxyTop}" width="${wf}" height="${D.proxyH}" fill="${col}" fill-opacity="0.20" stroke="${col}" stroke-opacity="0.85" stroke-width="0.75"/>`;
-      h += `<rect x="${xf}" y="${proxyTop}" width="${wf}" height="2.5" fill="${col}" fill-opacity="0.9"/>`;
-      if (r.n === 1)
-        h += `<rect x="${xf}" y="${proxyTop}" width="${wf}" height="${D.proxyH}" fill="url(#rl-hatch)"/>`;
-      if (w >= tw(r.g, 9) + 6)
-        h += `<text x="${(x1 + w / 2).toFixed(1)}" y="${proxyTop + D.proxyH / 2 + 3}" text-anchor="middle" font-size="9" fill="#2a2620">${esc(r.g)}</text>`;
-      h += `</g>`;
-    });
-    return { html: h, height: proxyBot - rugTop + D.gap };
+
+    // 3 · holds. The only coloured span on the page, and the only mark with width.
+    for (const h of m.holds) {
+      const a = xOf(h.a),
+        b = xOf(h.b),
+        w = Math.max(b - a, 3),
+        col = colorOf(h.g);
+      s +=
+        `<g><title>${esc(h.g)} — ${h.a}–${h.b} · ${h.b - h.a} years held by ${h.n} cards, none more than ${TENURE.maxGap} years apart</title>` +
+        rect(
+          a - 2.5,
+          lay.bandTop,
+          w + 5,
+          M.bandH,
+          `fill="#ffffff" stroke="#ded8cd" stroke-width=".5" rx="2"`,
+        ) +
+        rect(a, lay.bandBot - M.barH, w, M.barH, `fill="${col}" rx="1"`) +
+        `</g>`;
+    }
+
+    // 4 · posts: one per card, full band height, at the card's own year. A card is a
+    //     fact; it is drawn whether or not anything holds around it.
+    for (const t of lay.ticks)
+      s += rect(
+        t.x + t.dx - M.post / 2,
+        lay.bandTop,
+        M.post,
+        M.bandH,
+        `fill="${colorOf(ctryOf(t.c))}"`,
+      );
+
+    // 5 · the evidence rug — the dominant mark. Glyphs at full kind colour, each on a
+    //     hairline stem down to its own post, clickable and focusable.
+    for (const t of lay.ticks) {
+      const cy = lay.bandTop - 6 - t.r * M.rugRow;
+      s +=
+        `<g data-id="${enc(t.c.id)}" tabindex="0" role="button" aria-label="${esc(t.c.name)} — ${esc(t.c.kind)}, ${esc(t.c.place || "")}, ${t.c.year}">` +
+        line(
+          t.x + t.dx,
+          lay.bandTop,
+          t.x + t.dx,
+          cy + 3,
+          `stroke="${colorOf(ctryOf(t.c))}" stroke-width=".75" stroke-opacity=".38"`,
+        ) +
+        `<circle cx="${f(t.x + t.dx)}" cy="${f(cy)}" r="7" fill="transparent"/>` +
+        text(
+          t.x + t.dx,
+          cy + M.gly * 0.34,
+          KGLY[t.c.kind],
+          `text-anchor="middle" font-size="${M.gly}" fill="${KINK[t.c.kind]}"`,
+        ) +
+        `</g>`;
+    }
+
+    // 6 · hold labels, in their own lane, skipped rather than crammed
+    let right = -1e9;
+    for (const h of m.holds) {
+      const a = xOf(h.a),
+        w = Math.max(xOf(h.b) - a, 3);
+      const tiers = [
+        `${h.g} ${h.a}–${h.b} · ${h.b - h.a} y · ${h.n} cards`,
+        `${h.g} · ${h.b - h.a} y`,
+        `${h.b - h.a} y`,
+      ];
+      const lab = tiers.find(t => tw(t, M.hold) <= Math.max(w, 46) + 30);
+      if (!lab) continue;
+      const lx = Math.min(a, AXW - tw(lab, M.hold));
+      if (lx < right) continue;
+      right = lx + tw(lab, M.hold) + 10;
+      s += text(lx, lay.laneY - 2, esc(lab), `font-size="${M.hold}" fill="#4a453c"`);
+    }
+    return s;
   }
 
-  // ── assemble ─────────────────────────────────────────────────────────────
-  const FLAG_D = { rugRow: 15, gly: 12, proxyH: 20, lab: 12, minDx: 11, gap: 20 };
-  const IDX_D = { rugRow: 12, gly: 10, proxyH: 15, lab: 10.5, minDx: 9, gap: 14 };
-
-  let body = "";
-  let y = AXH + 8;
-  for (const [label, threads] of FLAGSHIP) {
-    const p = panel(label, threads, y, FLAG_D);
-    body += p.html;
-    y += p.height;
-  }
-  // divider into the index strip
-  const divY = y + 2;
-  body += `<line x1="8" y1="${divY}" x2="${AXW}" y2="${divY}" stroke="rgba(0,0,0,.16)" stroke-width="1"/>`;
-  body += `<text x="8" y="${divY + 15}" font-size="11" font-weight="600" fill="#6f6f6f">The other ${indexThreads.length} threads</text>`;
-  y = divY + 26;
-  for (const t of indexThreads) {
-    const p = panel(t, [t], y, IDX_D);
-    body += p.html;
-    y += p.height;
-  }
-  const totalH = y + 6;
-
-  // top axis + full-height gridlines (drawn first, behind the panels)
-  let axis = "";
-  axis += `<defs><pattern id="rl-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="rgba(28,28,28,0.30)" stroke-width="1.4"/></pattern></defs>`;
-  // pre-1700 compressed band
-  axis += `<rect x="${AX0}" y="${AXH - 6}" width="${PREW}" height="${totalH - AXH + 6}" fill="rgba(0,0,0,.028)"/>`;
-  axis += `<text x="${AX0 + PREW / 2}" y="${AXH - 26}" text-anchor="middle" font-size="9" fill="#8a857c">pre-1700</text>`;
-  axis += `<text x="${AX0 + PREW / 2}" y="${AXH - 15}" text-anchor="middle" font-size="8" fill="#b0a99c">${YMIN}→ (compressed)</text>`;
-  // axis break marker in the gap
-  const bx = AX0 + PREW + GAP / 2;
-  for (const off of [-3, 3]) {
-    axis += `<path d="M${bx + off - 4} ${AXH - 8} l8 -6 M${bx + off - 4} ${totalH} l8 -6" stroke="#fcfbf9" stroke-width="5"/>`;
-    axis += `<path d="M${bx + off - 4} ${AXH - 8} l8 -6" stroke="#c7bfb0" stroke-width="1.3"/>`;
-  }
-  axis += `<rect x="${AX0 + PREW}" y="${AXH - 6}" width="${GAP}" height="${totalH - AXH + 6}" fill="#fcfbf9"/>`;
-  // post-1700 major gridlines + labels (1700 itself is marked by the break glyph +
-  // the pre-1700 band, so labelling it again only collides with the band caption)
-  const majors = [1750, 1800, 1850, 1900, 1950, 2000];
-  for (const yr of majors) {
-    const gx = xOf(yr);
-    axis += `<line x1="${gx.toFixed(1)}" y1="${AXH - 6}" x2="${gx.toFixed(1)}" y2="${totalH}" stroke="rgba(0,0,0,.06)" stroke-width="1"/>`;
-    axis += `<text x="${gx.toFixed(1)}" y="${AXH - 15}" text-anchor="middle" font-size="10" font-weight="600" fill="#8f8f8f">${yr}</text>`;
-  }
-  // redraw the break gap over the 1700 gridline so it reads as a clean break
-  axis += `<rect x="${AX0 + PREW}" y="${AXH - 6}" width="${GAP}" height="${totalH - AXH + 6}" fill="#fcfbf9"/>`;
-  for (const off of [-3, 3]) {
-    axis += `<path d="M${bx + off - 4} ${AXH - 8} l8 -6" stroke="#c7bfb0" stroke-width="1.3"/>`;
+  // Compose the whole canvas: six flagship panels in the order the argument walks, a
+  // divider, the axis again, then the index strip. Height is only known once every panel
+  // has been laid out, so the axis (which spans the full height) is drawn last.
+  function drawChart() {
+    const AXH = 54;
+    let body = "",
+      y = AXH + 10;
+    for (const m of FLAGS) {
+      const lay = layoutPanel(m, FLAG_M, y, true);
+      body += drawGutter(m, lay, FLAG_M, true) + drawPanel(m, lay, FLAG_M, true);
+      y += Math.max(lay.height, 104);
+    }
+    const divY = y + 2;
+    body +=
+      line(8, divY, AXW, divY, `stroke="rgba(0,0,0,.16)" stroke-width="1"`) +
+      text(
+        8,
+        divY + 16,
+        `The other ${INDEX.length} threads — best-evidenced first, and it runs out`,
+        `font-size="11" font-weight="600" fill="#6f6f6f"`,
+      );
+    const axis2Top = divY + 26;
+    y = axis2Top + AXH + 6;
+    for (const m of INDEX) {
+      const lay = layoutPanel(m, IDX_M, y, false);
+      body += drawGutter(m, lay, IDX_M, false) + drawPanel(m, lay, IDX_M, false);
+      y += Math.max(lay.height, 56);
+    }
+    const h = y + 8;
+    const a1 = drawAxis(0, h),
+      a2 = drawAxis(axis2Top, h);
+    return { h, svg: a1.back + a2.back + body + a1.front + a2.front };
   }
 
-  const svg = document.getElementById("chart");
-  svg.setAttribute("width", FULLW);
-  svg.setAttribute("height", totalH);
-  svg.setAttribute("viewBox", "0 0 " + FULLW + " " + totalH);
-  svg.innerHTML = axis + body;
+  // ═══ 5 · COPY ═════════════════════════════════════════════════════════════
+  // Authored prose carries the argument; every number in it is injected live, so the
+  // page cannot drift out of agreement with the corpus it is drawn from.
+  const PANEL_COPY = {
+    "Precision Optics":
+      "Delft, then Jena, then one Dutch town. Optics moved every time the hard part " +
+      "moved — from grinding the glass, to computing the lens, to printing circuits " +
+      "with it. Nobody kept it by holding on. The Japanese decades between Jena and " +
+      "Veldhoven are real and this atlas has no card for them: a gap in the deck, " +
+      "not in the history.",
+    "Machine Tools / Production Systems":
+      "Britain built the machines that build machines. America made the parts " +
+      "interchangeable. Japan made them flow. Each handover was a change in what was " +
+      "hardest to make, not in who knew how.",
+    "Chip Lithography":
+      "America invented it and compounded it for a generation. Then the hardest thing " +
+      "became the light and the lenses, and it left for Veldhoven, where it still is. " +
+      "Japan held the steppers in between; no card here carries that, so the panel " +
+      "cannot show it.",
+    "The Network":
+      "The control case. Packet switching never migrated: the making stayed where the " +
+      "users and the money already were. If the lead always moved, this panel would " +
+      "not look like this.",
+    Therapeutics:
+      "Here the hardest making is half regulatory, and it is the one thread where a " +
+      "country can lose the lead without losing any of the skill.",
+    "Reading & Writing DNA":
+      "Britain and America trade places over and over, fast enough that you can watch " +
+      "the mechanism work. Speed is the whole story, and the record still cannot keep up.",
+  };
 
-  // ── legends ──────────────────────────────────────────────────────────────
-  document.getElementById("kindleg").innerHTML =
+  // The two numbers a reader would otherwise try to eyeball off the axis, written out.
+  // Both are read from the model, so neither can go stale.
+  function footLines(m) {
+    const out = [];
+    out.push(
+      m.longest
+        ? `Longest hold ${m.longest.g} ${m.longest.a}–${m.longest.b}, ${m.longest.b - m.longest.a} y on ${m.longest.n} cards.`
+        : `Nothing here the record can carry.`,
+    );
+    if (m.widest) out.push(`Widest silence ${num(m.widest.g)} yr, ${m.widest.a}–${m.widest.b}.`);
+    return out.flatMap(l => wrap(l, CFG.GUT - 16, 9.5));
+  }
+
+  const pct = (a, b) => (b ? Math.round((1000 * a) / b) / 10 : 0);
+
+  const findingHTML = () =>
+    `Of the <b>${num(TOT.span)}</b> years these ${MODELS.length} panels span, the record can carry ` +
+    `<b>${num(TOT.held)}</b> — <b>${pct(TOT.held, TOT.span)}%</b>. The rest is not a lead being held. It is a lead we cannot see.` +
+    `<span class="second">The corpus was gathered in English, and it shows: ${TOPC.n} of the ${HOLDS.length} holds, ` +
+    `and ${num(TOPC.y)} of the ${num(TOT.held)} held years, are American. That is a fact about this atlas before it is a fact about the world.</span>`;
+
+  const methodHTML = () =>
+    `A card is a place where something was made. Two cards from the same country, next to each other in a thread and ` +
+    `no more than <b>${TENURE.maxGap}</b> years apart, hold the years between them; a run of such pairs is a hold. That is the strongest ` +
+    `claim this corpus can make, and it is the only thing drawn in colour. Nothing is ever painted forward from a card ` +
+    `to the next country's. Do that and the loudest mark on the page becomes a lie: one ${esc(WORST.g)} card dated ${WORST.year} ` +
+    `would take the next <b>${num(WORST.claim)}</b> years of ${esc(WORST.panel)} on its own. ` +
+    `Across the atlas <b>${TOT.single} of ${TOT.runs}</b> turns rest on a single card, and a single card is a date, not a tenure.`;
+
+  const axisNoteHTML = () =>
+    `The axis gives its width to the years that have cards. ` +
+    (SCALE.folds.length
+      ? `${SCALE.folds.length} stretches with no card anywhere in the atlas — ` +
+        SCALE.folds.map(fo => `${fo.a}–${fo.b}`).join(" and ") +
+        `, ${num(SCALE.folds.reduce((a, fo) => a + fo.b - fo.a, 0))} years — are cut out and marked. `
+      : "") +
+    `From ${SCALE.linFrom} it is plain linear, and every hold in the atlas begins in ${SCALE.holdFrom}, so every hold on this page is drawn ` +
+    `to one scale: a longer hold is always a wider bar. Silences reach back further than that and are not comparable by eye, ` +
+    `so each one prints its own length.`;
+
+  const kindLegendHTML = () =>
     "<span>Corpus:</span>" +
     KINDS.map(
       k => `<span><span class="gly" style="color:${KINK[k]}">${KGLY[k]}</span> ${k}</span>`,
     ).join("");
+  const markLegendHTML = () =>
+    `<span><svg width="34" height="11" aria-hidden="true"><rect x="0" y="0" width="34" height="11" fill="${SILENCE}"/><rect x="0" y="5" width="34" height="6" fill="#2a78d6" rx="1"/></svg>held</span>` +
+    `<span><svg width="12" height="11" aria-hidden="true"><rect x="0" y="0" width="12" height="11" fill="${SILENCE}"/><rect x="5" y="0" width="2.5" height="11" fill="#2a78d6"/></svg>one card</span>` +
+    `<span><svg width="26" height="11" aria-hidden="true"><rect x="0" y="0" width="26" height="11" fill="${SILENCE}"/><line x1="1" y1="5.5" x2="25" y2="5.5" stroke="${RULE}" stroke-dasharray="1 3"/></svg>silence</span>`;
   const topN = ctryRank.slice(0, CTRY_PAL.length);
   const tail = ctryRank.length - topN.length;
-  document.getElementById("ctryleg").innerHTML =
-    "<span>Proxy lead:</span>" +
+  const ctryLegendHTML = () =>
+    "<span>Countries:</span>" +
     topN
       .map(g => `<span><span class="sw" style="background:${colorOf(g)}"></span>${esc(g)}</span>`)
       .join("") +
@@ -249,72 +831,96 @@
       ? `<span><span class="sw" style="background:${CTRY_NEUTRAL}"></span>+${tail} more (grey)</span>`
       : "");
 
-  // ── coda: run-length distribution + round-trips, computed live ───────────
-  function stats(cs) {
-    const rr = runsOf(cs);
-    const seq = rr.map(r => r.g);
-    let rt = 0;
-    for (let i = 2; i < seq.length; i++) if (seq[i] === seq[i - 2]) rt++; // X→Y→X
-    const dist = {};
-    rr.forEach(r => (dist[r.n] = (dist[r.n] || 0) + 1));
-    return {
-      cards: cs.length,
-      runs: rr.length,
-      single: rr.filter(r => r.n === 1).length,
-      rt,
-      dist,
-    };
-  }
-  const rows = allThreads
-    .map(t => [t, stats(panelCards([t]))])
-    .sort((a, b) => b[1].single - a[1].single || a[0].localeCompare(b[0]));
-  const tot = rows.reduce(
-    (a, [, s]) => ({ runs: a.runs + s.runs, single: a.single + s.single, rt: a.rt + s.rt }),
-    { runs: 0, single: 0, rt: 0 },
+  // The ledger: every hold in the atlas on ONE plain linear scale. The main chart
+  // answers "when, and next to what"; this answers "how long", so no length on the
+  // chart is ever the instrument a reader has to trust.
+  const maxHold = Math.max(1, ...HOLDS.map(h => h.b - h.a));
+  const ordered = HOLDS.slice().sort(
+    (a, b) => b.b - b.a - (a.b - a.a) || a.a - b.a || (a.panel < b.panel ? -1 : 1),
   );
-  const distStr = d =>
-    Object.keys(d)
-      .map(Number)
-      .sort((a, b) => a - b)
-      .map(n => `${d[n]}×${n}`)
-      .join(", ");
+  const ledgerHTML = () =>
+    `<h2>Every hold the record can carry</h2>` +
+    `<p class="note">All ${HOLDS.length} of them, on one plain linear scale — ${num(maxHold)} years is the longest anything in this atlas ` +
+    `can be shown to have held. The other ${TOT.single} turns rest on a single card and have no length at all. ` +
+    `Read down the first column: this is what a corpus of invention sites can and cannot establish about who was ahead.</p>` +
+    `<ol>` +
+    ordered
+      .map(h => {
+        const d = h.b - h.a;
+        return (
+          `<li title="${esc(h.g)} · ${esc(h.panel)} · ${h.a}–${h.b} · ${h.n} cards">` +
+          `<span class="who" style="border-color:${colorOf(h.g)}">${esc(h.g)}</span>` +
+          `<span class="what">${esc(h.panel)} <i>${h.a}–${h.b}</i></span>` +
+          `<span class="bar"><b style="width:${((100 * d) / maxHold).toFixed(1)}%;background:${colorOf(h.g)}"></b></span>` +
+          `<span class="len">${d} y</span></li>`
+        );
+      })
+      .join("") +
+    `</ol>`;
 
-  document.getElementById("reliab").innerHTML =
-    `Proxy reliability, computed live over all ${allThreads.length} threads: ` +
-    `<b>${tot.single} of ${tot.runs}</b> country-runs rest on a single card; <b>${tot.rt}</b> round-trip excursions (X→Y→X). ` +
-    `<span style="color:#8a857c">Method below.</span>`;
-
-  document.getElementById("coda").innerHTML =
-    `<h2>Coda — how reliable is the proxy? (computed live from the ${CARDS.length} cards)</h2>` +
-    `<div class="formula">Sort a thread's cards by year; collapse consecutive cards that share a country (the card's <code>country</code>, with the US as one) into <b>runs</b>. ` +
-    `A <b>run length</b> is the card count of a run. A <b>single-card run</b> (length 1) is the proxy handing a country the lead on one card. ` +
-    `A <b>round-trip</b> is a run <code>r[i]</code> whose country equals <code>r[i−2]</code>'s but differs from <code>r[i−1]</code>'s — a country the trace left and returned to: ` +
-    `<code>count = #{ i≥2 : country(r[i]) = country(r[i−2]) }</code>. ` +
-    `Totals: <b>${tot.single} of ${tot.runs}</b> runs single-card, <b>${tot.rt}</b> round-trips. ` +
-    `<span style="color:#8a857c">(An earlier draft circulated an irreproducible &ldquo;44 of 90&rdquo;; this is the live figure and its definition.)</span></div>` +
-    `<table><thead><tr><th>Thread</th><th>Cards</th><th>Runs</th><th>Single-card</th><th>Round-trips</th><th style="text-align:left;padding-left:16px">Run-length distribution</th></tr></thead><tbody>` +
+  // The coda: the rule, its one judgement call, its sensitivity, and the arithmetic.
+  const rows = MODELS.slice().sort((a, b) => a.cover - b.cover || (a.label < b.label ? -1 : 1));
+  const codaHTML = () =>
+    `<h2>Coda — what the ${ALL.length} cards can and cannot support</h2>` +
+    `<div class="formula">Sort a panel's cards by year. Two neighbours that share a country (the card's <code>country</code>, ` +
+    `with the US as one polity) and sit <code>≤ ${TENURE.maxGap}</code> years apart form a <b>link</b>; a maximal chain of links is a ` +
+    `<b>hold</b>, and its length is <code>last − first</code>. Every held year therefore lies between two same-country cards, and no ` +
+    `held stretch contains a card-free gap longer than ${TENURE.maxGap} years — a lone card can claim nothing. A <b>turn</b> is a maximal ` +
+    `stretch of neighbouring cards from one country, so a turn with one card is a country the sequence visits and leaves. ` +
+    `A <b>round trip</b> is a turn whose country equals the one two turns earlier: <code>#{ i≥2 : country(t[i]) = country(t[i−2]) }</code>. ` +
+    `Totals over ${MODELS.length} panels — machine tools and production systems are one relay, so they are read as one, and a card ` +
+    `filed under two threads is counted in both panels, which is why the card column sums past ${ALL.length}: ` +
+    `<b>${HOLDS.length}</b> holds, <b>${num(TOT.held)}</b> held years of <b>${num(TOT.span)}</b> (${pct(TOT.held, TOT.span)}%), ` +
+    `<b>${TOT.single} of ${TOT.runs}</b> turns on a single card, <b>${TOT.rt}</b> round trips. ` +
+    `The ${TENURE.maxGap}-year link is the one judgement call here, so here is what moves if you change it: ` +
+    SENS.map(s => `<b>${s.t} y</b> → ${s.n} holds, ${num(s.y)} yr (${pct(s.y, TOT.span)}%)`).join(
+      "; ",
+    ) +
+    `. The percentage moves; the shape does not.</div>` +
+    `<table><thead><tr><th>Panel</th><th>Cards</th><th>Turns</th><th>On one card</th><th>Holds</th><th>Held yr</th><th>Span yr</th><th>Held %</th></tr></thead><tbody>` +
     rows
       .map(
-        ([t, s]) =>
-          `<tr><td>${esc(t)}</td><td>${s.cards}</td><td>${s.runs}</td><td>${s.single}</td><td>${s.rt}</td><td class="dist" style="text-align:left;padding-left:16px">${distStr(s.dist)}</td></tr>`,
+        m =>
+          `<tr><td>${esc(m.label)}</td><td>${m.cards.length}</td><td>${m.runs.length}</td><td>${m.single}</td>` +
+          `<td>${m.holds.length}</td><td>${m.held}</td><td>${num(m.span)}</td><td>${Math.round(m.cover * 100)}%</td></tr>`,
       )
       .join("") +
-    `<tr class="tot"><td>All ${allThreads.length} threads</td><td></td><td>${tot.runs}</td><td>${tot.single}</td><td>${tot.rt}</td><td style="text-align:left;padding-left:16px"></td></tr>` +
+    `<tr class="tot"><td>All ${MODELS.length} panels</td><td>${TOT.cards}</td><td>${TOT.runs}</td><td>${TOT.single}</td>` +
+    `<td>${HOLDS.length}</td><td>${num(TOT.held)}</td><td>${num(TOT.span)}</td><td>${pct(TOT.held, TOT.span)}%</td></tr>` +
     `</tbody></table>`;
 
-  // ── interaction: delegated on the SVG ────────────────────────────────────
+  // ═══ 6 · MOUNT ════════════════════════════════════════════════════════════
+  const chart = drawChart();
+  const svg = document.getElementById("chart");
+  svg.setAttribute("width", FULLW);
+  svg.setAttribute("height", chart.h);
+  svg.setAttribute("viewBox", "0 0 " + FULLW + " " + chart.h);
+  svg.innerHTML = chart.svg;
+
+  document.getElementById("finding").innerHTML = findingHTML();
+  document.getElementById("method").innerHTML = methodHTML();
+  document.getElementById("axnote").innerHTML = axisNoteHTML();
+  document.getElementById("kindleg").innerHTML = kindLegendHTML();
+  document.getElementById("markleg").innerHTML = markLegendHTML();
+  document.getElementById("ctryleg").innerHTML = ctryLegendHTML();
+  document.getElementById("ledger").innerHTML = ledgerHTML();
+  document.getElementById("coda").innerHTML = codaHTML();
+
+  // ── interaction: delegated on the SVG ─────────────────────────────────────
   const tip = document.getElementById("tip");
   const showTip = TA.tooltip(tip, byId);
   const idOf = el => {
     const g = el.closest && el.closest("[data-id]");
     return g ? decodeURIComponent(g.dataset.id) : null;
   };
+  const open = id => {
+    try {
+      showDetail(byId[id]);
+    } catch (err) {}
+  };
   svg.addEventListener("click", e => {
     const id = idOf(e.target);
-    if (id)
-      try {
-        showDetail(byId[id]);
-      } catch (err) {}
+    if (id) open(id);
   });
   svg.addEventListener("mousemove", e => {
     const id = idOf(e.target);
@@ -327,8 +933,6 @@
     const id = idOf(document.activeElement);
     if (!id) return;
     e.preventDefault();
-    try {
-      showDetail(byId[id]);
-    } catch (err) {}
+    open(id);
   });
 })();
