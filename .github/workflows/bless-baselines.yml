@@ -28,7 +28,11 @@ jobs:
       - uses: browser-actions/setup-chrome@v1
         id: chrome
         with:
-          chrome-version: stable
+          # PINNED, not "stable". The golden images exist to catch OUR changes, and a
+          # moving browser silently invalidates them: the runner drifted 150.0.7871.128 ->
+          # .181 mid-week and tree-desktop shifted 13px with it. Bump this deliberately,
+          # then re-bless both baseline sets in the same commit.
+          chrome-version: 150.0.7871.181
       - run: npm ci --prefix test
       - name: Capture and bless
         env:
