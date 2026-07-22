@@ -34,6 +34,26 @@ One command does everything — regenerate the data **and** bundle the markdown 
 
 Just the data, no bundling: `python3 regenerate.py` (same `VAULT` override).
 
+## Tests
+
+```
+npm run check         # pipeline, derived-file drift, invariants (no browser)
+npm run smoke         # golden-image diff of every view, + console/count assertions
+npm run bless:linux   # refresh the linux golden images for the current tree
+```
+
+`smoke` compares a pinned screenshot of every view against committed golden images in
+`test/baseline/<platform>/`. Tolerance is zero pixels, with a measured 20px floor for
+cross-runner rasteriser variance (see the comment on `MIN_PIXELS`). A missing baseline set is a
+hard failure, never a skip — a skip is indistinguishable from a pass in CI logs.
+
+**If you change how anything looks, both baseline sets must be refreshed in the same commit.**
+macOS you can do locally (`UPDATE_BASELINE=1 node test/smoke.mjs`); linux can only be produced
+on a linux runner, so `npm run bless:linux` snapshots your working tree to a throwaway remote
+branch, blesses it there, and pulls the images back — leaving them in your tree to commit
+alongside the change. Skipping this is what turns master red: the code lands, the linux images
+do not, and CI correctly reports that it compared nothing.
+
 ## Deploy & update (GitHub Pages)
 Static site, no build step — GitHub Pages serves it as-is. Live URL is a project page: `https://<username>.github.io/tooling-atlas/`.
 

@@ -5,6 +5,7 @@
   "scripts": {
     "format": "npx --yes prettier@3 --write \"shared.js\" \"views/*.js\"",
     "check": "python3 test/check.py",
-    "smoke": "node test/smoke.mjs"
+    "smoke": "node test/smoke.mjs",
+    "bless:linux": "bash test/bless-linux.sh"
   }
 }
