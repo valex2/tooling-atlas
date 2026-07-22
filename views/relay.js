@@ -621,7 +621,7 @@
       if (cuts.some(c => mid - half - 3 < c[1] && mid + half + 3 > c[0])) continue;
       const dash = `stroke="${RULE}" stroke-width="1" stroke-dasharray="1 3"`;
       s +=
-        `<g><title>Silence · ${g.a}–${g.b} · ${num(g.g)} yr · no card in this panel</title>` +
+        `<g><title>Silence ${g.a}–${g.b} · ${num(g.g)} yr · no card in this panel</title>` +
         rect(xOf(g.a), lay.bandTop, g.w, M.bandH, `fill="transparent"`) +
         line(xOf(g.a) + 3, gy, mid - half, gy, dash) +
         line(mid + half, gy, xOf(g.b) - 3, gy, dash) +
@@ -641,7 +641,7 @@
         w = Math.max(b - a, 3),
         col = colorOf(h.g);
       s +=
-        `<g><title>Hold · ${esc(h.g)} · ${h.a}–${h.b} · ${h.b - h.a} yr · ${h.n} cards · no gap over ${TENURE.maxGap} yr</title>` +
+        `<g><title>Hold ${esc(h.g)} ${h.a}–${h.b} · ${h.b - h.a} yr · ${h.n} cards · no gap over ${TENURE.maxGap} yr</title>` +
         rect(
           a - 2.5,
           lay.bandTop,
@@ -775,18 +775,19 @@
   };
 
   // The two numbers a reader would otherwise try to eyeball off the axis, written out.
-  // Both are read from the model, so neither can go stale. Same field order in both:
-  // what · where in time · how long. The figure and its unit are joined by a no-break
-  // space, so the greedy wrap can only break at a separator, never between "34" and "yr".
+  // Both are read from the model, so neither can go stale. One shape for every label on
+  // this page: a naming word, then the fields, middot-separated, in the order the mark's
+  // own tooltip uses. Figure and unit are joined by a no-break space, so the greedy wrap
+  // can never break between "34" and "yr".
   const YR = n => `${n}\u00a0yr`;
   function footLines(m) {
     const out = [];
     out.push(
       m.longest
-        ? `Longest hold · ${m.longest.g} ${m.longest.a}–${m.longest.b} · ${YR(m.longest.b - m.longest.a)} · ${m.longest.n} cards`
+        ? `Longest hold ${m.longest.g} ${m.longest.a}–${m.longest.b} · ${YR(m.longest.b - m.longest.a)} on ${m.longest.n} cards`
         : `No hold the record can carry.`,
     );
-    if (m.widest) out.push(`Widest silence · ${m.widest.a}–${m.widest.b} · ${YR(num(m.widest.g))}`);
+    if (m.widest) out.push(`Widest silence ${m.widest.a}–${m.widest.b} · ${YR(num(m.widest.g))}`);
     return out.flatMap(l => wrap(l, CFG.GUT - 16, 9.5));
   }
 
@@ -857,7 +858,7 @@
       .map(h => {
         const d = h.b - h.a;
         return (
-          `<li title="Hold · ${esc(h.g)} · ${esc(h.panel)} · ${h.a}–${h.b} · ${d} yr · ${h.n} cards">` +
+          `<li title="Hold ${esc(h.g)} ${h.a}–${h.b} · ${esc(h.panel)} · ${d} yr · ${h.n} cards">` +
           `<span class="who" style="border-color:${colorOf(h.g)}">${esc(h.g)}</span>` +
           `<span class="what">${esc(h.panel)} <i>${h.a}–${h.b}</i></span>` +
           `<span class="bar"><b style="width:${((100 * d) / maxHold).toFixed(1)}%;background:${colorOf(h.g)}"></b></span>` +
