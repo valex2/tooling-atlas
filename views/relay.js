@@ -75,8 +75,9 @@
     return Object.values(seen).sort((a, b) => a.year - b.year || (a.id < b.id ? -1 : 1));
   }
 
-  // Runs: neighbouring cards that share a country. This is the sequence — who appears,
+  // Turns: neighbouring cards that share a country. This is the sequence — who appears,
   // in what order. It is NOT a tenure claim and nothing is drawn from it but the count.
+  // One word for this unit everywhere: gutter, method, ledger, coda table. Never "run".
   function turnsOf(cards) {
     const rr = [];
     for (const c of cards) {
@@ -532,7 +533,7 @@
     back += text(
       AXW,
       top + 11,
-      `evidence-weighted before ${SCALE.linFrom} · plain linear after it, ${f(SCALE.linRate * 10)} px per decade`,
+      `evidence-weighted before ${SCALE.linFrom} · linear after · ${f(SCALE.linRate * 10)} px per decade`,
       `text-anchor="end" font-size="9" fill="#9a948b"`,
     );
     return { back, front, h: H };
@@ -609,7 +610,7 @@
     // sliced in half; those silences keep their wash and are named in the gutter instead
     const cuts = SCALE.items.filter(i => i.fold).map(i => [i.x0, i.x0 + i.w]);
     for (const g of named) {
-      const full = `${num(g.g)} years · no card`,
+      const full = `${num(g.g)} yr · no card`,
         shortl = `${num(g.g)} yr`;
       const lab =
         g.w >= tw(full, M.sil) + 26 ? full : g.w >= tw(shortl, M.sil) + 16 ? shortl : null;
@@ -620,7 +621,7 @@
       if (cuts.some(c => mid - half - 3 < c[1] && mid + half + 3 > c[0])) continue;
       const dash = `stroke="${RULE}" stroke-width="1" stroke-dasharray="1 3"`;
       s +=
-        `<g><title>${g.a} → ${g.b} · ${num(g.g)} years with no card in this thread</title>` +
+        `<g><title>Silence · ${g.a}–${g.b} · ${num(g.g)} yr · no card in this panel</title>` +
         rect(xOf(g.a), lay.bandTop, g.w, M.bandH, `fill="transparent"`) +
         line(xOf(g.a) + 3, gy, mid - half, gy, dash) +
         line(mid + half, gy, xOf(g.b) - 3, gy, dash) +
@@ -640,7 +641,7 @@
         w = Math.max(b - a, 3),
         col = colorOf(h.g);
       s +=
-        `<g><title>${esc(h.g)} — ${h.a}–${h.b} · ${h.b - h.a} years held by ${h.n} cards, none more than ${TENURE.maxGap} years apart</title>` +
+        `<g><title>Hold · ${esc(h.g)} · ${h.a}–${h.b} · ${h.b - h.a} yr · ${h.n} cards · no gap over ${TENURE.maxGap} yr</title>` +
         rect(
           a - 2.5,
           lay.bandTop,
@@ -692,9 +693,9 @@
       const a = xOf(h.a),
         w = Math.max(xOf(h.b) - a, 3);
       const tiers = [
-        `${h.g} ${h.a}–${h.b} · ${h.b - h.a} y · ${h.n} cards`,
-        `${h.g} · ${h.b - h.a} y`,
-        `${h.b - h.a} y`,
+        `${h.g} ${h.a}–${h.b} · ${h.b - h.a} yr · ${h.n} cards`,
+        `${h.g} · ${h.b - h.a} yr`,
+        `${h.b - h.a} yr`,
       ];
       const lab = tiers.find(t => tw(t, M.hold) <= Math.max(w, 46) + 30);
       if (!lab) continue;
@@ -724,7 +725,7 @@
       text(
         8,
         divY + 16,
-        `The other ${INDEX.length} threads — best-evidenced first, and it runs out`,
+        `The other ${INDEX.length} threads, best-evidenced first — and the evidence thins`,
         `font-size="11" font-weight="600" fill="#6f6f6f"`,
       );
     const axis2Top = divY + 26;
@@ -749,45 +750,43 @@
   // ═══ 5 · COPY ═════════════════════════════════════════════════════════════
   // Authored prose carries the argument; every number in it is injected live, so the
   // page cannot drift out of agreement with the corpus it is drawn from.
+  // Two to four lines each, and every clause is checkable against the panel's own marks.
+  // Where a country is named, the deck has a card for it; where the deck has none, the
+  // blurb states the absence and claims nothing about the history it cannot see.
   const PANEL_COPY = {
     "Precision Optics":
-      "Delft, then Jena, then one Dutch town. Optics moved every time the hard part " +
-      "moved — from grinding the glass, to computing the lens, to printing circuits " +
-      "with it. Nobody kept it by holding on. The Japanese decades between Jena and " +
-      "Veldhoven are real and this atlas has no card for them: a gap in the deck, " +
-      "not in the history.",
+      "Pisa, Delft, Jena, one American hold, then Veldhoven. " +
+      "No Japanese card here: a hole in this atlas, not a verdict.",
     "Machine Tools / Production Systems":
       "Britain built the machines that build machines. America made the parts " +
-      "interchangeable. Japan made them flow. Each handover was a change in what was " +
-      "hardest to make, not in who knew how.",
+      "interchangeable. Japan made them flow.",
     "Chip Lithography":
-      "America invented it and compounded it for a generation. Then the hardest thing " +
-      "became the light and the lenses, and it left for Veldhoven, where it still is. " +
-      "Japan held the steppers in between; no card here carries that, so the panel " +
-      "cannot show it.",
+      "The hard part became light and glass, and left America for Veldhoven. " +
+      "No Japanese card here: a hole in this atlas, not a verdict.",
     "The Network":
-      "The near-control. Packet switching starts British and the web is Swiss, so the " +
-      "lead did leave — but it came back both times, and after 1967 the making never " +
-      "stayed away. The users and the money were already here. If the lead always " +
-      "moved for good, this panel would not keep returning to one country.",
+      "The near-control. Packet switching is British, the web is Swiss — " +
+      "and an American card follows each.",
     Therapeutics:
-      "Here the hardest making is half regulatory, and it is the one thread where a " +
-      "country can lose the lead without losing any of the skill.",
+      "Short American holds, mostly single cards. " +
+      "The newest cards here are Chinese and Canadian.",
     "Reading & Writing DNA":
-      "Britain and America trade places over and over, fast enough that you can watch " +
-      "the mechanism work. Speed is the whole story, and the record still cannot keep up.",
+      "Britain and America trade places over and over. The best-covered of these six " +
+      "panels, and still mostly unheld.",
   };
 
   // The two numbers a reader would otherwise try to eyeball off the axis, written out.
-  // Both are read from the model, so neither can go stale.
+  // Both are read from the model, so neither can go stale. Same field order in both:
+  // what · where in time · how long. The figure and its unit are joined by a no-break
+  // space, so the greedy wrap can only break at a separator, never between "34" and "yr".
+  const YR = n => `${n}\u00a0yr`;
   function footLines(m) {
     const out = [];
     out.push(
       m.longest
-        ? `Longest hold ${m.longest.g} ${m.longest.a}–${m.longest.b}, ${m.longest.b - m.longest.a} y on ${m.longest.n} cards.`
-        : `Nothing here the record can carry.`,
+        ? `Longest hold · ${m.longest.g} ${m.longest.a}–${m.longest.b} · ${YR(m.longest.b - m.longest.a)} · ${m.longest.n} cards`
+        : `No hold the record can carry.`,
     );
-    if (m.widest) out.push(`Widest silence ${num(m.widest.g)} yr, ${m.widest.a}–${m.widest.b}.`);
+    if (m.widest) out.push(`Widest silence · ${m.widest.a}–${m.widest.b} · ${YR(num(m.widest.g))}`);
     return out.flatMap(l => wrap(l, CFG.GUT - 16, 9.5));
   }
 
@@ -795,17 +794,19 @@
 
   const findingHTML = () =>
     `Of the <b>${num(TOT.span)}</b> years these ${MODELS.length} panels span, the record can carry ` +
-    `<b>${num(TOT.held)}</b> — <b>${pct(TOT.held, TOT.span)}%</b>. The rest is not a lead being held. It is a lead we cannot see.` +
+    `<b>${num(TOT.held)}</b> — <b>${pct(TOT.held, TOT.span)}%</b>. The rest is not a lead being held; it is a lead we cannot see.` +
     `<span class="second">The corpus was gathered in English, and it shows: ${TOPC.n} of the ${HOLDS.length} holds, ` +
-    `and ${num(TOPC.y)} of the ${num(TOT.held)} held years, are American. That is a fact about this atlas before it is a fact about the world.</span>`;
+    `and ${num(TOPC.y)} of the ${num(TOT.held)} held years, are American — a fact about this atlas before it is one about the world.</span>`;
 
+  // Only what a reader needs in order to SEE the marks: what a card is, what a hold is,
+  // what a turn is, and the rule that keeps a lone card from claiming a century. The
+  // counterexample that justifies that rule is a methodologist's business, so it sits in
+  // the coda with the rest of the arithmetic.
   const methodHTML = () =>
-    `A card is a place where something was made. Two cards from the same country, next to each other in a thread and ` +
-    `no more than <b>${TENURE.maxGap}</b> years apart, hold the years between them; a run of such pairs is a hold. That is the strongest ` +
-    `claim this corpus can make, and it is the only thing drawn in colour. Nothing is ever painted forward from a card ` +
-    `to the next country's. Do that and the loudest mark on the page becomes a lie: one ${esc(WORST.g)} card dated ${WORST.year} ` +
-    `would take the next <b>${num(WORST.claim)}</b> years of ${esc(WORST.panel)} on its own. ` +
-    `Across the atlas <b>${TOT.single} of ${TOT.turns}</b> turns rest on a single card, and a single card is a date, not a tenure.`;
+    `A card is a dated place where something was made. Two cards from one country, neighbours in a panel and ` +
+    `no more than <b>${TENURE.maxGap}</b> years apart, hold the years between them; a chain of such pairs is a hold — the only span ` +
+    `drawn in colour. Nothing is ever painted forward to the next country's card. A turn is one country's unbroken ` +
+    `stretch of cards, and <b>${TOT.single} of ${TOT.turns}</b> turns rest on a single card: a date, not a tenure.`;
 
   const axisNoteHTML = () =>
     `The axis gives its width to the years that have cards. ` +
@@ -814,18 +815,20 @@
         SCALE.folds.map(fo => `${fo.a}–${fo.b}`).join(" and ") +
         `, ${num(SCALE.folds.reduce((a, fo) => a + fo.b - fo.a, 0))} years — are cut out and marked. `
       : "") +
-    `From ${SCALE.linFrom} it is plain linear, and every hold in the atlas begins in ${SCALE.holdFrom}, so every hold on this page is drawn ` +
-    `to one scale: a longer hold is always a wider bar. Silences reach back further than that and are not comparable by eye, ` +
-    `so each one prints its own length.`;
+    `From ${SCALE.linFrom} it is plain linear and the earliest hold starts in ${SCALE.holdFrom}, so every hold shares one scale: ` +
+    `a longer hold is a wider bar. Silences reach further back and are not comparable by eye, so each prints its own length.`;
 
   const kindLegendHTML = () =>
-    "<span>Corpus:</span>" +
+    "<span>Kinds:</span>" +
     KINDS.map(
       k => `<span><span class="gly" style="color:${KINK[k]}">${KGLY[k]}</span> ${k}</span>`,
     ).join("");
+  // Each swatch keys a mark, so each takes the mark's noun: hold, card, silence. "% held"
+  // stays the adjective form, and only on the meter.
   const markLegendHTML = () =>
-    `<span><svg width="34" height="11" aria-hidden="true"><rect x="0" y="0" width="34" height="11" fill="${SILENCE}"/><rect x="0" y="5" width="34" height="6" fill="#2a78d6" rx="1"/></svg>held</span>` +
-    `<span><svg width="12" height="11" aria-hidden="true"><rect x="0" y="0" width="12" height="11" fill="${SILENCE}"/><rect x="5" y="0" width="2.5" height="11" fill="#2a78d6"/></svg>one card</span>` +
+    "<span>Marks:</span>" +
+    `<span><svg width="34" height="11" aria-hidden="true"><rect x="0" y="0" width="34" height="11" fill="${SILENCE}"/><rect x="0" y="5" width="34" height="6" fill="#2a78d6" rx="1"/></svg>hold</span>` +
+    `<span><svg width="12" height="11" aria-hidden="true"><rect x="0" y="0" width="12" height="11" fill="${SILENCE}"/><rect x="5" y="0" width="2.5" height="11" fill="#2a78d6"/></svg>card</span>` +
     `<span><svg width="26" height="11" aria-hidden="true"><rect x="0" y="0" width="26" height="11" fill="${SILENCE}"/><line x1="1" y1="5.5" x2="25" y2="5.5" stroke="${RULE}" stroke-dasharray="1 3"/></svg>silence</span>`;
   const topN = ctryRank.slice(0, CTRY_PAL.length);
   const tail = ctryRank.length - topN.length;
@@ -835,7 +838,7 @@
       .map(g => `<span><span class="sw" style="background:${colorOf(g)}"></span>${esc(g)}</span>`)
       .join("") +
     (tail
-      ? `<span><span class="sw" style="background:${CTRY_NEUTRAL}"></span>+${tail} more (grey)</span>`
+      ? `<span><span class="sw" style="background:${CTRY_NEUTRAL}"></span>+${tail} others</span>`
       : "");
 
   // The ledger: every hold in the atlas on ONE plain linear scale. The main chart
@@ -847,19 +850,18 @@
   );
   const ledgerHTML = () =>
     `<h2>Every hold the record can carry</h2>` +
-    `<p class="note">All ${HOLDS.length} of them, on one plain linear scale — ${num(maxHold)} years is the longest anything in this atlas ` +
-    `can be shown to have held. The other ${TOT.single} turns rest on a single card and have no length at all. ` +
-    `Read down the first column: this is what a corpus of invention sites can and cannot establish about who was ahead.</p>` +
+    `<p class="note">All ${HOLDS.length} of them, on one plain linear scale — ${num(maxHold)} years is the longest anything here ` +
+    `can be shown to have held. Single-card turns have no length at all, so they are not in this list.</p>` +
     `<ol>` +
     ordered
       .map(h => {
         const d = h.b - h.a;
         return (
-          `<li title="${esc(h.g)} · ${esc(h.panel)} · ${h.a}–${h.b} · ${h.n} cards">` +
+          `<li title="Hold · ${esc(h.g)} · ${esc(h.panel)} · ${h.a}–${h.b} · ${d} yr · ${h.n} cards">` +
           `<span class="who" style="border-color:${colorOf(h.g)}">${esc(h.g)}</span>` +
           `<span class="what">${esc(h.panel)} <i>${h.a}–${h.b}</i></span>` +
           `<span class="bar"><b style="width:${((100 * d) / maxHold).toFixed(1)}%;background:${colorOf(h.g)}"></b></span>` +
-          `<span class="len">${d} y</span></li>`
+          `<span class="len">${d} yr</span></li>`
         );
       })
       .join("") +
@@ -869,21 +871,24 @@
   const rows = MODELS.slice().sort((a, b) => a.cover - b.cover || (a.label < b.label ? -1 : 1));
   const codaHTML = () =>
     `<h2>Coda — what the ${ALL.length} cards can and cannot support</h2>` +
-    `<div class="formula">Sort a panel's cards by year. Two neighbours that share a country (the card's <code>country</code>, ` +
+    `<div class="formula">` +
+    `<p>Sort a panel's cards by year. Two neighbours that share a country (the card's <code>country</code>, ` +
     `with the US as one polity) and sit <code>≤ ${TENURE.maxGap}</code> years apart form a <b>link</b>; a maximal chain of links is a ` +
-    `<b>hold</b>, and its length is <code>last − first</code>. Every held year therefore lies between two same-country cards, and no ` +
-    `held stretch contains a card-free gap longer than ${TENURE.maxGap} years — a lone card can claim nothing. A <b>turn</b> is a maximal ` +
-    `stretch of neighbouring cards from one country, so a turn with one card is a country the sequence visits and leaves. ` +
-    `A <b>round trip</b> is a turn whose country equals the one two turns earlier: <code>#{ i≥2 : country(t[i]) = country(t[i−2]) }</code>. ` +
-    `Totals over ${MODELS.length} panels — machine tools and production systems are one relay, so they are read as one, and a card ` +
-    `filed under two threads is counted in both panels, which is why the card column sums past ${ALL.length}: ` +
+    `<b>hold</b>, its length <code>last − first</code>. By construction no hold hides a card-free gap longer than ` +
+    `${TENURE.maxGap} years, and a lone card holds nothing. Paint forward instead — hand each turn the years up to the next ` +
+    `country's first card — and the loudest mark on the page becomes a lie: one ${esc(WORST.g)} card dated ${WORST.year} would take ` +
+    `the next <b>${num(WORST.claim)}</b> years of ${esc(WORST.panel)} on its own.</p>` +
+    `<p>A <b>turn</b> is a maximal stretch of neighbouring cards from one country, so a turn with one card is a country ` +
+    `the sequence visits and leaves. A <b>round trip</b> is a turn whose country equals the one two turns earlier.</p>` +
+    `<p>Totals over ${MODELS.length} panels (machine tools and production systems are one relay, read as one panel, and a card ` +
+    `filed under two threads counts in both, which is why the card column sums past ${ALL.length}): ` +
     `<b>${HOLDS.length}</b> holds, <b>${num(TOT.held)}</b> held years of <b>${num(TOT.span)}</b> (${pct(TOT.held, TOT.span)}%), ` +
-    `<b>${TOT.single} of ${TOT.turns}</b> turns on a single card, <b>${TOT.rt}</b> round trips. ` +
-    `The ${TENURE.maxGap}-year link is the one judgement call here, so here is what moves if you change it: ` +
-    SENS.map(s => `<b>${s.t} y</b> → ${s.n} holds, ${num(s.y)} yr (${pct(s.y, TOT.span)}%)`).join(
+    `<b>${TOT.single} of ${TOT.turns}</b> turns on a single card, <b>${TOT.rt}</b> round trips.</p>` +
+    `<p>The ${TENURE.maxGap}-year link is the one judgement call: ` +
+    SENS.map(s => `<b>${s.t} yr</b> → ${s.n} holds, ${num(s.y)} yr (${pct(s.y, TOT.span)}%)`).join(
       "; ",
     ) +
-    `. The percentage moves; the shape does not.</div>` +
+    `. The percentage moves; the shape does not.</p></div>` +
     `<table><thead><tr><th>Panel</th><th>Cards</th><th>Turns</th><th>On one card</th><th>Holds</th><th>Held yr</th><th>Span yr</th><th>Held %</th></tr></thead><tbody>` +
     rows
       .map(
