@@ -3,7 +3,7 @@
 // Structure. Six seams, top to bottom, each depending only on the ones above it:
 //
 //   0 CONFIG   the tunables, in one place, with the reason each number is what it is
-//   1 DERIVE   pure functions over the corpus: panels, runs, holds, silences, stats.
+//   1 DERIVE   pure functions over the corpus: panels, turns, holds, silences, stats.
 //              No DOM, no SVG, no pixels. TENURE is the swappable seam: anything that
 //              answers holds(cards) can drive this view, so an authored-tenure layer
 //              drops in here without touching anything below.
@@ -77,7 +77,7 @@
 
   // Runs: neighbouring cards that share a country. This is the sequence — who appears,
   // in what order. It is NOT a tenure claim and nothing is drawn from it but the count.
-  function runsOf(cards) {
+  function turnsOf(cards) {
     const rr = [];
     for (const c of cards) {
       const g = ctryOf(c);
@@ -143,21 +143,21 @@
 
   function buildModel(label, threads, tenure) {
     const cards = cardsOf(threads);
-    const runs = runsOf(cards);
+    const turns = turnsOf(cards);
     const holds = tenure.holds(cards);
     const sil = silencesOf(cards);
     const first = cards[0].year,
       last = cards[cards.length - 1].year;
     const span = last - first;
     const held = holds.reduce((a, h) => a + (h.b - h.a), 0);
-    const seq = runs.map(r => r.g);
+    const seq = turns.map(r => r.g);
     let rt = 0;
     for (let i = 2; i < seq.length; i++) if (seq[i] === seq[i - 2]) rt++; // X->Y->X
     return {
       label,
       threads,
       cards,
-      runs,
+      turns,
       holds,
       sil,
       first,
@@ -165,7 +165,7 @@
       span,
       held,
       rt,
-      single: runs.filter(r => r.n === 1).length,
+      single: turns.filter(r => r.n === 1).length,
       cover: span ? held / span : 0,
       longest: holds.slice().sort((a, b) => b.b - b.a - (a.b - a.a) || (a.g < b.g ? -1 : 1))[0],
       widest: sil.slice().sort((a, b) => b.g - a.g || a.a - b.a)[0],
@@ -188,13 +188,13 @@
   const TOT = MODELS.reduce(
     (a, m) => ({
       cards: a.cards + m.cards.length,
-      runs: a.runs + m.runs.length,
+      turns: a.turns + m.turns.length,
       single: a.single + m.single,
       span: a.span + m.span,
       held: a.held + m.held,
       rt: a.rt + m.rt,
     }),
-    { cards: 0, runs: 0, single: 0, span: 0, held: 0, rt: 0 },
+    { cards: 0, turns: 0, single: 0, span: 0, held: 0, rt: 0 },
   );
   const usaHolds = HOLDS.filter(h => h.g === "USA");
   const TOPC = usaHolds.length
@@ -206,9 +206,9 @@
   // country's first card and find the single lone card that ends up claiming the most.
   const WORST = MODELS.reduce(
     (best, m) => {
-      m.runs.forEach((r, i) => {
-        if (r.n !== 1 || i >= m.runs.length - 1) return;
-        const claim = m.runs[i + 1].start - r.start;
+      m.turns.forEach((r, i) => {
+        if (r.n !== 1 || i >= m.turns.length - 1) return;
+        const claim = m.turns[i + 1].start - r.start;
         if (claim > best.claim) best = { claim, g: r.g, year: r.start, panel: m.label };
       });
       return best;
@@ -566,7 +566,7 @@
     s += text(
       x,
       ty,
-      `${m.cards.length} cards · ${m.runs.length} turns · ${m.single} on one card`,
+      `${m.cards.length} cards · ${m.turns.length} turns · ${m.single} on one card`,
       `font-size="9.5" fill="#8a857c"`,
     );
     if (flagship) {
@@ -805,7 +805,7 @@
     `claim this corpus can make, and it is the only thing drawn in colour. Nothing is ever painted forward from a card ` +
     `to the next country's. Do that and the loudest mark on the page becomes a lie: one ${esc(WORST.g)} card dated ${WORST.year} ` +
     `would take the next <b>${num(WORST.claim)}</b> years of ${esc(WORST.panel)} on its own. ` +
-    `Across the atlas <b>${TOT.single} of ${TOT.runs}</b> turns rest on a single card, and a single card is a date, not a tenure.`;
+    `Across the atlas <b>${TOT.single} of ${TOT.turns}</b> turns rest on a single card, and a single card is a date, not a tenure.`;
 
   const axisNoteHTML = () =>
     `The axis gives its width to the years that have cards. ` +
@@ -878,7 +878,7 @@
     `Totals over ${MODELS.length} panels — machine tools and production systems are one relay, so they are read as one, and a card ` +
     `filed under two threads is counted in both panels, which is why the card column sums past ${ALL.length}: ` +
     `<b>${HOLDS.length}</b> holds, <b>${num(TOT.held)}</b> held years of <b>${num(TOT.span)}</b> (${pct(TOT.held, TOT.span)}%), ` +
-    `<b>${TOT.single} of ${TOT.runs}</b> turns on a single card, <b>${TOT.rt}</b> round trips. ` +
+    `<b>${TOT.single} of ${TOT.turns}</b> turns on a single card, <b>${TOT.rt}</b> round trips. ` +
     `The ${TENURE.maxGap}-year link is the one judgement call here, so here is what moves if you change it: ` +
     SENS.map(s => `<b>${s.t} y</b> → ${s.n} holds, ${num(s.y)} yr (${pct(s.y, TOT.span)}%)`).join(
       "; ",
@@ -888,11 +888,11 @@
     rows
       .map(
         m =>
-          `<tr><td>${esc(m.label)}</td><td>${m.cards.length}</td><td>${m.runs.length}</td><td>${m.single}</td>` +
+          `<tr><td>${esc(m.label)}</td><td>${m.cards.length}</td><td>${m.turns.length}</td><td>${m.single}</td>` +
           `<td>${m.holds.length}</td><td>${m.held}</td><td>${num(m.span)}</td><td>${Math.round(m.cover * 100)}%</td></tr>`,
       )
       .join("") +
-    `<tr class="tot"><td>All ${MODELS.length} panels</td><td>${TOT.cards}</td><td>${TOT.runs}</td><td>${TOT.single}</td>` +
+    `<tr class="tot"><td>All ${MODELS.length} panels</td><td>${TOT.cards}</td><td>${TOT.turns}</td><td>${TOT.single}</td>` +
     `<td>${HOLDS.length}</td><td>${num(TOT.held)}</td><td>${num(TOT.span)}</td><td>${pct(TOT.held, TOT.span)}%</td></tr>` +
     `</tbody></table>`;
 

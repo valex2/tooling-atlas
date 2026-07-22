@@ -87,21 +87,29 @@ const GOLDEN_SKIP = {};
 // waved through 1296 unflagged pixels at 1440x900, which is a whole label or a
 // collapsed lane. The comment above argued for zero and then didn't take it.
 const FAIL_RATIO = 0;
-// ...and an absolute floor of 20 pixels, which is NOT the ratio tolerance I removed above.
+// ...and an absolute floor of 100 pixels, which is NOT the ratio tolerance removed above.
 //
-// Measured, not assumed: ubuntu renders tree-desktop 13px (0.001%) differently from a
-// baseline blessed on a DIFFERENT ubuntu runner. Within one run it is perfectly stable — the
-// bless job blesses and re-verifies clean in the same job, and the re-capture below agrees
-// with itself — so this is cross-machine rasteriser variance, not flakiness we can settle by
-// waiting or freezing more state. Baselines are already per-platform; they are not per-runner
-// and cannot be.
+// Two causes were chased down before settling on a floor, and both are now fixed at source:
+//   - Browser drift. Both workflows asked setup-chrome for "stable", so the runner moved
+//     150.0.7871.128 -> .181 underneath the images and tree-desktop shifted 13px with it.
+//     Chrome is now pinned in ci.yml and bless-baselines.yml; that difference is gone.
+//   - Stale baselines. The linux set could only be made after the code landed, so master went
+//     red on every visual change. `npm run bless:linux` now blesses before master sees it.
 //
-// 20px is chosen to be smaller than anything meaningful: a single glyph of body text inks
-// ~50-100px, and the regressions this file exists to catch measured 405,623px (a --bg shift),
-// 144,792px (a copy change) and 13,173px (one added button). The old 0.1% ratio would have
-// waved through 1,296px — a whole label — which is why it is gone. Anything at or above this
-// floor still fails at zero ratio.
-const MIN_PIXELS = 20;
+// What is left is antialiasing on curved and glyph edges under ubuntu: globe-desktop settles
+// 66px (0.005%) apart between two page loads in the SAME job with the SAME pinned browser —
+// the bless step and its verify step disagree by that much. It reproduces across the
+// re-capture below, so it is not a one-shot flake, and no amount of freezing animation,
+// fonts, sticky positioning or scroll offsets removes it.
+//
+// 100px on a 1,296,000px canvas is 0.0077%. It is sized against measurement, not taste: the
+// smallest REAL regression tried here — adding letter-spacing to a single <h1> — measured
+// 922px, roughly 9x the floor, and the others measured 405,623px (a --bg shift), 144,792px
+// (a copy change) and 13,173px (one added button). The old 0.1% ratio would have waved
+// through 1,296px, more than a whole label, which is why it is gone. Anything at or above
+// this floor still fails at zero ratio, and every sub-floor difference is printed on each run
+// so creep stays visible.
+const MIN_PIXELS = 100;
 const PIXEL_THRESHOLD = 0;
 const INCLUDE_AA = true;
 
@@ -360,7 +368,7 @@ for (const [name, p] of VIEWS) {
     // variance (see MIN_PIXELS). Passed, but always printed — if this number ever climbs,
     // it is a regression creeping up, not the noise floor moving.
     if (r.pixels > 0 && r.pixels < MIN_PIXELS) {
-      notes.push(`${vp} ${r.pixels}px — under the ${MIN_PIXELS}px cross-runner floor, passing`);
+      notes.push(`${vp} ${r.pixels}px — under the ${MIN_PIXELS}px antialiasing floor, passing`);
       continue;
     }
     const pct = (r.ratio * 100).toFixed(4);
