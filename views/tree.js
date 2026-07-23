@@ -179,5 +179,12 @@
     render();
   };
   scroll.addEventListener("scroll", pinLabels);
+  try {
+    const _f = getState().card || "";
+    if (_f && byId[_f]) {
+      sel = _f; // local highlight: light this tool's ancestry & descendants
+      showDetail(byId[_f]);
+    }
+  } catch (e) {}
   render();
 })();

@@ -72,12 +72,14 @@ const KC={Measure:"var(--Measure)",Model:"var(--Model)",Make:"var(--Make)",Manuf
 const KINK=window.KINK, KGLY=window.KGLY;   // contrast-safe ink + non-colour glyph (shared.js)
 const allThreads=[...new Set(DATA.flatMap(c=>c.threads))].sort();
 let fKind=null,fThread=null;
+// B2: land on the same thread the visitor was tracing on Globe/Timeline (shared #thread=).
+try{const _t=getThreads()[0];if(_t&&allThreads.includes(_t))fThread=_t;}catch(e){}
 const byName=Object.fromEntries(DATA.map(c=>[c.name,c]));
 function chips(){
  document.getElementById("kinds").innerHTML=KINDS.map(k=>`<button class="chip kchip" data-k="${k}" style="${fKind===k?'background:'+KC[k]:''}">${k}</button>`).join("")+`<button class="chip" data-k="">All</button>`;
  document.getElementById("threads").innerHTML=allThreads.map(t=>`<button class="chip ${fThread===t?'on':''}" data-t="${t}">${t}</button>`).join("")+`<button class="chip" data-t="">All</button>`;
  document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{fKind=b.dataset.k||null;render();});
- document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{fThread=b.dataset.t||null;render();});
+ document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{fThread=b.dataset.t||null;try{setThreads(fThread?[fThread]:[]);}catch(e){}render();});
  document.querySelectorAll(".kchip").forEach(b=>{if(b.dataset.k===fKind)b.classList.add("on");});
 }
 function rail(){
@@ -102,7 +104,7 @@ function cardHTML(c){
  return `<div class="scene"><div class="card" id="card-${cssid(c.name)}">
   <div class="face front"><div class="stripe" style="background:${KC[c.kind]}"></div>
     <div class="corner">${marks.join(" · ")}</div>
-    <div class="pad"><div class="hd">${c.kind} · ${c.place} · ${c.era}</div>
+    <div class="pad"><div class="hd">${c.kind} · ${c.place} · ${decadeLabel(c.year)}</div>
       <div class="who">${c.name}</div><div class="maker">${c.person}</div><div class="tool">${c.tool}</div>
       <div class="txt">${c.front}</div></div>
     <div class="foot"><span class="tag" style="background:${KC[c.kind]}1f;color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.kind}</span>
@@ -117,6 +119,10 @@ function cardHTML(c){
   </div></div></div>`;
 }
 function cssid(s){return s.replace(/[^a-z0-9]/gi,"_");}
+// Front-header date: a clean derived decade from c.year, so the grid reads uniformly
+// ("1870s", "1200s", "550s") instead of the free-form c.era ("6TH CENTURY"/"1200S"/
+// "2020-2022"). Display only — c.era data is left intact.
+function decadeLabel(y){return y?(Math.floor(y/10)*10)+"s":"";}
 // Single entry point for flip state. `inert` (not aria-hidden) on the turned-away
 // face: backface-visibility hides it visually only, and aria-hidden over a subtree
 // containing focusable things — every back face has an obsidian:// link, and the
@@ -164,10 +170,16 @@ window.addEventListener("message",function(e){if(e.data&&e.data.type==="focuscar
  // clear=true only on hashchange (an in-page .xcard click): if the target card is
  // filtered out of the current view, drop the filters first, matching what the
  // [data-go] chips do — otherwise the link would silently land on nothing.
- // The initial load passes false so a deep link like #thread=X keeps its filter.
+ // On the initial load the thread filter has already been seeded from #thread=X (see
+ // the fThread init above), so we pass false to keep it rather than clearing it.
+ // C1: the shared focus lives at #card= as a card id — resolve it through __byId
+ // (id) with a byName (name) fallback, then flip+scroll so a tool focused on another
+ // view opens here.
  function fh(clear){var m=(location.hash||"").match(/card=([^&]+)/);if(!m)return;
-  var nm=decodeURIComponent(m[1]);
-  if(clear&&byName[nm]&&!document.getElementById("card-"+cssid(nm))){fThread=null;fKind=null;render();}
+  var key=decodeURIComponent(m[1]);
+  var c=(window.__byId&&window.__byId[key])||byName[key];if(!c)return;
+  var nm=c.name;
+  if(clear&&!document.getElementById("card-"+cssid(nm))){fThread=null;fKind=null;render();}
   setTimeout(function(){try{scrollTo2(nm,true);}catch(x){}},80);}
  window.addEventListener("hashchange",function(){fh(true);});fh(false);})();
 </script></body></html>

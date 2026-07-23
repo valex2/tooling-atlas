@@ -30,9 +30,10 @@
   const allThreads = [...new Set(CARDS.flatMap(c => c.threads))].sort();
   document.getElementById("thread").innerHTML =
     '<option value="">all threads</option>' + allThreads.map(t => `<option>${t}</option>`).join("");
+  // faint "→" between the four Ms so they read as an order (see it → build a billion), not peers
   document.getElementById("kinds").innerHTML = KINDS.map(
     k => `<button class="chip" data-k="${k}" style="border-color:${KC[k]}">${k}</button>`,
-  ).join("");
+  ).join('<span class="sep" aria-hidden="true">→</span>');
   function headRow() {
     // aria-sort carries the sort state for screen readers; the ▲/▼ glyph is visual only.
     // This blows away the <th>s, so remember which one had focus and put it back below —
@@ -215,4 +216,20 @@
     if (goal) document.getElementById("goal").value = goal;
   } catch (e) {}
   render();
+  // C1: honour a tool carried across views via the hash — open its panel and flash/scroll its row.
+  try {
+    const _f = getState().card || "";
+    const _byId = TA.byId(CARDS);
+    if (_f && _byId[_f]) {
+      showDetail(_byId[_f]);
+      const _ix = rows().findIndex(c => c.id === _f);
+      if (_ix >= 0) {
+        const _tr = document.querySelectorAll("#body tr")[_ix];
+        if (_tr) {
+          _tr.scrollIntoView({ block: "center" });
+          _tr.classList.add("flash");
+        }
+      }
+    }
+  } catch (e) {}
 })();

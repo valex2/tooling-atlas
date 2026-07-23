@@ -7,7 +7,8 @@
 :root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 .wrap{max-width:1080px;margin:0 auto;padding:46px 18px 60px}
-h1{font-size:21px;font-weight:600;margin:0 0 2px}.sub{color:var(--mut);margin:0 0 22px}
+h1{font-size:21px;font-weight:600;margin:0 0 2px}.sub{color:var(--mut);margin:0 0 4px}
+.meta{color:var(--mut);font-size:12px;margin:0 0 20px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .card{background:#fff;border:.5px solid var(--line);border-radius:12px;padding:16px 18px}
 .card h2{font-size:14px;font-weight:600;margin:0 0 12px}
@@ -27,7 +28,8 @@ td.gap{background:#fbe7e7;color:#a83232;font-weight:600}td.era{text-align:left;c
 </style></head><body>
 <div class="wrap">
 <h1>Dashboard</h1>
-<p class="sub" id="sub"></p>
+<p class="sub">What the atlas covers, and what it is still missing.</p>
+<p class="meta" id="sub"></p>
 <div class="grid">
  <div class="card"><h2>By kind</h2><div id="bykind"></div></div>
  <div class="card"><h2>By decade</h2><div id="bydecade"></div></div>
@@ -42,7 +44,9 @@ const ERAS=window.ERAS;
 const threads=[...new Set(CARDS.flatMap(c=>c.threads))];
 document.getElementById("sub").textContent=CARDS.length+" tools · "+threads.length+" threads · "+new Set(CARDS.map(c=>c.country).filter(Boolean)).size+" countries";
 // legend
-document.getElementById("sub").insertAdjacentHTML("afterend",'<div style="display:flex;gap:14px;margin:-12px 0 20px;font-size:11px;color:var(--mut)">'+KINDS.map(k=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${KC[k]};vertical-align:-1px;margin-right:4px"></span>${k}</span>`).join("")+'</div>');
+// A7: faint "→" between the swatches so the four jobs read as an ORDER (see it → build a
+// billion), not four peer categories.
+document.getElementById("sub").insertAdjacentHTML("afterend",'<div style="display:flex;gap:10px;margin:-12px 0 20px;font-size:11px;color:var(--mut)">'+KINDS.map(k=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${KC[k]};vertical-align:-1px;margin-right:4px"></span>${k}</span>`).join('<span aria-hidden="true" style="color:#b9b4ab;align-self:center">→</span>')+'</div>');
 function bars(el,data,max,colorfn,linkfn){el.innerHTML=data.map(d=>{const inner=`<span class="lab">${d.k}</span><div class="bar" style="width:${Math.max(2,d.v/max*260)}px;background:${colorfn(d.k)}"></div><span class="n">${d.v}</span>`;return linkfn?`<a class="row" href="${linkfn(d.k)}" style="text-decoration:none;color:inherit">${inner}</a>`:`<div class="row">${inner}</div>`;}).join("");}
 // stacked (kind-colored) horizontal bar
 function segBar(perKind,total,max,wpx){const w=Math.max(2,total/max*wpx);const segs=KINDS.filter(k=>perKind[k]).map(k=>`<div title="${k}: ${perKind[k]}" style="flex:${perKind[k]} 0 0;background:${KC[k]}"></div>`).join("");return `<div class="bar" style="width:${w}px;display:flex;overflow:hidden">${segs}</div>`;}
@@ -65,6 +69,8 @@ document.getElementById("bythread").innerHTML=ts.map(d=>{const n=d.cards.length,
 let h='<table><tr><th>Era</th>'+KINDS.map(k=>`<th><a href="table.html#kind=${encodeURIComponent(k)}" style="color:${KC[k]};text-decoration:none">${k}</a></th>`).join("")+'<th>Σ</th></tr>';
 for(const [name,a,b] of ERAS){let rsum=0;let cells="";for(const k of KINDS){const n=CARDS.filter(c=>c.kind===k&&c.year>=a&&c.year<b).length;rsum+=n;cells+=`<td class="${n===0?'gap':''}">${n||"·"}</td>`;}h+=`<tr><td class="era">${name} <span style="color:#bbb">${a}–${b-1}</span></td>${cells}<td>${rsum}</td></tr>`;}
 h+='</table>';document.getElementById("matrix").innerHTML=h;
+// C1: a tool focused on another view arrives at #card=<id> — open its detail panel.
+try{const _f=(getState().card||"");if(_f&&window.__byId&&window.__byId[_f])showDetail(window.__byId[_f]);}catch(e){}
 </script>
 <div id="appnav"></div>
 </body></html>

@@ -191,7 +191,16 @@ window.showDetail = function (c) {
         '" style="display:inline-block;margin-top:16px;background:#5a5a5a;color:#fff;text-decoration:none;padding:7px 13px;border-radius:9px;font-size:12.5px">Open note in Obsidian ↗</a>'
       : "");
   p.style.display = "block";
-  document.getElementById("appdx").onclick = () => (p.style.display = "none");
+  // C1: carry the focused tool across views via the URL hash.
+  try {
+    setState({ card: id });
+  } catch (e) {}
+  document.getElementById("appdx").onclick = () => {
+    p.style.display = "none";
+    try {
+      setState({ card: "" });
+    } catch (e) {}
+  };
   var _oc = document.getElementById("appcard");
   if (_oc)
     _oc.onclick = function () {
@@ -286,6 +295,17 @@ function buildNav() {
 // help overlay
 function helpHTML() {
   const KC = KCOL;
+  // B1: the four colours do NOT always mean the four jobs. Detect the current view
+  // from its filename (same signal buildNav uses) and add a per-view colour note.
+  const file = (location.pathname.split("/").pop() || "").toLowerCase();
+  let viewNote = "";
+  if (file.indexOf("relay") === 0)
+    viewNote = "On the Relay, the four colours mean COUNTRY, not the four jobs.";
+  else if (file.indexOf("map") === 0)
+    viewNote =
+      "On the Globe, land shade = how many tools, dot fade = how recent, and a coloured path is a thread you picked.";
+  else if (file.indexOf("dashboard") === 0)
+    viewNote = "On the Dashboard, a red cell means no tool written yet.";
   const ms = [
     ["Measure", "seeing what's there: a microscope, an X-ray, a way to read DNA"],
     [
@@ -316,6 +336,7 @@ function helpHTML() {
       .join("") +
     '<p style="margin:12px 0 0;font-weight:600">See it, understand it, build one, build a million.</p>' +
     '<p style="margin:8px 0 0;color:#555">And because ideas are free to copy, the lead that lasts almost always sits at the far end — in the making at scale, where the skill is in the doing and can\'t be written down.</p>' +
+    (viewNote ? '<p style="margin:12px 0 0;color:#555">' + viewNote + "</p>" : "") +
     "</div>"
   );
 }
@@ -377,6 +398,9 @@ document.addEventListener("keydown", e => {
   const d = document.getElementById("appdetail");
   if (d && d.style.display !== "none") {
     d.style.display = "none";
+    try {
+      setState({ card: "" });
+    } catch (e) {}
     return;
   }
   const o = document.getElementById("helpov");

@@ -129,8 +129,10 @@
     s += g;
     // countries
     COUNTRIES.forEach((o, ci) => {
+      // warm NEUTRAL, deliberately outside KCOL: a busy country must not read as
+      // "Make" (KCOL.Make #b06a1e = rgba(176,106,30)). Same 0.12→0.72 alpha ramp.
       const fill =
-        o.c > 0 ? `rgba(176,106,30,${(0.12 + (0.6 * o.c) / maxc).toFixed(3)})` : "#e7e3db";
+        o.c > 0 ? `rgba(150,140,120,${(0.12 + (0.6 * o.c) / maxc).toFixed(3)})` : "#e7e3db";
       for (const ring of o.r) {
         const d = ringPath(ring);
         if (d)
@@ -156,6 +158,11 @@
       }
     } else {
       // thread migration paths: each selected thread's cards joined in chronological order
+      // B3: paths carried identity by COLOUR ALONE. Give each path a text head-label
+      // (matching how the Timeline labels its traces) so a thread is legible even when
+      // its colour is ambiguous or neutral. Collision-pruned so many selected threads
+      // do not clutter — a label that would overlap an already-placed one is dropped.
+      const _tlab = [];
       selThreads.forEach(t => {
         const col = threadColor(t);
         const mem = CARDS.filter(c => c.threads.includes(t) && c.lat != null && c.year <= T).sort(
@@ -185,6 +192,24 @@
             uy = ty / tl,
             ah = 6 * rsc;
           s += `<path d="M${B[0].toFixed(1)} ${B[1].toFixed(1)} L${(B[0] - ux * ah - uy * ah * 0.55).toFixed(1)} ${(B[1] - uy * ah + ux * ah * 0.55).toFixed(1)} L${(B[0] - ux * ah + uy * ah * 0.55).toFixed(1)} ${(B[1] - uy * ah - ux * ah * 0.55).toFixed(1)} Z" fill="${col}" fill-opacity=".9"/>`;
+        }
+        // head-label at the newest visible tool on this thread's path
+        for (let i = mem.length - 1; i >= 0; i--) {
+          const hd = mem[i];
+          if (!vis(hd.lon, hd.lat)) continue;
+          const P = proj(hd.lon, hd.lat);
+          if (P[2] < 0) continue;
+          const fs = 10,
+            lx = P[0],
+            ly = P[1] - 10 * Math.min(1.4, rsc),
+            w = t.length * fs * 0.56 + 6;
+          if (
+            _tlab.some(q => Math.abs(q.x - lx) < (q.w + w) / 2 + 2 && Math.abs(q.y - ly) < fs + 3)
+          )
+            break;
+          _tlab.push({ x: lx, y: ly, w });
+          s += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="600" fill="${col}" stroke="#f5f3ef" stroke-width="3" paint-order="stroke" style="pointer-events:none">${TA.esc(t)}</text>`;
+          break;
         }
       });
     }
@@ -443,7 +468,7 @@
     if (!el) return;
     const list = CARDS.filter(c => c.year <= T);
     let html =
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#888">Innovations through ' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#888">Tools through ' +
       T +
       " (" +
       list.length +
@@ -484,7 +509,7 @@
         chipsOpen = !chipsOpen;
         renderChips();
       };
-      kbd(tg, () => tg.onclick(), "Toggle the innovations list");
+      kbd(tg, () => tg.onclick(), "Toggle the tools list");
     }
     el.querySelectorAll(".chip2").forEach(d => {
       d.onmouseenter = () => (d.style.background = "#efece6");
@@ -725,4 +750,20 @@
   document.getElementById("ylab").textContent = T;
   render();
   renderChips();
+  // C1 READ side: a tool focused in another view arrives via the URL hash. Open its
+  // detail panel and, so it is actually visible, spin the globe to it and highlight it.
+  try {
+    const _f = getState().card || "";
+    if (_f && byId[_f]) {
+      const c = byId[_f];
+      foundId = c.id;
+      if (c.lat != null) {
+        rotLon = c.lon;
+        rotLat = Math.max(-80, Math.min(80, c.lat));
+        if (scale < 320) scale = 420;
+      }
+      render();
+      showDetail(c);
+    }
+  } catch (e) {}
 })();

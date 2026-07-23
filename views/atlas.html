@@ -10,6 +10,7 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
 .top{padding:14px 18px 6px;}
 h1{font-size:20px;font-weight:600;margin:0 0 6px;}
+.sub{font-size:12.5px;color:var(--mut);margin:0 0 8px;max-width:78ch;}
 .bar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:5px 0;}
 .grp{display:flex;gap:4px;align-items:center;}
 .grp .lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-right:3px;}
@@ -20,6 +21,7 @@ input[type=range]{accent-color:var(--ink);width:90px;}
 .legend{display:flex;gap:11px;flex-wrap:wrap;font-size:11px;color:var(--mut);margin-top:3px;}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:4px;}
 .legend .gly{margin-right:3px;}
+.legend .mar{color:#b9b4ab;margin:0 -4px;}
 .threadbar{display:flex;flex-wrap:wrap;gap:4px;margin:5px 0 0;max-height:50px;overflow:auto;}
 .tchip{border:.5px solid var(--line);background:#fff;border-radius:11px;padding:2px 8px;font:inherit;font-size:10.5px;cursor:pointer;color:var(--mut);}
 .tchip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
@@ -66,6 +68,7 @@ input[type=range]{accent-color:var(--ink);width:90px;}
 <div id="appnav"></div>
 <div class="top">
 <h1>Timeline</h1>
+<p class="sub">Every tool on a time axis. Switch to Geography and pick a thread to see the lead change hands.</p>
 <div class="bar">
   <div class="grp"><span class="lab">By</span><span id="axisBtns"></span></div>
   <div class="grp"><span class="lab">Detail</span><span id="sizeBtns"></span></div>
@@ -73,7 +76,7 @@ input[type=range]{accent-color:var(--ink);width:90px;}
   <input class="search" id="search" placeholder="search…" aria-label="Search tools by name or person">
   <button class="btn" id="reset">reset</button>
 </div>
-<div class="legend"><span><i style="background:var(--Measure)"></i><span class="gly" data-k="Measure" aria-hidden="true"></span>Measure</span><span><i style="background:var(--Model)"></i><span class="gly" data-k="Model" aria-hidden="true"></span>Model</span><span><i style="background:var(--Make)"></i><span class="gly" data-k="Make" aria-hidden="true"></span>Make</span><span><i style="background:var(--Manufacture)"></i><span class="gly" data-k="Manufacture" aria-hidden="true"></span>Manufacture</span><span>line = builds-on → enables · click a lane name to expand it · click a card for its lineage</span></div>
+<div class="legend"><span><i style="background:var(--Measure)"></i><span class="gly" data-k="Measure" aria-hidden="true"></span>Measure</span><span class="mar" aria-hidden="true">→</span><span><i style="background:var(--Model)"></i><span class="gly" data-k="Model" aria-hidden="true"></span>Model</span><span class="mar" aria-hidden="true">→</span><span><i style="background:var(--Make)"></i><span class="gly" data-k="Make" aria-hidden="true"></span>Make</span><span class="mar" aria-hidden="true">→</span><span><i style="background:var(--Manufacture)"></i><span class="gly" data-k="Manufacture" aria-hidden="true"></span>Manufacture</span><span>line = builds-on → enables · click a lane name to expand it · click a tool for its lineage</span></div>
 <div class="threadbar" id="threadbar"></div>
 </div>
 <div class="scroll" id="scroll" role="region" tabindex="0" aria-label="Timeline canvas — drag to pan, or use the arrow keys to scroll"><div id="zoomwrap"><div id="stage"><svg id="edges" aria-hidden="true"></svg><div id="fc"></div></div></div></div>
@@ -214,8 +217,8 @@ lanes.forEach((l,i)=>{if(LTOP[l]!=null&&i%2)html+=`<div style="position:absolute
  stage.querySelectorAll('.lanelab').forEach(el=>{el.onclick=()=>{const l=dec(el.dataset.lane);expanded.has(l)?expanded.delete(l):expanded.add(l);render();};kbd(el,()=>el.onclick(),"Expand "+dec(el.dataset.lane));});
  applyZoom();
  const untraced=selThreads.filter(t=>!slotOf.has(t)).length;
- document.getElementById("hint").textContent=`${DATA.length} cards · ${lanes.length} lanes · by ${axis} · click a lane name to expand`
-  +(handoffs?` · ${handoffs} handoff${handoffs>1?"s":""} (▶ = the trace crosses into another region; hover for which)`:"")
+ document.getElementById("hint").textContent=`${DATA.length} tools · ${lanes.length} lanes · by ${axis} · click a lane name to expand`
+  +(handoffs?` · ${handoffs} handoff${handoffs>1?"s":""} — the lead migrating to another region (▶ = the trace crosses; hover for which)`:"")
   +(untraced?` · tracing ${slotOf.size} of ${selThreads.length} selected — ${untraced} still filtering but untraced (${TRACE.length} trace colours); deselect one to trace another`:"");
 }
 function showFull(id,el){const c=byId[id];fc.style.borderLeftColor=KC[c.kind];
@@ -225,7 +228,7 @@ function showFull(id,el){const c=byId[id];fc.style.borderLeftColor=KC[c.kind];
 function hideFull(){fc.style.display="none";}
 const enc=s=>encodeURIComponent(s),dec=s=>decodeURIComponent(s);
 function mk(el,opts,cur,fn){document.getElementById(el).innerHTML=opts.map(o=>`<button class="btn ${o[0]===cur?'on':''}" data-v="${o[0]}">${o[1]}</button>`).join("");document.querySelectorAll(`#${el} .btn`).forEach(b=>b.onclick=()=>fn(b.dataset.v));}
-const axisBtns=()=>mk("axisBtns",[["thread","Thread"],["geo","Geography"],["kind","Four Ms"]],axis,v=>{axis=v;selCard=null;expanded.clear();axisBtns();render();fitWidth();});
+const axisBtns=()=>mk("axisBtns",[["thread","Thread"],["geo","Geography"],["kind","Job"]],axis,v=>{axis=v;selCard=null;expanded.clear();axisBtns();render();fitWidth();});
 const sizeBtns=()=>mk("sizeBtns",[["overview","Overview"],["chip","Chip"],["medium","Medium"],["full","Full"]],size,v=>{size=v;sizeBtns();render();});
 function threadbar(){const all=[...new Set(DATA.flatMap(c=>c.threads))].sort();
  // The chips are real <button>s now, and this rebuilds them wholesale — so activating one
@@ -255,6 +258,9 @@ document.getElementById("reset").onclick=()=>{selThreads=[];selCard=null;q="";ex
  window.addEventListener("mousemove",e=>{if(!dn)return;sc.scrollLeft=sl-(e.clientX-sx);sc.scrollTop=st-(e.clientY-sy);});
  window.addEventListener("mouseup",()=>{dn=false;sc.style.cursor="grab";});})();
 axisBtns();sizeBtns();threadbar();render();fitWidth();
+// C1: carry a focused tool in from the URL hash. Open its detail panel AND set the
+// local selCard highlight so the tool is visibly focused, not just paneled.
+try { const _f = (getState().card||""); if(_f && byId[_f]) { showDetail(byId[_f]); selCard=_f; render(); } } catch(e){}
 // Registered once at init. It used to live inside the axis-button callback, so
 // label pinning did nothing until you switched axis, and every switch after
 // that added another duplicate listener.
