@@ -257,13 +257,182 @@ window.setThreads = function (arr) {
 window.threadMatch = function (card, arr) {
   return !arr || !arr.length || arr.some(t => (card.threads || []).includes(t));
 };
-// dynamic nav
-const NAVITEMS = [
+
+// HISTORIES: the essay's spine. ONE source of truth, read by every view; re-derived by none.
+// A thread has exactly one history EXCEPT Chip Lithography (optics AND semi), by the essay.
+// spine:true marks the four fields the essay actually traces; floor/other render demoted.
+window.HISTORIES = [
+  {
+    key: "optics",
+    label: "Optics",
+    tag: "bending light",
+    spine: true,
+    blurb: "Lenses, the diffraction limit, the wafer stepper, EUV.",
+    threads: [
+      "Precision Optics",
+      "Seeing Smaller",
+      "Materials Characterization",
+      "Chip Lithography",
+    ],
+  },
+  {
+    key: "tools",
+    label: "Machine Tools",
+    tag: "the tools that make tools",
+    spine: true,
+    blurb: "The lathe, interchangeable parts, flow, numerical control.",
+    threads: ["Machine Tools", "Production Systems", "Measure and Correct", "Prototyping & CAD"],
+  },
+  {
+    key: "semi",
+    label: "Semiconductors",
+    tag: "the transistor and what it became",
+    spine: true,
+    blurb: "The chip, the network, the model.",
+    threads: [
+      "Electronic Switching",
+      "Chip Lithography",
+      "Wafer Processing",
+      "Electronic Instruments",
+      "Long-Distance Comms",
+      "The Network",
+      "Software Abstraction",
+      "Machine Learning",
+    ],
+  },
+  {
+    key: "bio",
+    label: "Genetic Engineering",
+    tag: "life becomes programmable",
+    spine: true,
+    blurb: "Restriction enzymes, PCR, sequencing, CRISPR, AlphaFold.",
+    threads: [
+      "Reading & Writing DNA",
+      "Therapeutics",
+      "Engineering Biology",
+      "Predict Before Building",
+    ],
+  },
+  {
+    key: "floor",
+    label: "The Floor",
+    tag: "the materials the stack stands on",
+    spine: false,
+    blurb: "The raw materials and process chemistry the whole stack stands on.",
+    threads: ["Critical Materials", "Bulk Materials", "The Open Reservoir"],
+  },
+  {
+    key: "other",
+    label: "Other fields",
+    tag: "threads the essay does not trace",
+    spine: false,
+    blurb: "Energy, power, orbit.",
+    threads: ["Energy", "Electricity & Batteries", "Reaching Orbit"],
+  },
+];
+
+// precomputed thread -> [historyKey,...]  (length 1 for all but Chip Lithography = ["optics","semi"])
+window.HKEYS = (function () {
+  var m = {};
+  window.HISTORIES.forEach(function (h) {
+    h.threads.forEach(function (t) {
+      (m[t] = m[t] || []).push(h.key);
+    });
+  });
+  return m;
+})();
+
+window.historyByKey = function (k) {
+  return (
+    window.HISTORIES.find(function (h) {
+      return h.key === k;
+    }) || null
+  );
+};
+// thread name -> array of history keys it belongs to (primary home is historyOf(t)[0])
+window.historyOf = function (t) {
+  return (window.HKEYS[t] || []).slice();
+};
+// history key -> its threads in essay order (COPY, so callers cannot mutate the source)
+window.threadsIn = function (k) {
+  var h = window.historyByKey(k);
+  return h ? h.threads.slice() : [];
+};
+// does a card belong to a history? (any of its threads is in that history)
+window.historyMatch = function (card, k) {
+  return (card.threads || []).some(function (t) {
+    return (window.HKEYS[t] || []).indexOf(k) >= 0;
+  });
+};
+
+// #hist= shared hash state, mirrors getThreads/setThreads (which back the #thread= param)
+window.getHistory = function () {
+  return getState().hist || "";
+};
+window.setHistory = function (k) {
+  setState({ hist: k || "" });
+};
+
+// The shared history selector. ONE renderer, so the pill markup exists in one place and the
+// grouping is read never re-derived. Native <button type="button"> with onclick only — NOT
+// kbd(): kbd() adds an Enter/Space keydown handler that double-fires on a real button.
+window.historyBar = function (el, onPick) {
+  if (!el) return;
+  var cur = getHistory();
+  var pill = function (h) {
+    var on = h.key === cur;
+    return (
+      '<button type="button" class="hchip' +
+      (h.spine ? "" : " sec") +
+      (on ? " on" : "") +
+      '" aria-pressed="' +
+      (on ? "true" : "false") +
+      '" data-h="' +
+      h.key +
+      '" title="' +
+      h.tag +
+      '">' +
+      h.label +
+      ' <span class="hn">' +
+      window.threadsIn(h.key).length +
+      "</span></button>"
+    );
+  };
+  var spine = window.HISTORIES.filter(function (h) {
+    return h.spine;
+  })
+    .map(pill)
+    .join("");
+  var rest = window.HISTORIES.filter(function (h) {
+    return !h.spine;
+  })
+    .map(pill)
+    .join("");
+  el.innerHTML =
+    '<span class="hlab">Histories</span>' +
+    spine +
+    '<span aria-hidden="true" class="hdiv"></span>' +
+    rest +
+    '<button type="button" class="hchip' +
+    (cur ? "" : " on") +
+    '" data-h="">All</button>';
+  el.querySelectorAll(".hchip").forEach(function (b) {
+    b.onclick = function () {
+      var k = b.dataset.h;
+      window.setHistory(k === cur ? "" : k); // clicking the active history clears to All
+      if (onPick) onPick(getHistory());
+    };
+  });
+};
+// dynamic nav — two tiers. PRIMARY carries the argument; BROWSE is the demoted database deck.
+const NAV_PRIMARY = [
   ["Home", "index.html"],
   ["Globe", "views/map.html"],
   ["Timeline", "views/atlas.html"],
   ["Tree", "views/tree.html"],
   ["Relay", "views/relay.html"],
+];
+const NAV_BROWSE = [
   ["Deck", "views/deck.html"],
   ["Table", "views/table.html"],
   ["Dashboard", "views/dashboard.html"],
@@ -273,24 +442,35 @@ function buildNav() {
   if (!el) return;
   const views = location.pathname.indexOf("/views/") >= 0;
   const cur = location.pathname.split("/").pop() || "index.html";
-  el.innerHTML = NAVITEMS.map(([label, file]) => {
-    let h = file;
-    if (views) {
-      h = file.indexOf("views/") === 0 ? file.slice(6) : "../" + file;
-    }
-    const key = file.split("/").pop();
-    const act = key === cur ? "background:#1c1c1c;color:#fff;" : "background:#fff;color:#1c1c1c;";
-    return (
-      '<a href="' +
-      h +
-      location.hash +
-      '" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);' +
-      act +
-      'font-size:11.5px">' +
-      label +
-      "</a>"
-    );
-  }).join("");
+  const pill =
+    muted =>
+    ([label, file]) => {
+      let h = file;
+      if (views) {
+        h = file.indexOf("views/") === 0 ? file.slice(6) : "../" + file;
+      }
+      const key = file.split("/").pop();
+      // active branch byte-identical to before; resting BROWSE pills read muted.
+      const act =
+        key === cur
+          ? "background:#1c1c1c;color:#fff;"
+          : muted
+            ? "background:#fff;color:#8a857c;border-color:rgba(0,0,0,.10);"
+            : "background:#fff;color:#1c1c1c;";
+      return (
+        '<a href="' +
+        h +
+        location.hash +
+        '" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);' +
+        act +
+        'font-size:11.5px">' +
+        label +
+        "</a>"
+      );
+    };
+  const div =
+    '<span aria-hidden="true" style="align-self:center;width:1px;height:16px;background:rgba(0,0,0,.2);margin:0 4px"></span>';
+  el.innerHTML = NAV_PRIMARY.map(pill(false)).join("") + div + NAV_BROWSE.map(pill(true)).join("");
 }
 // help overlay
 function helpHTML() {
@@ -384,6 +564,16 @@ function injectChrome() {
       ".num,.yr,.ylab,.car,td{font-variant-numeric:tabular-nums}" + // align digits like an instrument
       "#appnav a:focus-visible{outline-offset:1px}" +
       "@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}" +
+      // History selector — the PRIMARY way in, one block so pills look identical everywhere and
+      // read larger/bolder than the .tchip thread chips. Histories FILTER; they get no colour channel.
+      ".histbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:6px 0 0}" +
+      ".hlab{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#8a857c;margin-right:2px}" +
+      ".hchip{border:.5px solid var(--line,rgba(0,0,0,.12));background:#fff;border-radius:13px;padding:4px 12px;font-size:12.5px;font-weight:600;cursor:pointer;color:#1c1c1c}" +
+      ".hchip.sec{color:#8a857c;border-color:rgba(0,0,0,.10)}" +
+      ".hchip.on{background:#1c1c1c;color:#fff;border-color:#1c1c1c}" +
+      ".hchip .hn{font-weight:400;color:#aaa;font-size:10.5px}" +
+      ".hchip.on .hn{color:#cfc9bf}" +
+      ".hdiv{width:1px;height:15px;background:rgba(0,0,0,.16);align-self:center;margin:0 2px}" +
       "@media (max-width:640px){#appnav{position:static!important;justify-content:flex-end;padding:6px 8px 0}body>.top>h1,body>.top h1{margin-top:4px}}";
     document.head.appendChild(s);
   }

@@ -17,6 +17,7 @@
     selT = [],
     goal = "",
     decade = "",
+    hist = "",
     sortK = "year",
     sortDir = 1;
   try {
@@ -26,10 +27,26 @@
     if (st.q) q = st.q;
     if (st.goal) goal = st.goal;
     if (st.decade) decade = st.decade;
+    if (st.hist && historyByKey(st.hist)) hist = st.hist;
   } catch (e) {}
   const allThreads = [...new Set(CARDS.flatMap(c => c.threads))].sort();
-  document.getElementById("thread").innerHTML =
-    '<option value="">all threads</option>' + allThreads.map(t => `<option>${t}</option>`).join("");
+  // Thread <select> options: scoped to the chosen history's threads, or all 25 when All.
+  function fillThreads() {
+    const ts = hist ? threadsIn(hist) : allThreads;
+    document.getElementById("thread").innerHTML =
+      '<option value="">all threads</option>' + ts.map(t => `<option>${t}</option>`).join("");
+  }
+  fillThreads();
+  // History = single-select FILTER (hist=), above the multi-select thread TRACE (thread=).
+  // Picking a history scopes the thread <select> to its threads and drops out-of-scope traces.
+  function pickHist(h) {
+    hist = h || "";
+    if (hist) selT = selT.filter(t => threadsIn(hist).includes(t));
+    fillThreads();
+    render();
+  }
+  const _histbar = document.getElementById("histbar");
+  if (_histbar) historyBar(_histbar, pickHist);
   // faint "→" between the four Ms so they read as an order (see it → build a billion), not peers
   document.getElementById("kinds").innerHTML = KINDS.map(
     k => `<button class="chip" data-k="${k}" style="border-color:${KC[k]}">${k}</button>`,
@@ -84,6 +101,7 @@
   }
   function rows() {
     let r = CARDS.filter(c => {
+      if (hist && !historyMatch(c, hist)) return false;
       if (kind && c.kind !== kind) return false;
       if (selT.length && !threadMatch(c, selT)) return false;
       if (goal && c.goal !== goal) return false;
@@ -204,6 +222,12 @@
     selT = [];
     goal = "";
     decade = "";
+    hist = "";
+    try {
+      setHistory("");
+    } catch (e) {}
+    fillThreads();
+    if (_histbar) historyBar(_histbar, pickHist); // resync the pill state to All
     document.getElementById("q").value = "";
     document.getElementById("thread").value = "";
     document.getElementById("goal").value = "";

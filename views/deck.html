@@ -59,6 +59,7 @@ h1{font-size:24px;font-weight:600;margin:0 0 2px;}
 <h1>Deck</h1>
 <p class="sub">Click a card to flip it — the moment on the front, the aftermath on the back.</p>
 <div class="bar"><span class="lab">Kind</span><span id="kinds"></span></div>
+<div class="histbar" id="histbar"></div>
 <div class="bar"><span class="lab">Thread</span><span id="threads"></span></div>
 <div id="rail"></div>
 <p class="count" id="count"></p>
@@ -71,13 +72,24 @@ const KINDS=window.KINDS;
 const KC={Measure:"var(--Measure)",Model:"var(--Model)",Make:"var(--Make)",Manufacture:"var(--Manufacture)"};
 const KINK=window.KINK, KGLY=window.KGLY;   // contrast-safe ink + non-colour glyph (shared.js)
 const allThreads=[...new Set(DATA.flatMap(c=>c.threads))].sort();
-let fKind=null,fThread=null;
+let fKind=null,fThread=null,fHist=null;
 // B2: land on the same thread the visitor was tracing on Globe/Timeline (shared #thread=).
 try{const _t=getThreads()[0];if(_t&&allThreads.includes(_t))fThread=_t;}catch(e){}
+// Land already scoped to the essay history a reader clicked through from (shared #hist=).
+try{const _h=getHistory();if(_h&&historyByKey(_h))fHist=_h;}catch(e){}
 const byName=Object.fromEntries(DATA.map(c=>[c.name,c]));
+// History = single-select FILTER (hist=), the primary way in above the 25-card thread TRACE.
+// Picking a history scopes the thread chips to its threads and drops an out-of-scope trace.
+function pickHist(h){
+ fHist=h||null;
+ if(fHist&&fThread&&!threadsIn(fHist).includes(fThread)){fThread=null;try{setThreads([]);}catch(e){}}
+ render();
+}
 function chips(){
+ historyBar(document.getElementById("histbar"),pickHist);
+ const curThreads=fHist?threadsIn(fHist):allThreads;
  document.getElementById("kinds").innerHTML=KINDS.map(k=>`<button class="chip kchip" data-k="${k}" style="${fKind===k?'background:'+KC[k]:''}">${k}</button>`).join("")+`<button class="chip" data-k="">All</button>`;
- document.getElementById("threads").innerHTML=allThreads.map(t=>`<button class="chip ${fThread===t?'on':''}" data-t="${t}">${t}</button>`).join("")+`<button class="chip" data-t="">All</button>`;
+ document.getElementById("threads").innerHTML=curThreads.map(t=>`<button class="chip ${fThread===t?'on':''}" data-t="${t}">${t}</button>`).join("")+`<button class="chip" data-t="">All</button>`;
  document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{fKind=b.dataset.k||null;render();});
  document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{fThread=b.dataset.t||null;try{setThreads(fThread?[fThread]:[]);}catch(e){}render();});
  document.querySelectorAll(".kchip").forEach(b=>{if(b.dataset.k===fKind)b.classList.add("on");});
@@ -92,6 +104,7 @@ function rail(){
 }
 function visible(){
  let v=DATA.slice();
+ if(fHist)v=v.filter(c=>historyMatch(c,fHist));
  if(fKind)v=v.filter(c=>c.kind===fKind);
  if(fThread)v=v.filter(c=>c.threads.includes(fThread));
  v.sort((a,b)=>a.year-b.year);
@@ -148,8 +161,8 @@ function render(){
  document.getElementById("grid").innerHTML=v.map(cardHTML).join("");
  document.querySelectorAll(".card").forEach(el=>{el.onclick=e=>{
    if(e.target.closest("a"))return;
-   const g=e.target.closest("[data-go]");if(g){e.stopPropagation();const t=byName[g.dataset.go];if(t){fThread=null;fKind=null;render();setTimeout(()=>scrollTo2(g.dataset.go,true),60);}return;}
-   const tc=e.target.closest(".xchip");if(tc){e.stopPropagation();fThread=tc.dataset.t;fKind=null;render();return;}
+   const g=e.target.closest("[data-go]");if(g){e.stopPropagation();const t=byName[g.dataset.go];if(t){fThread=null;fKind=null;fHist=null;try{setHistory("");}catch(x){}render();setTimeout(()=>scrollTo2(g.dataset.go,true),60);}return;}
+   const tc=e.target.closest(".xchip");if(tc){e.stopPropagation();fThread=tc.dataset.t;fKind=null;fHist=null;try{setHistory("");}catch(x){}render();return;}
    setFlip(el,!el.classList.contains("flip"));
  };
  // No kbd() on the card: it would set role="button" (see setFlip) and its blanket
@@ -179,7 +192,7 @@ window.addEventListener("message",function(e){if(e.data&&e.data.type==="focuscar
   var key=decodeURIComponent(m[1]);
   var c=(window.__byId&&window.__byId[key])||byName[key];if(!c)return;
   var nm=c.name;
-  if(clear&&!document.getElementById("card-"+cssid(nm))){fThread=null;fKind=null;render();}
+  if(clear&&!document.getElementById("card-"+cssid(nm))){fThread=null;fKind=null;fHist=null;try{setHistory("");}catch(x){}render();}
   setTimeout(function(){try{scrollTo2(nm,true);}catch(x){}},80);}
  window.addEventListener("hashchange",function(){fh(true);});fh(false);})();
 </script></body></html>

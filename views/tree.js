@@ -27,13 +27,17 @@
   const lanes = [...new Set(CARDS.map(prim))].sort((a, b) => tmin[a] - tmin[b]);
   let sel = null,
     q = "",
+    hist = "",
     pos = {},
     layoutH = 0,
     layoutW = 0;
   try {
     const st = getState();
     if (st.q) q = st.q;
+    hist = getHistory(); // #hist= scopes the genealogy to one history's threads
   } catch (e) {}
+  // a card is in-history if any of its threads belongs to the picked history (shared.js)
+  const inHist = c => !hist || historyMatch(c, hist);
   const ERABAND = 28; // dedicated top band for era labels (pushes everything below down)
   // Era gridlines + labels (TA.eraBand in ta.js). "bg" tags the gridline divs so render()'s
   // sweep removes them; layoutH is read fresh at each call.
@@ -50,7 +54,10 @@
     lanes.forEach(l => (items[l] = []));
     CARDS.forEach(c => items[prim(c)].push(c));
     const meta = [];
-    for (const l of lanes) {
+    // history filter: drop lanes with no in-history card; off-history cards in a
+    // kept lane stay laid out and get dimmed in render() (Timeline's .dim treatment).
+    const shown = hist ? lanes.filter(l => items[l].some(inHist)) : lanes;
+    for (const l of shown) {
       const arr = items[l].sort((a, b) => a.year - b.year);
       const rr = [];
       for (const c of arr) {
@@ -122,7 +129,8 @@
     }
     for (const m of meta) h += `<div class="lanelab" style="top:${m[1]}px">${m[0]}</div>`;
     for (const c of CARDS) {
-      const dimd = lit && !lit.has(c.id);
+      if (!pos[c.id]) continue; // card's lane was filtered out by the history scope
+      const dimd = (lit && !lit.has(c.id)) || !inHist(c);
       const hl = (lit && lit.has(c.id) && c.id !== sel) || (q && c.name.toLowerCase().includes(q));
       h += `<div class="c${dimd ? " dim" : ""}${c.id === sel ? " sel" : ""}${hl ? " hl" : ""}" data-id="${encodeURIComponent(c.id)}" style="left:${c._x}px;top:${c._y}px;border-left-color:${KC[c.kind]}"><div class="ti" style="color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.name}</div><div class="yt">${c.kind} · ${c.year}</div></div>`;
     }
@@ -178,6 +186,18 @@
     document.getElementById("q").value = "";
     render();
   };
+  // history selector (shared.js historyBar): single-select FILTER on #hist=,
+  // rebuilt on each pick so the active pill state stays correct.
+  function onPickHistory() {
+    hist = getHistory();
+    buildHistbar();
+    render();
+  }
+  function buildHistbar() {
+    const el = document.getElementById("histbar");
+    if (el && window.historyBar) historyBar(el, onPickHistory);
+  }
+  buildHistbar();
   scroll.addEventListener("scroll", pinLabels);
   try {
     const _f = getState().card || "";

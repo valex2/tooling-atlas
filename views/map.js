@@ -47,6 +47,16 @@
   try {
     selThreads = getThreads();
   } catch (e) {}
+  // History filter (the essay's spine): single-select scope on #hist=, read from
+  // window.HISTORIES via the shared helpers. Independent of the multi-select thread
+  // trace — it scopes the thread popover to that history's threads and dims off-history
+  // dots, never touching the migration/genealogy geometry. repaintThreads is the popover
+  // rebuild hook, set once the picker IIFE has defined its paint().
+  let curHist = "";
+  try {
+    curHist = getHistory();
+  } catch (e) {}
+  let repaintThreads = null;
   // Was a local 8-colour palette assigned by rank and cycled with %. It failed
   // hard: orange vs green measured deltaE 0.3 under protanopia (identical for
   // ~8% of men), the two reds 9.5 for normal vision, and the brown read as grey.
@@ -222,7 +232,9 @@
       if (p[2] < 0) continue;
       const r = (3 + Math.min(4, (c.en ? c.en.length : 0) * 0.8)) * rsc * (fnd ? 1.6 : 1);
       const onT = selThreads.length ? selThreads.find(t => c.threads.includes(t)) : null;
-      const off = selThreads.length && !onT;
+      // A scoped history dims any card outside it (spec §5 canvas step); All dims nothing.
+      const offH = curHist && window.historyMatch && !window.historyMatch(c, curHist);
+      const off = offH || (selThreads.length && !onT);
       const fo = fnd ? 1 : off ? 0.07 : 0.3 + 0.65 * tfrac(c.year);
       const ring = fnd ? "#111" : onT ? threadColor(onT) : "#fff";
       const rw = fnd ? "2.2" : onT ? "2" : ".8";
@@ -644,7 +656,14 @@
     if (!btn || !pan) return;
     const counts = {};
     CARDS.forEach(c => c.threads.forEach(t => (counts[t] = (counts[t] || 0) + 1)));
-    const ths = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    const allThs = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    // When a history is active the popover shows only that history's threads (spec §5,
+    // step 1); All shows every thread as before. selThreads is left intact — history and
+    // thread are independent hash params, so a trace can survive a history scope change.
+    const ths = () =>
+      curHist && window.threadsIn
+        ? allThs.filter(t => window.threadsIn(curHist).indexOf(t) >= 0)
+        : allThs;
     function paint() {
       window.threadSlots(threadSlot, selThreads);
       // .trow rows and #tclr are keyboard-operable now, but this rebuilds pan.innerHTML
@@ -660,7 +679,7 @@
                 : null
             : null;
       pan.innerHTML =
-        ths
+        ths()
           .map(t => {
             const on = selThreads.includes(t);
             const col = on ? threadColor(t) : "#ccc";
@@ -724,8 +743,19 @@
     document.addEventListener("keydown", ev => {
       if (ev.key === "Escape" && pan.style.display !== "none") setOpen(false, true);
     });
+    repaintThreads = paint;
     paint();
   })();
+  // History selector — the shared historyBar renders the pills (one source of markup);
+  // picking a history scopes the thread popover and dims off-history dots. Incoming
+  // #hist= is already honoured at load via curHist (read above) feeding paint()/render().
+  if (window.historyBar) {
+    window.historyBar(document.getElementById("histbar"), function (hk) {
+      curHist = hk || "";
+      if (repaintThreads) repaintThreads();
+      render();
+    });
+  }
   window.addEventListener("resize", render);
   // Delegated interaction (bound once): tooltip on dot hover, open card on dot click,
   // open country panel on country click (unless the gesture was a drag).
