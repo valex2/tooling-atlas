@@ -9,15 +9,10 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 .top{padding:12px 16px 6px}h1{font-size:18px;font-weight:600;margin:0 0 4px}
 .sub{color:var(--mut);font-size:12px;line-height:1.5;margin:0 0 8px;max-width:860px}
-.finding{border-left:3px solid var(--ink);padding:1px 0 1px 12px;margin:0 0 7px;max-width:880px;
- font-size:15px;line-height:1.45;color:#2a2620}
-.finding b{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
-.finding .second{display:block;font-size:12px;line-height:1.5;color:#5f594f;margin-top:4px}
-.finding .second b{font-size:12px}
 .method,.axnote{font-size:11.5px;line-height:1.5;color:#5f594f;max-width:900px;margin:0 0 5px}
 .axnote{color:#8a857c;font-size:11px}
 /* the method definitions + axis construction are what a skeptic checks, not what a reader
-   meets first: they live behind this toggle so the header is thesis + finding + chart. */
+   meets first: they live behind this toggle so the header is thesis + chart. */
 .legrow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-top:4px}
 .howbtn{flex:none;background:none;border:0;padding:2px;font:inherit;font-size:11px;color:var(--mut);cursor:pointer;white-space:nowrap}
 .howbtn:hover{color:var(--ink)}
@@ -31,7 +26,7 @@
 .legend .gly{font-size:12px}
 .legend svg{vertical-align:-1px}
 .legend .sw{display:inline-block;width:11px;height:11px;border-radius:2px;border:.5px solid rgba(0,0,0,.18)}
-.scroll{overflow:auto;border-top:.5px solid var(--line);height:calc(100vh - 172px);min-height:420px;background:#fcfbf9}
+.scroll{overflow:auto;border-top:.5px solid var(--line);height:calc(100vh - 130px);min-height:420px;background:#fcfbf9}
 #stage{position:relative}
 .tip{position:fixed;pointer-events:none;background:#fff;border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:50}
 .tip .t{font-weight:600}.tip .m{color:var(--mut);font-size:10.5px;margin:2px 0 4px}.tip .s{font-size:11px;line-height:1.4}
@@ -60,7 +55,6 @@
 .coda tr.tot td{border-top:1px solid rgba(0,0,0,.22);font-weight:600}
 @media (max-width:640px){
  .sub{font-size:11.5px}
- .finding{font-size:13px;line-height:1.4}.finding b{font-size:16px}
  .method{font-size:11px}.axnote{font-size:10.5px}
  .scroll{height:calc(100vh - 150px)}
 }
@@ -68,7 +62,6 @@
 <div id="appnav"></div>
 <div class="top"><h1>Relay</h1>
 <p class="sub">Leadership in a technology migrates. A country keeps it only while it is doing the hardest making: ideas travel, making stays put. This page is the evidence, and the honest news is how little of it there is.</p>
-<p class="finding" id="finding"></p>
 <div class="legrow">
  <div class="legend">
   <span class="grp" id="kindleg"></span>

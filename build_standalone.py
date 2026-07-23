@@ -8,7 +8,7 @@ import re, os, json
 HERE = os.path.dirname(os.path.abspath(__file__))
 VIEWS = [("Globe","views/map.html"),("Timeline","views/atlas.html"),("Tree","views/tree.html"),
          ("Relay","views/relay.html"),
-         ("Deck","views/deck.html"),("Table","views/table.html"),("Dashboard","views/dashboard.html")]
+         ("Browse","views/browse.html")]
 MS = [("01","Measure","var(--Measure-ink)","◇","see what is there — a microscope, an X-ray, a way to read DNA"),
       ("02","Model","var(--Model-ink)","◯","reason about it — an equation or rule that predicts without building"),
       ("03","Make","var(--Make-ink)","△","build one working copy — a single transistor, engine, or molecule"),
@@ -19,9 +19,7 @@ VGLY = {
  "Timeline":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 8h24M4 16h24M4 24h24"/><circle cx="10" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="20" cy="16" r="2" fill="currentColor" stroke="none"/><circle cx="14" cy="24" r="2" fill="currentColor" stroke="none"/></svg>',
  "Tree":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="16" r="2.4"/><circle cx="22" cy="8" r="2.4"/><circle cx="22" cy="24" r="2.4"/><path d="M9 15l11-6M9 17l11 6"/></svg>',
  "Relay":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="5" y="7" width="22" height="5" rx="1"/><rect x="5" y="14" width="22" height="5" rx="1"/><rect x="5" y="21" width="22" height="5" rx="1"/></svg>',
- "Deck":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="9" y="6" width="17" height="21" rx="2"/><rect x="5" y="9" width="15" height="18" rx="2" fill="var(--card)"/></svg>',
- "Table":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="5" y="6" width="22" height="20" rx="1.5"/><path d="M5 12h22M13 6v20M20 6v20"/></svg>',
- "Dashboard":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 26V6"/><rect x="9" y="18" width="4" height="8"/><rect x="15" y="12" width="4" height="14"/><rect x="21" y="15" width="4" height="11"/></svg>',
+ "Browse":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="9" y="6" width="17" height="21" rx="2"/><rect x="5" y="9" width="15" height="18" rx="2" fill="var(--card)"/></svg>',
 }
 
 # Front/Back text is only needed by the Deck; slim it out of the other views' data to keep the bundle small.
@@ -45,7 +43,7 @@ def inline(relpath, slim=False):
     txt = re.sub(r'<div id="appnav"[^>]*>.*?</div>', '', txt, flags=re.S)
     return txt
 
-views = {label: inline(p, slim=(label != "Deck")) for label, p in VIEWS}
+views = {label: inline(p, slim=(label != "Browse")) for label, p in VIEWS}
 order = [label for label, _ in VIEWS]
 data = json.dumps(views).replace("</", "<\\/")
 n_cards = len(cards)
@@ -80,14 +78,14 @@ HOME = f"""<section id="home"><div class="hwrap">
  <p class="sub">Every tool here does one of four jobs, and they fall in order.</p>
  <div class="ms">{ms_html}</div>
  <p class="tagline">See it, understand it, build one, build a million.</p>
- <h2>Seven ways to read it</h2>
+ <h2>Five ways to read it</h2>
  <div class="views">{view_cards}</div>
 </div></section>"""
 
 shell = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tooling Atlas — how tools make technology leadership</title>
-<meta name="description" content="An interactive atlas of __NC__ tools across __SPAN__: leadership in a field follows leadership in its tools. Explore as a globe, timeline, genealogy tree, migration relay, deck, table, and coverage dashboard.">
+<meta name="description" content="An interactive atlas of __NC__ tools across __SPAN__: leadership in a field follows leadership in its tools. Explore as a globe, timeline, genealogy tree, migration relay, and a unified browse view (cards, table, and coverage).">
 <meta name="theme-color" content="#f5f3ef">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tooling Atlas">
@@ -165,7 +163,7 @@ const VIEWS=__DATA__, ORDER=__ORDER__, TABS=["Home"].concat(ORDER);
 const tabs=document.getElementById('tabs'),frame=document.getElementById('frame'),home=document.getElementById('home');
 let pendingCard=null;
 frame.onload=function(){if(pendingCard){try{frame.contentWindow.postMessage({type:'focuscard',id:pendingCard},'*');}catch(e){}pendingCard=null;}};
-window.addEventListener('message',function(e){if(e.data&&e.data.type==='opencard'){pendingCard=e.data.id;show('Deck');}});
+window.addEventListener('message',function(e){if(e.data&&e.data.type==='opencard'){pendingCard=e.data.id;show('Browse');}});
 function show(k){
  if(!TABS.includes(k))k="Home";
  const isHome=k==="Home";

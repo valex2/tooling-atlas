@@ -75,7 +75,7 @@ check(n > 100, "cards.js has a full dataset (%d cards)" % n)
 #     or bare reassignment). Deliberately narrow on both ends so it cannot fire on ordinary
 #     code: only these three names, and only NON-EMPTY literals -- which keeps accumulators
 #     (`const rows = []`) and the legal alias every view uses
-#     (`const DATA = window.CARDS || []`, views/atlas.html, views/deck.html) passing.
+#     (`const DATA = window.CARDS || []`, views/atlas.html, views/browse.js) passing.
 # SHAPE: an array of objects whose first key is `id` — the primary key every card
 #   carries and that legends/series/config arrays essentially never do. Keying on `name`
 #   or `year` (both common) made this fire on `const LEGEND=[{name:"x"}]`; requiring `id`
@@ -108,9 +108,10 @@ for v in SCANNED:
     t = open(os.path.join(ROOT, v), encoding="utf-8").read()
     check(not forked(t), "%s carries no forked inline dataset" % v)
 
-# 3) the data-driven views actually reference the canonical cards
-for v in ["views/map.html", "views/table.html", "views/dashboard.html",
-          "views/atlas.html", "views/tree.html", "views/deck.html", "views/relay.html"]:
+# 3) the data-driven views actually reference the canonical cards. Deck/Table/Dashboard are
+# now redirect stubs (no cards.js), consolidated into views/browse.html — assert that instead.
+for v in ["views/map.html", "views/browse.html",
+          "views/atlas.html", "views/tree.html", "views/relay.html"]:
     t = open(os.path.join(ROOT, v), encoding="utf-8").read()
     check("cards.js" in t, "%s loads data/cards.js" % v)
 
@@ -120,8 +121,8 @@ for v in ["views/map.html", "views/table.html", "views/dashboard.html",
 # "shared.js" also appears in prose comments (map.html), which a substring search misreads.
 TA_TAG = re.compile(r'<script src="[^"]*\bta\.js"')
 SHARED_TAG = re.compile(r'<script src="[^"]*\bshared\.js"')
-for v in ["index.html", "views/map.html", "views/table.html", "views/dashboard.html",
-          "views/atlas.html", "views/tree.html", "views/deck.html", "views/relay.html"]:
+for v in ["index.html", "views/map.html", "views/browse.html",
+          "views/atlas.html", "views/tree.html", "views/relay.html"]:
     t = open(os.path.join(ROOT, v), encoding="utf-8").read()
     mta, msh = TA_TAG.search(t), SHARED_TAG.search(t)
     check(bool(mta) and bool(msh) and mta.start() < msh.start(),

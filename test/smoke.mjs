@@ -60,8 +60,12 @@ const NO_PLATFORM_BASELINE = !UPDATE && !SELFCHECK && !fs.existsSync(BASE);
 
 const VIEWS = [
   ['home', 'index.html'], ['globe', 'views/map.html'], ['timeline', 'views/atlas.html'],
-  ['tree', 'views/tree.html'], ['relay', 'views/relay.html'], ['deck', 'views/deck.html'],
-  ['table', 'views/table.html'], ['dashboard', 'views/dashboard.html'],
+  ['tree', 'views/tree.html'], ['relay', 'views/relay.html'],
+  // Deck/Table/Dashboard consolidated into Browse; captured once per mode. The three old
+  // files are now redirect stubs (browse.html#mode=…) and are deliberately NOT captured.
+  ['browse-cards', 'views/browse.html'],
+  ['browse-table', 'views/browse.html#mode=table'],
+  ['browse-coverage', 'views/browse.html#mode=coverage'],
 ];
 
 // Viewports are pinned (including deviceScaleFactor) so a capture is reproducible across
@@ -127,7 +131,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 //
 //  - document.fonts.ready. The kind pills use geometric glyphs (◇ ◯ △ ▦) that fall back to
 //    a non-primary font; capturing before that resolves measures them at a different width.
-//  - Neutralising position:sticky. views/table.html has `th{position:sticky;top:0}`. Whether
+//  - Neutralising position:sticky. Browse's table mode has `th{position:sticky;top:0}`. Whether
 //    Chrome has promoted that header to its own compositing layer by capture time is a race,
 //    and the two outcomes round the table's 0.5px top border to a different device pixel —
 //    a 1px × 1126px seam, 0.087% of the frame, i.e. it slipped under the 0.1% gate by luck
@@ -158,7 +162,7 @@ async function settle(page) {
 
 // The golden images are structurally blind to this, by our own choice: settle() pins every
 // position:sticky element to static before capture (see the note above), so deleting
-// `th{position:sticky;top:0}` from views/table.html would diff exactly zero pixels and pass.
+// `th{position:sticky;top:0}` from Browse's table mode would diff exactly zero pixels and pass.
 // Coverage traded away has to be bought back explicitly, so assert the behaviour directly:
 // load the table for real (no settle, no freeze of position), scroll past the header, and
 // require it to still be pinned to the top of the viewport.
@@ -166,12 +170,15 @@ async function settle(page) {
 async function stickyCheck(browser) {
   const page = await browser.newPage();
   await page.setViewport(VIEWPORTS[0][1]);
+  // Table mode now lives inside browse.html; the old views/table.html is a redirect stub.
+  // Load Browse straight into table mode and wait for the table to route in and render.
   const err = await page
-    .goto(`${HOST}/views/table.html`, { waitUntil: 'networkidle0', timeout: 20000 })
+    .goto(`${HOST}/views/browse.html#mode=table`, { waitUntil: 'networkidle0', timeout: 20000 })
     .then(() => null)
     .catch(e => 'NAV ' + e.message);
   if (err) { await page.close(); return err; }
   await sleep(800);
+  await page.waitForSelector('thead th', { timeout: 5000 }).catch(() => {});
   const r = await page
     .evaluate(async () => {
       const th = document.querySelector('thead th');
@@ -395,7 +402,7 @@ for (const [name, p] of VIEWS) {
 }
 const sticky = await stickyCheck(browser);
 if (sticky) {
-  console.log(`FAIL sticky     views/table.html header does not stick: ${sticky}`);
+  console.log(`FAIL sticky     views/browse.html#mode=table header does not stick: ${sticky}`);
   console.log('FAIL sticky     (th{position:sticky;top:0} is defeated by any ancestor that is');
   console.log('FAIL sticky      itself a scroll container — check `overflow` on table/.wrap.)');
   // Deliberately NOT counted toward the UPDATE gate. That gate exists because blessing an
@@ -403,7 +410,7 @@ if (sticky) {
   // pin sticky to static regardless, so this defect cannot reach a golden image. Wedging
   // re-blessing on an unrelated behavioural failure only gets the assertion deleted.
   if (!UPDATE) fail++;
-} else console.log('ok   sticky     views/table.html header stays pinned at scrollY 600');
+} else console.log('ok   sticky     views/browse.html#mode=table header stays pinned at scrollY 600');
 
 await browser.close();
 srv.kill();

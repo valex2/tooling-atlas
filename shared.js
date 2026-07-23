@@ -88,8 +88,8 @@ window.openCard = function (name) {
     }
   } catch (e) {}
   var views = location.pathname.indexOf("/views/") >= 0;
-  var deck = views ? "deck.html" : "views/deck.html";
-  location.href = deck + "#card=" + encodeURIComponent(name);
+  var browse = views ? "browse.html" : "views/browse.html";
+  location.href = browse + "#mode=cards&card=" + encodeURIComponent(name);
 };
 // Make a click-only element keyboard-operable: focusable, button semantics, Enter/Space fires fn.
 window.kbd = function (el, fn, label) {
@@ -432,11 +432,7 @@ const NAV_PRIMARY = [
   ["Tree", "views/tree.html"],
   ["Relay", "views/relay.html"],
 ];
-const NAV_BROWSE = [
-  ["Deck", "views/deck.html"],
-  ["Table", "views/table.html"],
-  ["Dashboard", "views/dashboard.html"],
-];
+const NAV_BROWSE = [["Browse", "views/browse.html"]];
 function buildNav() {
   const el = document.getElementById("appnav");
   if (!el) return;
@@ -484,8 +480,8 @@ function helpHTML() {
   else if (file.indexOf("map") === 0)
     viewNote =
       "On the Globe, land shade = how many tools, dot fade = how recent, and a coloured path is a thread you picked.";
-  else if (file.indexOf("dashboard") === 0)
-    viewNote = "On the Dashboard, a red cell means no tool written yet.";
+  else if (file.indexOf("browse") === 0 && getState().mode === "coverage")
+    viewNote = "In Coverage, a red cell means no tool written yet.";
   const ms = [
     ["Measure", "seeing what's there: a microscope, an X-ray, a way to read DNA"],
     [

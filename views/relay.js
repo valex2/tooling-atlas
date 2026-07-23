@@ -197,11 +197,6 @@
     }),
     { cards: 0, turns: 0, single: 0, span: 0, held: 0, rt: 0 },
   );
-  const usaHolds = HOLDS.filter(h => h.g === "USA");
-  const TOPC = usaHolds.length
-    ? { g: "USA", n: usaHolds.length, y: usaHolds.reduce((a, h) => a + h.b - h.a, 0) }
-    : { g: "—", n: 0, y: 0 };
-
   // What the rule this view refuses would have cost, measured on the panels actually
   // drawn rather than asserted from memory: paint every turn forward to the next
   // country's first card and find the single lone card that ends up claiming the most.
@@ -763,12 +758,6 @@
   // The two numbers a reader would otherwise try to eyeball off the axis, written out.
   const pct = (a, b) => (b ? Math.round((1000 * a) / b) / 10 : 0);
 
-  const findingHTML = () =>
-    `Of the <b>${num(TOT.span)}</b> years these ${MODELS.length} panels span, the record can carry ` +
-    `<b>${num(TOT.held)}</b> — <b>${pct(TOT.held, TOT.span)}%</b>. The rest is not a lead being held; it is a lead we cannot see.` +
-    `<span class="second">The corpus was gathered in English, and it shows: ${TOPC.n} of the ${HOLDS.length} holds, ` +
-    `and ${num(TOPC.y)} of the ${num(TOT.held)} held years, are American — a fact about this atlas before it is one about the world.</span>`;
-
   // Only what a reader needs in order to SEE the marks: what a card is, what a hold is,
   // what a turn is, and the rule that keeps a lone card from claiming a century. The
   // counterexample that justifies that rule is a methodologist's business, so it sits in
@@ -880,7 +869,6 @@
   svg.setAttribute("viewBox", "0 0 " + FULLW + " " + chart.h);
   svg.innerHTML = chart.svg;
 
-  document.getElementById("finding").innerHTML = findingHTML();
   document.getElementById("method").innerHTML = methodHTML();
   document.getElementById("axnote").innerHTML = axisNoteHTML();
   document.getElementById("kindleg").innerHTML = kindLegendHTML();
