@@ -16,13 +16,22 @@
 .finding .second b{font-size:12px}
 .method,.axnote{font-size:11.5px;line-height:1.5;color:#5f594f;max-width:900px;margin:0 0 5px}
 .axnote{color:#8a857c;font-size:11px}
+/* the method definitions + axis construction are what a skeptic checks, not what a reader
+   meets first: they live behind this toggle so the header is thesis + finding + chart. */
+.legrow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-top:4px}
+.howbtn{flex:none;background:none;border:0;padding:2px;font:inherit;font-size:11px;color:var(--mut);cursor:pointer;white-space:nowrap}
+.howbtn:hover{color:var(--ink)}
+.howbtn::before{content:"\25B8\00a0";font-size:9px}
+.howbtn[aria-expanded="true"]::before{content:"\25BE\00a0"}
+.howto{margin:7px 0 0}
+.howto[hidden]{display:none}
 .legend{display:flex;gap:14px;font-size:11px;color:var(--mut);flex-wrap:wrap;align-items:center;margin-top:3px}
 .legend .grp{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .legend .grp span{display:flex;gap:4px;align-items:center}
 .legend .gly{font-size:12px}
 .legend svg{vertical-align:-1px}
 .legend .sw{display:inline-block;width:11px;height:11px;border-radius:2px;border:.5px solid rgba(0,0,0,.18)}
-.scroll{overflow:auto;border-top:.5px solid var(--line);height:calc(100vh - 250px);min-height:420px;background:#fcfbf9}
+.scroll{overflow:auto;border-top:.5px solid var(--line);height:calc(100vh - 172px);min-height:420px;background:#fcfbf9}
 #stage{position:relative}
 .tip{position:fixed;pointer-events:none;background:#fff;border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:50}
 .tip .t{font-weight:600}.tip .m{color:var(--mut);font-size:10.5px;margin:2px 0 4px}.tip .s{font-size:11px;line-height:1.4}
@@ -60,13 +69,18 @@
 <div class="top"><h1>Relay</h1>
 <p class="sub">Leadership in a technology migrates. A country keeps it only while it is doing the hardest making: ideas travel, making stays put. This page is the evidence, and the honest news is how little of it there is.</p>
 <p class="finding" id="finding"></p>
-<p class="method" id="method"></p>
-<div class="legend">
- <span class="grp" id="kindleg"></span>
- <span class="grp" id="markleg"></span>
- <span class="grp" id="ctryleg"></span>
+<div class="legrow">
+ <div class="legend">
+  <span class="grp" id="kindleg"></span>
+  <span class="grp" id="markleg"></span>
+  <span class="grp" id="ctryleg"></span>
+ </div>
+ <button class="howbtn" id="howbtn" type="button" aria-expanded="false" aria-controls="howto">How this is measured</button>
 </div>
-<p class="axnote" id="axnote"></p>
+<div class="howto" id="howto" hidden>
+ <p class="method" id="method"></p>
+ <p class="axnote" id="axnote"></p>
+</div>
 </div>
 <div class="scroll" id="scroll" tabindex="0" role="region" aria-label="Relay canvas — scroll to pan across time and threads">
  <div id="stage"><svg id="chart" role="img" aria-label="The cards in each technology thread, the holds the record can carry, and the silence between them"></svg><div class="ledger" id="ledger"></div><div class="coda" id="coda"></div></div>

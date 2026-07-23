@@ -430,17 +430,16 @@
     // taller, so a long finding never runs into the next thread's name
     const name = wrap(model.label, CFG.GUT - 12, flagship ? 12.5 : 10.5);
     const prose = flagship ? wrap(PANEL_COPY[model.label] || "", CFG.GUT - 16, 10) : [];
-    const foot = flagship ? footLines(model) : [];
     const head = (name.length - 1) * (flagship ? 14 : 12);
-    const gutH =
-      head + (flagship ? 38 : 34) + prose.length * 12 + foot.length * 12 + (flagship ? 8 : 0);
+    // gutter height: name + the meter/stat line + the blurb. The longest-hold / widest-silence
+    // foot lines are gone (they lived in `foot`), so the panel no longer reserves rows for them.
+    const gutH = head + (flagship ? 32 : 28) + prose.length * 12;
     return {
       ticks,
       rows,
       name,
       head,
       prose,
-      foot,
       top: y,
       bandTop,
       bandBot: bandTop + M.bandH,
@@ -557,34 +556,21 @@
     s += rect(x, ty - 6, mw, 5, `fill="#e2ddd3" rx="2.5"`);
     if (m.cover > 0)
       s += rect(x, ty - 6, Math.max(mw * m.cover, 1.5), 5, `fill="#3a352d" rx="2.5"`);
-    s += text(
-      x + mw + 6,
-      ty - 1.5,
-      `${Math.round(m.cover * 100)}% held`,
-      `font-size="9" fill="#6f695f"`,
-    );
     ty += flagship ? 13 : 11;
+    // One stat line, not three: coverage + the honesty figure (how many turns are a single
+    // card). The raw card count, the longest hold and the widest silence are DROPPED from the
+    // gutter — the hold bar and the silence span already print those in the chart itself, so
+    // the gutter was duplicating labels. Blurb carries the meaning; this line carries the caveat.
     s += text(
       x,
       ty,
-      `${m.cards.length} cards · ${m.turns.length} turns · ${m.single} on one card`,
+      `${Math.round(m.cover * 100)}% held · ${m.single} of ${m.turns.length} turns on one card`,
       `font-size="9.5" fill="#8a857c"`,
     );
-    if (flagship) {
+    if (flagship)
       lay.prose.forEach((l, i) => {
         s += text(x, ty + 14 + i * 12, esc(l), `font-size="10" fill="#5f594f"`);
       });
-      // The two facts a reader would otherwise have to measure off a distorted axis, in
-      // words. Stated here whether or not either mark had room for its label.
-      lay.foot.forEach((l, i) => {
-        s += text(
-          x,
-          ty + 17 + lay.prose.length * 12 + i * 12,
-          esc(l),
-          `font-size="9.5" font-weight="600" fill="#3a352d"`,
-        );
-      });
-    }
     return s;
   }
 
@@ -775,22 +761,6 @@
   };
 
   // The two numbers a reader would otherwise try to eyeball off the axis, written out.
-  // Both are read from the model, so neither can go stale. One shape for every label on
-  // this page: a naming word, then the fields, middot-separated, in the order the mark's
-  // own tooltip uses. Figure and unit are joined by a no-break space, so the greedy wrap
-  // can never break between "34" and "yr".
-  const YR = n => `${n}\u00a0yr`;
-  function footLines(m) {
-    const out = [];
-    out.push(
-      m.longest
-        ? `Longest hold ${m.longest.g} ${m.longest.a}–${m.longest.b} · ${YR(m.longest.b - m.longest.a)} on ${m.longest.n} cards`
-        : `No hold the record can carry.`,
-    );
-    if (m.widest) out.push(`Widest silence ${m.widest.a}–${m.widest.b} · ${YR(num(m.widest.g))}`);
-    return out.flatMap(l => wrap(l, CFG.GUT - 16, 9.5));
-  }
-
   const pct = (a, b) => (b ? Math.round((1000 * a) / b) / 10 : 0);
 
   const findingHTML = () =>
@@ -918,6 +888,18 @@
   document.getElementById("ctryleg").innerHTML = ctryLegendHTML();
   document.getElementById("ledger").innerHTML = ledgerHTML();
   document.getElementById("coda").innerHTML = codaHTML();
+
+  // "How this is measured" toggle: the method + axis note default hidden, so the header is
+  // thesis + finding + chart. A native <button> already handles Enter/Space; do not add kbd().
+  const howbtn = document.getElementById("howbtn"),
+    howto = document.getElementById("howto");
+  if (howbtn && howto)
+    howbtn.onclick = () => {
+      const open = howto.hasAttribute("hidden");
+      if (open) howto.removeAttribute("hidden");
+      else howto.setAttribute("hidden", "");
+      howbtn.setAttribute("aria-expanded", open ? "true" : "false");
+    };
 
   // ── interaction: delegated on the SVG ─────────────────────────────────────
   const tip = document.getElementById("tip");
