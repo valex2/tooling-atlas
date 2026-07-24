@@ -16,12 +16,13 @@ Confidence: Direct
 Unlocked: reading volts and microseconds off a fast circuit
 Significance: "Holding a fast repeating signal still on a ruled screen turned the oscilloscope from a picture into a measurement, and gave one Portland shop about three quarters of the world market for forty years."
 BuildsOn:
-  - "[[Tooling Card - The Triode]]"
+  - "[[Tooling Card - The Braun Tube]]"
   - "[[Tooling Card - The Cavity Magnetron]]"
+  - "[[Tooling Card - The Triode]]"
 Enables:
-  - "[[Tooling Card - The Integrated Circuit]]"
   - "[[Tooling Card - The Breadboard]]"
   - "[[Tooling Card - The HP Interface Bus]]"
+  - "[[Tooling Card - The Integrated Circuit]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Electronic Instruments]]"

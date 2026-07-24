@@ -16,6 +16,7 @@ Confidence: Direct
 Unlocked: the prime mover put on wheels
 Significance: "A steam engine that ran fast and reliably on rails turned a stationary power source into transport at scale."
 BuildsOn:
+  - "[[Tooling Card - Darby's Coke-Smelted Iron]]"
   - "[[Tooling Card - Watt's Steam Engine]]"
 Threads:
   - "[[Thread - Energy]]"

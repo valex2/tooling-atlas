@@ -16,13 +16,16 @@ Confidence: Direct
 Unlocked: computed lenses and the limit of light
 Significance: "Abbe's formula turned lens design from guesswork into calculation, making Jena the center of world optics for generations and drawing the exact wall that forced the jump to electron microscopes."
 BuildsOn:
-  - "[[Tooling Card - Leeuwenhoek's Microscope]]"
   - "[[Tooling Card - Fraunhofer's Spectral-Line Glass]]"
+  - "[[Tooling Card - Leeuwenhoek's Microscope]]"
+  - "[[Tooling Card - Lister's Achromatic Microscope]]"
 Enables:
-  - "[[Tooling Card - The Matter Wave]]"
-  - "[[Tooling Card - Photolithography]]"
-  - "[[Tooling Card - The Foldscope]]"
   - "[[Tooling Card - Optical Proximity Correction]]"
+  - "[[Tooling Card - Photolithography]]"
+  - "[[Tooling Card - STED Microscopy]]"
+  - "[[Tooling Card - The Foldscope]]"
+  - "[[Tooling Card - The Matter Wave]]"
+  - "[[Tooling Card - The Phase-Contrast Microscope]]"
 Threads:
   - "[[Thread - Precision Optics]]"
   - "[[Thread - Seeing Smaller]]"

@@ -16,13 +16,14 @@ Confidence: Direct
 Unlocked: many separate networks joined into one internet
 Significance: "TCP/IP let separately built networks hand packets to one another through gateways, turning many private networks into one internet that no one owned."
 BuildsOn:
-  - "[[Tooling Card - The Bit]]"
-  - "[[Tooling Card - Packet Switching]]"
-  - "[[Tooling Card - The Router]]"
   - "[[Tooling Card - Ethernet]]"
+  - "[[Tooling Card - Packet Switching]]"
+  - "[[Tooling Card - The Bit]]"
+  - "[[Tooling Card - The Datagram]]"
+  - "[[Tooling Card - The Router]]"
 Enables:
-  - "[[Tooling Card - The Web]]"
   - "[[Tooling Card - The Scaled-Up Language Model]]"
+  - "[[Tooling Card - The Web]]"
 Threads:
   - "[[Thread - The Network]]"
   - "[[Thread - Long-Distance Comms]]"

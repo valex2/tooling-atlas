@@ -16,9 +16,11 @@ Confidence: Direct
 Unlocked: design lives inside the computer, not on paper
 Significance: "Sketchpad put a design inside the computer as geometry you could grab and the machine could keep correct, the seed of every CAD system and of the graphical screen itself."
 Enables:
-  - "[[Tooling Card - Smalltalk]]"
   - "[[Tooling Card - CATIA]]"
   - "[[Tooling Card - Electronic Design Automation]]"
+  - "[[Tooling Card - Smalltalk]]"
+  - "[[Tooling Card - The BUILD Solid Modeller]]"
+  - "[[Tooling Card - UNISURF]]"
 Threads:
   - "[[Thread - Prototyping & CAD]]"
 ---

@@ -16,14 +16,16 @@ Confidence: Direct
 Unlocked: the chip and the digital age
 Significance: "Solid crystal replacing the vacuum tube meant the same part could amplify a phone call or flip a binary switch, opening both the long-distance network and the computer to the same piece of Bell semiconductor science."
 BuildsOn:
-  - "[[Tooling Card - The Triode]]"
-  - "[[Tooling Card - The Czochralski Puller]]"
   - "[[Tooling Card - The Crystal Rectifier]]"
+  - "[[Tooling Card - The Czochralski Puller]]"
+  - "[[Tooling Card - The Field-Effect Transistor Patent]]"
+  - "[[Tooling Card - The Triode]]"
 Enables:
   - "[[Tooling Card - The Blue LED]]"
-  - "[[Tooling Card - Unix and C]]"
-  - "[[Tooling Card - The Silicon Solar Cell]]"
   - "[[Tooling Card - The Integrated Circuit]]"
+  - "[[Tooling Card - The Silicon Solar Cell]]"
+  - "[[Tooling Card - The Tunnel Diode]]"
+  - "[[Tooling Card - Unix and C]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Long-Distance Comms]]"

@@ -16,14 +16,15 @@ Confidence: Direct
 Unlocked: software unwelded from the machine
 Significance: "Unix and C cut software loose from the hardware it ran on. An antitrust decree barred AT&T from selling software, so Bell Labs gave the system away, spreading the standard until no one came to own it."
 BuildsOn:
-  - "[[Tooling Card - The Transistor]]"
-  - "[[Tooling Card - The Punch Card]]"
   - "[[Tooling Card - FORTRAN]]"
   - "[[Tooling Card - The Integrated Circuit]]"
+  - "[[Tooling Card - The Punch Card]]"
   - "[[Tooling Card - The Self-Hosting Compiler]]"
+  - "[[Tooling Card - The Transistor]]"
 Enables:
-  - "[[Tooling Card - The Deep-Learning Framework]]"
   - "[[Tooling Card - CUDA]]"
+  - "[[Tooling Card - Linux]]"
+  - "[[Tooling Card - The Deep-Learning Framework]]"
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---

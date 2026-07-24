@@ -18,8 +18,6 @@ Significance: "The controller reads a program and drives a cutting tool to a tho
 BuildsOn:
   - "[[Tooling Card - Numerical Control]]"
   - "[[Tooling Card - The Microcontroller]]"
-Enables:
-  - "[[Tooling Card - The Machine-Tool VRA]]"
 Threads:
   - "[[Thread - Machine Tools]]"
   - "[[Thread - Production Systems]]"

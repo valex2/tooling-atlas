@@ -18,6 +18,8 @@ Significance: "It cut the fuel a steam engine burned by most of what it used, so
 BuildsOn:
   - "[[Tooling Card - The Barometer]]"
   - "[[Tooling Card - The Blast Furnace]]"
+  - "[[Tooling Card - The Newcomen Engine]]"
+  - "[[Tooling Card - Wilkinson's Boring Machine]]"
 Enables:
   - "[[Tooling Card - The Steam Locomotive]]"
   - "[[Tooling Card - The Steam Turbine]]"

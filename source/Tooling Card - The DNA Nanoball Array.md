@@ -19,7 +19,7 @@ BuildsOn:
   - "[[Tooling Card - DNA Sequencing]]"
   - "[[Tooling Card - Next-Generation Sequencing]]"
   - "[[Tooling Card - Photolithography]]"
-Enables:
+  - "[[Tooling Card - Pyrosequencing]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
   - "[[Thread - Engineering Biology]]"

@@ -18,6 +18,7 @@ Significance: "Guinand's fireclay stirrer blended molten flint glass until it ca
 Enables:
   - "[[Tooling Card - Fraunhofer's Spectral-Line Glass]]"
   - "[[Tooling Card - Ion Beam Figuring]]"
+  - "[[Tooling Card - Schott Optical Glass]]"
 BuildsOn:
   - "[[Tooling Card - Venetian Mirror Glass]]"
 Threads:

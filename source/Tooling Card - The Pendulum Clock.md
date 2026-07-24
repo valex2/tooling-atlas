@@ -18,6 +18,8 @@ Significance: "A swinging weight tied to a clock's gears cut the day's error fro
 BuildsOn:
   - "[[Tooling Card - The Escapement]]"
 Enables: []
+Enables:
+  - "[[Tooling Card - Harrison's Marine Chronometer]]"
 Threads:
   - "[[Thread - Machine Tools]]"
 ---

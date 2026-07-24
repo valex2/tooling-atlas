@@ -17,6 +17,7 @@ Unlocked: the far made near
 Significance: "Galileo ground a Dutch toy into a 30-power telescope and turned it on the sky, the lone-bench instrument for seeing far, twin to the microscope's seeing small."
 Enables:
   - "[[Tooling Card - Leeuwenhoek's Microscope]]"
+  - "[[Tooling Card - The Achromatic Doublet]]"
 BuildsOn:
   - "[[Tooling Card - Eyeglasses]]"
 Threads:

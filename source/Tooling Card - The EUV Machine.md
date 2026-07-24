@@ -16,15 +16,17 @@ Confidence: Direct
 Unlocked: every advanced computer chip
 Significance: "Every advanced chip in phones, data centers, and AI is printed by ASML's EUV machine, and despite the physics being public since 1986 no other company has built one."
 BuildsOn:
-  - "[[Tooling Card - The Czochralski Puller]]"
-  - "[[Tooling Card - Photolithography]]"
-  - "[[Tooling Card - The Laser]]"
-  - "[[Tooling Card - The Wafer Stepper]]"
+  - "[[Tooling Card - Chemical-Mechanical Planarization]]"
+  - "[[Tooling Card - Cymer Excimer Laser Source]]"
   - "[[Tooling Card - Immersion Lithography]]"
   - "[[Tooling Card - Ion Beam Figuring]]"
-  - "[[Tooling Card - The Measure Station]]"
-  - "[[Tooling Card - Chemical-Mechanical Planarization]]"
+  - "[[Tooling Card - Photolithography]]"
   - "[[Tooling Card - The Chemically Amplified Resist]]"
+  - "[[Tooling Card - The Czochralski Puller]]"
+  - "[[Tooling Card - The Laser]]"
+  - "[[Tooling Card - The Measure Station]]"
+  - "[[Tooling Card - The Wafer Stepper]]"
+  - "[[Tooling Card - Zeiss Lithography Optics]]"
 Enables:
   - "[[Tooling Card - The High-Yield Process Recipe]]"
 Threads:

@@ -17,12 +17,15 @@ Unlocked: cheap reading of the genome
 Significance: "Sanger's 1977 method let anyone read the order of DNA letters for the first time, opening a four-decade cost collapse that carried the sequencing lead from Cambridge to San Diego's Illumina, and now into contest with China's BGI."
 BuildsOn:
   - "[[Tooling Card - Gel Electrophoresis]]"
-  - "[[Tooling Card - The Restriction Enzyme]]"
   - "[[Tooling Card - Recombinant DNA]]"
+  - "[[Tooling Card - The Restriction Enzyme]]"
 Enables:
   - "[[Tooling Card - CRISPR-Cas9]]"
+  - "[[Tooling Card - Nanopore Sequencing]]"
   - "[[Tooling Card - Next-Generation Sequencing]]"
+  - "[[Tooling Card - Pyrosequencing]]"
   - "[[Tooling Card - The DNA Nanoball Array]]"
+  - "[[Tooling Card - The EMBL Nucleotide Sequence Data Library]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
 ---

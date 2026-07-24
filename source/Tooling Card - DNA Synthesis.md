@@ -15,11 +15,11 @@ Mechanism: Convergence
 Confidence: Direct
 Unlocked: write DNA to order, not just read it
 Significance: "Caruthers' phosphoramidite chemistry let a machine write a chosen DNA sequence one base at a time in hours, the write half of biology that pairs with reading it."
-BuildsOn:
 Enables:
+  - "[[Tooling Card - CRISPR-Cas9]]"
   - "[[Tooling Card - DNA-Encoded Libraries]]"
   - "[[Tooling Card - PCR]]"
-  - "[[Tooling Card - CRISPR-Cas9]]"
+  - "[[Tooling Card - Site-Directed Mutagenesis]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
   - "[[Thread - Engineering Biology]]"

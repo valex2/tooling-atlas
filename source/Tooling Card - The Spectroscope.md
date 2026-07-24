@@ -17,6 +17,7 @@ Unlocked: tell what something is made of from its light
 Significance: "Bunsen and Kirchhoff's spectroscope split a flame's light into a barcode of sharp lines unique to each element, the first way to read what something is made of from its light alone, even a star's."
 Enables:
   - "[[Tooling Card - Einstein's Displacement Equation]]"
+  - "[[Tooling Card - Raman Spectroscopy]]"
   - "[[Tooling Card - X-ray Crystallography]]"
 Threads:
   - "[[Thread - Materials Characterization]]"

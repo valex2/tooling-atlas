@@ -16,13 +16,15 @@ Confidence: Direct
 Unlocked: the pure single crystal every chip is sliced from
 Significance: "Almost every computer chip and most solar cells are cut from a single silicon crystal pulled from a melt by Czochralski's machine, grown so pure that fewer than one atom in a billion is out of place."
 BuildsOn:
+  - "[[Tooling Card - The Siemens Process]]"
+  - "[[Tooling Card - The Verneuil Process]]"
 Enables:
-  - "[[Tooling Card - The EUV Machine]]"
-  - "[[Tooling Card - The Transistor]]"
-  - "[[Tooling Card - The Silicon Solar Cell]]"
-  - "[[Tooling Card - The Integrated Circuit]]"
   - "[[Tooling Card - The Diamond Wire]]"
+  - "[[Tooling Card - The EUV Machine]]"
+  - "[[Tooling Card - The Integrated Circuit]]"
   - "[[Tooling Card - The Metal-Organic Vapor Reactor]]"
+  - "[[Tooling Card - The Silicon Solar Cell]]"
+  - "[[Tooling Card - The Transistor]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Energy]]"

@@ -16,8 +16,10 @@ Confidence: Direct
 Unlocked: aircraft designed on a screen
 Significance: "CFD let Boeing cut wind-tunnel test rounds from 77 to 10 on the 777, showing that cheap compute could replace much of physical testing and keeping the aircraft design lead where the supercomputers were."
 BuildsOn:
+  - "[[Tooling Card - The Calculus]]"
+  - "[[Tooling Card - The Finite Element Method]]"
+  - "[[Tooling Card - The Towing Tank]]"
   - "[[Tooling Card - The Variable-Density Tunnel]]"
-Enables:
 Threads:
   - "[[Thread - Predict Before Building]]"
 ---

@@ -17,10 +17,12 @@ Unlocked: mass production, the work moving past a still worker
 Significance: "Ford's moving conveyor brought the work to the worker instead of the worker to the work, cutting a Model T from twelve and a half hours to ninety-three minutes and setting the template for twentieth-century mass production."
 BuildsOn:
   - "[[Tooling Card - The Go-No-Go Gauge]]"
+  - "[[Tooling Card - The Portsmouth Block Mills]]"
+  - "[[Tooling Card - The Venetian Arsenal]]"
 Enables:
-  - "[[Tooling Card - The Toyota Production System]]"
   - "[[Tooling Card - The Magnetron Stamping Line]]"
   - "[[Tooling Card - The Mega-Block]]"
+  - "[[Tooling Card - The Toyota Production System]]"
 Threads:
   - "[[Thread - Production Systems]]"
 ---

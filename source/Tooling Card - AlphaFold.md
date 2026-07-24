@@ -16,12 +16,13 @@ Confidence: Direct
 Unlocked: protein shape computed from its letters in hours
 Significance: "AlphaFold replaced months of X-ray crystallography with hours of computation, putting the shapes of 200 million proteins online for free and moving the lead in structural biology to whoever can train the model."
 BuildsOn:
-  - "[[Tooling Card - X-ray Crystallography]]"
+  - "[[Tooling Card - AlphaGo]]"
   - "[[Tooling Card - Cryo-EM]]"
+  - "[[Tooling Card - Swiss-Prot]]"
   - "[[Tooling Card - The Deep-Learning Framework]]"
-  - "[[Tooling Card - The Transformer]]"
   - "[[Tooling Card - The Protein Data Bank]]"
-Enables:
+  - "[[Tooling Card - The Transformer]]"
+  - "[[Tooling Card - X-ray Crystallography]]"
 Threads:
   - "[[Thread - Reading & Writing DNA]]"
   - "[[Thread - Predict Before Building]]"

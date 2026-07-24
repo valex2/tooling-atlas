@@ -18,11 +18,13 @@ Significance: "The wafer stepper prints a chip's pattern one small field at a ti
 BuildsOn:
   - "[[Tooling Card - Photolithography]]"
 Enables:
-  - "[[Tooling Card - Immersion Lithography]]"
-  - "[[Tooling Card - The Measure Station]]"
-  - "[[Tooling Card - The EUV Machine]]"
+  - "[[Tooling Card - Canon Stepper]]"
   - "[[Tooling Card - Chemical-Mechanical Planarization]]"
+  - "[[Tooling Card - Immersion Lithography]]"
+  - "[[Tooling Card - Nikon NSR Stepper]]"
   - "[[Tooling Card - The Chemically Amplified Resist]]"
+  - "[[Tooling Card - The EUV Machine]]"
+  - "[[Tooling Card - The Measure Station]]"
 Threads:
   - "[[Thread - Chip Lithography]]"
   - "[[Thread - Precision Optics]]"

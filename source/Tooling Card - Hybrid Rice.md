@@ -20,6 +20,7 @@ BuildsOn:
 Enables:
 Threads:
   - "[[Thread - Engineering Biology]]"
+  - "[[Thread - Agriculture]]"
 ---
 
 *Manufacture · Changsha, China · 1970s*

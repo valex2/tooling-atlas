@@ -18,9 +18,11 @@ Significance: "Seeing microbes for the first time opened the path to germ theory
 BuildsOn:
   - "[[Tooling Card - Galileo's Telescope]]"
 Enables:
-  - "[[Tooling Card - The Foldscope]]"
   - "[[Tooling Card - Abbe's Diffraction Limit]]"
   - "[[Tooling Card - Einstein's Displacement Equation]]"
+  - "[[Tooling Card - Lister's Achromatic Microscope]]"
+  - "[[Tooling Card - The Foldscope]]"
+  - "[[Tooling Card - The Phase-Contrast Microscope]]"
 Threads:
   - "[[Thread - Precision Optics]]"
   - "[[Thread - Seeing Smaller]]"

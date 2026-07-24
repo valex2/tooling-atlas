@@ -17,6 +17,8 @@ Unlocked: a whole aircraft checked as a model before any part is cut
 Significance: "CATIA turned Sutherland's American design idea into the standard tool of world aerospace, a lead that crossed the Atlantic and stayed in French hands."
 BuildsOn:
   - "[[Tooling Card - Sketchpad]]"
+  - "[[Tooling Card - The BUILD Solid Modeller]]"
+  - "[[Tooling Card - UNISURF]]"
 Enables:
   - "[[Tooling Card - The Falcon 9]]"
 Threads:

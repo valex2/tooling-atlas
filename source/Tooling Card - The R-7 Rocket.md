@@ -16,11 +16,12 @@ Confidence: Direct
 Unlocked: the first rocket strong enough to reach orbit
 Significance: "The first rocket powerful enough to reach orbit, it gave the Soviet Union a decade-long lead in spaceflight and its descendants still carry people to orbit today."
 BuildsOn:
+  - "[[Tooling Card - The Rocket Equation]]"
   - "[[Tooling Card - The V-2]]"
 Enables:
-  - "[[Tooling Card - The Soyuz]]"
   - "[[Tooling Card - Project Echo]]"
   - "[[Tooling Card - The F-1 Engine]]"
+  - "[[Tooling Card - The Soyuz]]"
 Threads:
   - "[[Thread - Reaching Orbit]]"
 ---

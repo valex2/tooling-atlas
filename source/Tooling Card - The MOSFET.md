@@ -16,10 +16,13 @@ Confidence: Direct
 Unlocked: every digital chip and Moore's law
 Significance: "A transistor defined entirely by flat printed layers on a silicon oxide surface can be shrunk and printed a billion at a time, which is the physical fact that Moore's law and every digital device since 1960 rides on."
 BuildsOn:
+  - "[[Tooling Card - The Field-Effect Transistor Patent]]"
   - "[[Tooling Card - The Integrated Circuit]]"
 Enables:
-  - "[[Tooling Card - The Ion Implanter]]"
+  - "[[Tooling Card - 3D V-NAND]]"
   - "[[Tooling Card - DRAM]]"
+  - "[[Tooling Card - NAND Flash]]"
+  - "[[Tooling Card - The Ion Implanter]]"
   - "[[Tooling Card - The Microprocessor]]"
 Threads:
   - "[[Thread - Electronic Switching]]"

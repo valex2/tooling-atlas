@@ -16,10 +16,12 @@ Confidence: Direct
 Unlocked: stacked memory and the packaging line under AI chips
 Significance: "Drilling and filling copper posts straight down through a silicon die let chips be stacked face to face instead of wired around their edges, and the yield on that step is now the constraint on every AI accelerator built."
 BuildsOn:
+  - "[[Tooling Card - Atomic Layer Deposition]]"
   - "[[Tooling Card - DRAM]]"
   - "[[Tooling Card - Photolithography]]"
-  - "[[Tooling Card - Atomic Layer Deposition]]"
+  - "[[Tooling Card - The Bosch Process]]"
 Enables:
+  - "[[Tooling Card - CoWoS Advanced Packaging]]"
   - "[[Tooling Card - The Scaled-Up Language Model]]"
 Threads:
   - "[[Thread - Wafer Processing]]"

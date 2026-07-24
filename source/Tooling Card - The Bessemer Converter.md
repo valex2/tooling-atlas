@@ -18,8 +18,10 @@ Significance: "Blowing cold air up through molten pig iron burns out the carbon 
 BuildsOn:
   - "[[Tooling Card - The Blast Furnace]]"
 Enables:
-  - "[[Tooling Card - The Steam Turbine]]"
+  - "[[Tooling Card - Basic Oxygen Steelmaking]]"
+  - "[[Tooling Card - The Open-Hearth Furnace]]"
   - "[[Tooling Card - The Production Grinder]]"
+  - "[[Tooling Card - The Steam Turbine]]"
 Threads:
   - "[[Thread - Bulk Materials]]"
 ---

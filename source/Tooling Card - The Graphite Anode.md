@@ -15,9 +15,9 @@ Mechanism: Pace-layers
 Confidence: Direct
 Unlocked: the battery-grade anode every lithium cell needs
 Significance: "Rounding and acid-purifying graphite to battery grade is the materials-processing chokepoint of the lithium battery, and China holds nearly all of it."
-BuildsOn:
 Enables:
   - "[[Tooling Card - Battery-Line Equipment]]"
+  - "[[Tooling Card - The Blade Battery]]"
   - "[[Tooling Card - The Lithium-Ion Battery]]"
 Threads:
   - "[[Thread - Electricity & Batteries]]"

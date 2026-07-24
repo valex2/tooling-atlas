@@ -19,6 +19,7 @@ BuildsOn:
   - "[[Tooling Card - DNA Sequencing]]"
   - "[[Tooling Card - DNA Synthesis]]"
   - "[[Tooling Card - PCR]]"
+  - "[[Tooling Card - Site-Directed Mutagenesis]]"
 Enables:
   - "[[Tooling Card - The Base Editor]]"
 Threads:

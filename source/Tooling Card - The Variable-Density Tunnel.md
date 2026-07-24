@@ -17,6 +17,8 @@ Unlocked: wings designed by lookup, not guesswork
 Significance: "By pressurizing a small tunnel to 20 atmospheres, NACA engineers made a model behave like a full-size wing and published the results as a free catalog that American planemakers used for decades without having to test each shape themselves."
 Enables:
   - "[[Tooling Card - Computational Fluid Dynamics]]"
+BuildsOn:
+  - "[[Tooling Card - The Towing Tank]]"
 Threads:
   - "[[Thread - Predict Before Building]]"
 ---

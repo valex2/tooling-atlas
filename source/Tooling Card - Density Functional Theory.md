@@ -17,6 +17,10 @@ Unlocked: a material's properties calculated, not measured
 Significance: "Density functional theory made it possible to calculate a material's properties from the quantum behavior of its electrons, turning materials science from wet-lab trial and error into something you can compute."
 Enables:
   - "[[Tooling Card - GNoME]]"
+BuildsOn:
+  - "[[Tooling Card - Schrödinger's Wave Equation]]"
+  - "[[Tooling Card - The Calculus]]"
+  - "[[Tooling Card - The Hartree-Fock Method]]"
 Threads:
   - "[[Thread - Predict Before Building]]"
 ---

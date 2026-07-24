@@ -18,6 +18,8 @@ Significance: "A cell that shuttles lithium ions between a layered oxide and car
 BuildsOn:
   - "[[Tooling Card - The Graphite Anode]]"
   - "[[Tooling Card - Volta's Pile]]"
+Enables:
+  - "[[Tooling Card - The Blade Battery]]"
 Threads:
   - "[[Thread - Electricity & Batteries]]"
 ---

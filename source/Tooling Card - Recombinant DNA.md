@@ -16,11 +16,13 @@ Confidence: Direct
 Unlocked: writing a chosen gene into a living thing
 Significance: "Cut-and-paste gene editing was the first time anyone deliberately wrote a chosen gene into a living cell, opening the write layer of the DNA toolkit and seeding the Bay Area biotech industry."
 BuildsOn:
+  - "[[Tooling Card - Insulin Extraction]]"
   - "[[Tooling Card - The Central Dogma]]"
   - "[[Tooling Card - The Restriction Enzyme]]"
 Enables:
   - "[[Tooling Card - DNA Sequencing]]"
   - "[[Tooling Card - Directed Evolution]]"
+  - "[[Tooling Card - Golden Rice]]"
   - "[[Tooling Card - The Lentiviral Vector]]"
   - "[[Tooling Card - The Protein A Column]]"
 Threads:

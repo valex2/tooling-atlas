@@ -17,11 +17,13 @@ Unlocked: programs that drove the bare machine directly
 Significance: "When a program was a deck of physical holes fed raw to one machine, it was both the beginning of stored-program computing and the problem the operating system had to solve: one job, one machine, no abstraction."
 Enables:
   - "[[Tooling Card - FORTRAN]]"
-  - "[[Tooling Card - Unix and C]]"
-  - "[[Tooling Card - The Relational Model]]"
   - "[[Tooling Card - The Protein Data Bank]]"
+  - "[[Tooling Card - The QR Code]]"
+  - "[[Tooling Card - The Relational Model]]"
+  - "[[Tooling Card - Unix and C]]"
 BuildsOn:
   - "[[Tooling Card - The Bombe]]"
+  - "[[Tooling Card - The Jacquard Loom]]"
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---

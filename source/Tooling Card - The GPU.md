@@ -16,6 +16,7 @@ Confidence: Direct
 Unlocked: 3D geometry math on one cheap chip
 Significance: "The GeForce 256 pulled the whole 3D pipeline onto a single die, moving geometry work off the main processor and off $75,000 workstations, and the rows of identical small math units it grew into became the cheapest arithmetic in computing."
 BuildsOn:
+  - "[[Tooling Card - CoWoS Advanced Packaging]]"
   - "[[Tooling Card - The Microprocessor]]"
 Enables:
   - "[[Tooling Card - CUDA]]"

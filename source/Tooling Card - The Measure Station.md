@@ -16,11 +16,15 @@ Confidence: Direct
 Unlocked: chip layers stacked to within a nanometre
 Significance: "By giving the scanner a second station whose only job is to measure the wafer, ASML made measurement free and turned overlay from a throughput cost into the thing its machines were best at."
 BuildsOn:
-  - "[[Tooling Card - The Wafer Stepper]]"
+  - "[[Tooling Card - Johansson Gauge Blocks]]"
+  - "[[Tooling Card - The Abbe Comparator]]"
   - "[[Tooling Card - The Laser]]"
+  - "[[Tooling Card - The Vernier Scale]]"
+  - "[[Tooling Card - The Wafer Stepper]]"
 Enables:
   - "[[Tooling Card - Immersion Lithography]]"
   - "[[Tooling Card - The EUV Machine]]"
+  - "[[Tooling Card - The Touch-Trigger Probe]]"
 Threads:
   - "[[Thread - Chip Lithography]]"
   - "[[Thread - Precision Optics]]"

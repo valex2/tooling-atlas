@@ -16,7 +16,9 @@ Confidence: Direct
 Unlocked: pen-and-paper calculation for everyone
 Significance: "Fibonacci carried India's place-value digits and zero into Europe in a single book. Free to copy, the notation became the ground floor of every later calculation, from merchant ledgers to the slide rule to the computer."
 BuildsOn:
+  - "[[Tooling Card - Al-Khwarizmi's Algebra]]"
 Enables:
+  - "[[Tooling Card - Napier's Logarithms]]"
   - "[[Tooling Card - The Slide Rule]]"
 Threads:
   - "[[Thread - Software Abstraction]]"

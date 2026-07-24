@@ -16,6 +16,7 @@ Confidence: Direct
 Unlocked: compute you can rent by the hour
 Significance: "The hypervisor lets one physical computer pretend to be many separate, fully isolated ones, the tool that decades later turned computing into something you rent by the hour."
 BuildsOn:
+  - "[[Tooling Card - Linux]]"
   - "[[Tooling Card - The Microprocessor]]"
 Threads:
   - "[[Thread - The Network]]"

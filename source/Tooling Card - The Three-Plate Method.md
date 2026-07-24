@@ -18,8 +18,11 @@ Significance: "Rotating three plates against each other makes a true flat surfac
 BuildsOn:
   - "[[Tooling Card - The Screw-Cutting Lathe]]"
 Enables:
-  - "[[Tooling Card - The Universal Miller]]"
+  - "[[Tooling Card - Johansson Gauge Blocks]]"
+  - "[[Tooling Card - The Jig Borer]]"
   - "[[Tooling Card - The Production Grinder]]"
+  - "[[Tooling Card - The Universal Miller]]"
+  - "[[Tooling Card - The Whitworth Thread Standard]]"
 Threads:
   - "[[Thread - Machine Tools]]"
   - "[[Thread - Precision Optics]]"

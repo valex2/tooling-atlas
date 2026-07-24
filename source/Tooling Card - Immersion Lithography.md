@@ -16,12 +16,14 @@ Confidence: Direct
 Unlocked: another decade of smaller chips
 Significance: "Slipping a film of water under the lens let the existing 193nm light print a dozen more chip generations, buying the industry a decade before EUV became unavoidable and helping ASML pull permanently ahead of Nikon in the process."
 BuildsOn:
-  - "[[Tooling Card - The Wafer Stepper]]"
-  - "[[Tooling Card - The Measure Station]]"
+  - "[[Tooling Card - Cymer Excimer Laser Source]]"
   - "[[Tooling Card - The Chemically Amplified Resist]]"
+  - "[[Tooling Card - The Coater-Developer Track]]"
+  - "[[Tooling Card - The Measure Station]]"
+  - "[[Tooling Card - The Wafer Stepper]]"
 Enables:
-  - "[[Tooling Card - The High-Yield Process Recipe]]"
   - "[[Tooling Card - The EUV Machine]]"
+  - "[[Tooling Card - The High-Yield Process Recipe]]"
 Threads:
   - "[[Thread - Chip Lithography]]"
   - "[[Thread - Precision Optics]]"

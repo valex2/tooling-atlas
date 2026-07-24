@@ -17,8 +17,11 @@ Unlocked: keep only what connects to what
 Significance: "Euler threw away the map and kept only the connections, and that one move is the root every later network tool grows from."
 BuildsOn: []
 Enables:
-  - "[[Tooling Card - The Social Graph]]"
   - "[[Tooling Card - PageRank]]"
+  - "[[Tooling Card - The Social Graph]]"
+BuildsOn:
+  - "[[Tooling Card - Analytic Geometry]]"
+  - "[[Tooling Card - The Calculus]]"
 Threads:
   - "[[Thread - The Network]]"
 ---

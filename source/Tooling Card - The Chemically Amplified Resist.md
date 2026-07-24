@@ -20,6 +20,7 @@ BuildsOn:
   - "[[Tooling Card - The Wafer Stepper]]"
 Enables:
   - "[[Tooling Card - Immersion Lithography]]"
+  - "[[Tooling Card - Japanese Photoresist]]"
   - "[[Tooling Card - The EUV Machine]]"
 Threads:
   - "[[Thread - Chip Lithography]]"

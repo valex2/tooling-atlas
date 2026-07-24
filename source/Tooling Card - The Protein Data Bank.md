@@ -16,14 +16,15 @@ Confidence: Direct
 Unlocked: every solved protein shape in one readable form
 Significance: "Fixing every protein structure into one plain coordinate file turned fifty years of separate crystallography into a single pile a program could read, the pile AlphaFold trained on."
 BuildsOn:
-  - "[[Tooling Card - X-ray Crystallography]]"
+  - "[[Tooling Card - The Cambridge Structural Database]]"
   - "[[Tooling Card - The Punch Card]]"
+  - "[[Tooling Card - X-ray Crystallography]]"
 Enables:
   - "[[Tooling Card - AlphaFold]]"
   - "[[Tooling Card - Generative Drug Design]]"
+  - "[[Tooling Card - Swiss-Prot]]"
 Threads:
   - "[[Thread - Predict Before Building]]"
-  - "[[Thread - Machine Learning]]"
   - "[[Thread - The Open Reservoir]]"
 ---
 *Model · Upton, New York, USA · 1970s*

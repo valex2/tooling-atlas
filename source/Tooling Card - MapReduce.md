@@ -16,6 +16,7 @@ Confidence: Direct
 Unlocked: process web-scale data on cheap machines
 Significance: "MapReduce let a programmer write two short functions and have the system spread them across thousands of cheap machines, handling the failures and the splitting, so web-scale data became something an ordinary engineer could process."
 BuildsOn:
+  - "[[Tooling Card - Linux]]"
   - "[[Tooling Card - The Microprocessor]]"
 Threads:
   - "[[Thread - The Network]]"

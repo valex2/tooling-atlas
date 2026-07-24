@@ -18,9 +18,11 @@ Significance: "Roughly half the nitrogen in your body passed through one of thes
 BuildsOn:
 Enables:
   - "[[Tooling Card - Hybrid Rice]]"
+  - "[[Tooling Card - Drip Irrigation]]"
 Threads:
   - "[[Thread - Bulk Materials]]"
   - "[[Thread - Critical Materials]]"
+  - "[[Thread - Agriculture]]"
 ---
 
 *Manufacture · Ludwigshafen, Germany · 1910s*

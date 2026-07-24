@@ -18,6 +18,8 @@ Significance: "The hybridoma fuses an antibody-making cell with a cancer cell to
 BuildsOn:
   - "[[Tooling Card - The Vaccine]]"
 Enables:
+  - "[[Tooling Card - Antibody Humanization]]"
+  - "[[Tooling Card - Antibody Phage Display]]"
   - "[[Tooling Card - The Protein A Column]]"
 Threads:
   - "[[Thread - Engineering Biology]]"

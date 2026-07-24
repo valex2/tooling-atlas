@@ -17,11 +17,13 @@ Unlocked: a beam of one pure colour you can aim and focus
 Significance: "The laser turned light into a tool you could point, time, and tune, and almost every precise machine that came after taps into it."
 BuildsOn: []
 Enables:
-  - "[[Tooling Card - Next-Generation Sequencing]]"
-  - "[[Tooling Card - The Measure Station]]"
-  - "[[Tooling Card - The EUV Machine]]"
   - "[[Tooling Card - Ajinomoto Build-up Film]]"
+  - "[[Tooling Card - Cymer Excimer Laser Source]]"
+  - "[[Tooling Card - Next-Generation Sequencing]]"
+  - "[[Tooling Card - The EUV Machine]]"
+  - "[[Tooling Card - The Erbium-Doped Fibre Amplifier]]"
   - "[[Tooling Card - The Fluorescence-Activated Cell Sorter]]"
+  - "[[Tooling Card - The Measure Station]]"
 Threads:
   - "[[Thread - Precision Optics]]"
   - "[[Thread - Long-Distance Comms]]"

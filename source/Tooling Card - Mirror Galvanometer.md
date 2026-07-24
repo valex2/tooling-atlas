@@ -19,6 +19,7 @@ Enables:
   - "[[Tooling Card - The Triode]]"
 BuildsOn:
   - "[[Tooling Card - The Electric Telegraph]]"
+  - "[[Tooling Card - The Wheatstone Bridge]]"
 Threads:
   - "[[Thread - Long-Distance Comms]]"
   - "[[Thread - Electronic Instruments]]"

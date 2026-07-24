@@ -19,6 +19,7 @@ Enables:
   - "[[Tooling Card - The Screw-Cutting Lathe]]"
 BuildsOn:
   - "[[Tooling Card - Silk Reeling and Sericulture]]"
+  - "[[Tooling Card - The Treadle Spinning Wheel]]"
 Threads:
   - "[[Thread - Production Systems]]"
 ---

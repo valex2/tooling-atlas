@@ -19,6 +19,7 @@ BuildsOn:
   - "[[Tooling Card - The Crystal Rectifier]]"
 Enables:
   - "[[Tooling Card - The Integrated Circuit]]"
+  - "[[Tooling Card - The Siemens Process]]"
   - "[[Tooling Card - The Silicon Solar Cell]]"
 Threads:
   - "[[Thread - Electronic Switching]]"

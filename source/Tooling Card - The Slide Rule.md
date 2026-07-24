@@ -17,6 +17,7 @@ Unlocked: Multiply by eye, no tables
 Significance: "It turned a multiplication into a sliding distance you could read off a ruler, the first calculating instrument anyone could carry."
 BuildsOn:
   - "[[Tooling Card - Hindu-Arabic Numerals]]"
+  - "[[Tooling Card - Napier's Logarithms]]"
 Enables: []
 Threads:
   - "[[Thread - Software Abstraction]]"

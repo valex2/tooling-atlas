@@ -16,6 +16,9 @@ Confidence: Direct
 Unlocked: same-size parts from unskilled hands
 Significance: "A part that must slide into one steel check and stop at a second comes out the same size in any worker's hands, so parts made far apart still fit together."
 BuildsOn:
+  - "[[Tooling Card - Johansson Gauge Blocks]]"
+  - "[[Tooling Card - The Vernier Scale]]"
+  - "[[Tooling Card - The Whitworth Thread Standard]]"
 Enables:
   - "[[Tooling Card - The Moving Assembly Line]]"
   - "[[Tooling Card - The Universal Miller]]"

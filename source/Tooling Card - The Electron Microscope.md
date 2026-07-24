@@ -19,8 +19,9 @@ BuildsOn:
   - "[[Tooling Card - The Mass Spectrograph]]"
   - "[[Tooling Card - The Matter Wave]]"
 Enables:
-  - "[[Tooling Card - The Scanning Tunneling Microscope]]"
   - "[[Tooling Card - Cryo-EM]]"
+  - "[[Tooling Card - The Scanning Electron Microscope]]"
+  - "[[Tooling Card - The Scanning Tunneling Microscope]]"
 Threads:
   - "[[Thread - Seeing Smaller]]"
   - "[[Thread - Materials Characterization]]"

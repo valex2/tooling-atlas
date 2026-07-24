@@ -16,6 +16,8 @@ Confidence: Direct
 Unlocked: the architecture under every modern AI model
 Significance: "Google published the Transformer freely in 2017, handing the whole industry an architecture that scales with compute. The lead then pooled not in the design but in whoever could afford the largest clusters to run it."
 BuildsOn:
+  - "[[Tooling Card - LSTM]]"
+  - "[[Tooling Card - ResNet]]"
   - "[[Tooling Card - cuda-convnet]]"
 Enables:
   - "[[Tooling Card - AlphaFold]]"

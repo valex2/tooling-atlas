@@ -15,11 +15,11 @@ Mechanism: Convergence
 Confidence: Plausible
 Unlocked: iron you can pour by the ton instead of hammer one lump at a time
 Significance: "A tall furnace with a water-driven blast burns hot enough to melt iron so it pours as a liquid, turning iron from a smith's lump into a bulk material made by the ton."
-BuildsOn:
 Enables:
+  - "[[Tooling Card - Darby's Coke-Smelted Iron]]"
+  - "[[Tooling Card - The Bessemer Converter]]"
   - "[[Tooling Card - Watt's Steam Engine]]"
   - "[[Tooling Card - Wootz Steel]]"
-  - "[[Tooling Card - The Bessemer Converter]]"
 Threads:
   - "[[Thread - Bulk Materials]]"
   - "[[Thread - Critical Materials]]"

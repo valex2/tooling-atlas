@@ -16,10 +16,13 @@ Confidence: Direct
 Unlocked: training one network across two graphics cards
 Significance: "cuda-convnet was the hand-written CUDA program that trained a 60-million-number network across two 3GB gaming cards by cutting the network in half, and it was given away under a BSD license before the frameworks absorbed the job."
 BuildsOn:
-  - "[[Tooling Card - CUDA]]"
   - "[[Tooling Card - Backpropagation]]"
+  - "[[Tooling Card - CUDA]]"
   - "[[Tooling Card - ImageNet]]"
+  - "[[Tooling Card - The Neocognitron]]"
 Enables:
+  - "[[Tooling Card - AlphaGo]]"
+  - "[[Tooling Card - ResNet]]"
   - "[[Tooling Card - The Deep-Learning Framework]]"
   - "[[Tooling Card - The Transformer]]"
 Threads:

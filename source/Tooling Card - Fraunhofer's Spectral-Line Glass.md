@@ -19,6 +19,7 @@ BuildsOn:
   - "[[Tooling Card - Guinand's Stirring Process]]"
 Enables:
   - "[[Tooling Card - Abbe's Diffraction Limit]]"
+  - "[[Tooling Card - Schott Optical Glass]]"
 Threads:
   - "[[Thread - Precision Optics]]"
 ---

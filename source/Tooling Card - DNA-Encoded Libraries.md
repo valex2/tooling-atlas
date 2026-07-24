@@ -18,7 +18,7 @@ Significance: "It turns drug screening from a one-at-a-time grind into a single 
 BuildsOn:
   - "[[Tooling Card - DNA Synthesis]]"
   - "[[Tooling Card - Next-Generation Sequencing]]"
-Enables:
+  - "[[Tooling Card - Salvarsan]]"
 Threads:
   - "[[Thread - Therapeutics]]"
 ---

@@ -18,8 +18,10 @@ Significance: "Cutting a message into small numbered packets, each finding its o
 BuildsOn:
   - "[[Tooling Card - The Bit]]"
 Enables:
-  - "[[Tooling Card - The Router]]"
+  - "[[Tooling Card - Minitel]]"
   - "[[Tooling Card - TCP-IP]]"
+  - "[[Tooling Card - The Datagram]]"
+  - "[[Tooling Card - The Router]]"
 Threads:
   - "[[Thread - The Network]]"
 ---

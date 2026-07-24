@@ -318,7 +318,7 @@ window.HISTORIES = [
     label: "Other fields",
     tag: "threads the essay does not trace",
     spine: false,
-    blurb: "Materials, chemistry, energy, power, orbit.",
+    blurb: "Materials, chemistry, energy, power, orbit, food, navigation.",
     threads: [
       "Critical Materials",
       "Bulk Materials",
@@ -326,6 +326,8 @@ window.HISTORIES = [
       "Energy",
       "Electricity & Batteries",
       "Reaching Orbit",
+      "Agriculture",
+      "Navigation & Position",
     ],
   },
 ];

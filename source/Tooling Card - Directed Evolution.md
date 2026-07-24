@@ -18,6 +18,7 @@ Significance: "Breeding a protein by rounds of sloppy copying and testing made e
 BuildsOn:
   - "[[Tooling Card - PCR]]"
   - "[[Tooling Card - Recombinant DNA]]"
+  - "[[Tooling Card - Site-Directed Mutagenesis]]"
 Enables:
   - "[[Tooling Card - The Base Editor]]"
 Threads:

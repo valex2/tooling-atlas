@@ -16,6 +16,8 @@ Confidence: Direct
 Unlocked: identical copies of a text by the thousand
 Significance: "Casting reusable metal letters and pressing them turned a book from a thing one scribe copied in months into a thing made by the thousand, the first machine for copying knowledge at scale."
 BuildsOn:
+  - "[[Tooling Card - Cai Lun's Paper]]"
+  - "[[Tooling Card - Korean Cast-Metal Movable Type]]"
 Enables:
   - "[[Tooling Card - Photolithography]]"
 Threads:

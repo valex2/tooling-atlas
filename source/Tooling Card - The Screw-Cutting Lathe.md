@@ -19,6 +19,7 @@ BuildsOn:
   - "[[Tooling Card - Arkwright's Water Frame]]"
 Enables:
   - "[[Tooling Card - The Factory Machine Shop]]"
+  - "[[Tooling Card - The Portsmouth Block Mills]]"
   - "[[Tooling Card - The Three-Plate Method]]"
 Threads:
   - "[[Thread - Machine Tools]]"

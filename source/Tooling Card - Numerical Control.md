@@ -16,11 +16,13 @@ Confidence: Direct
 Unlocked: numbers-driven machine tools (NC/CNC)
 Significance: "America invented computer-controlled machining in 1952 but never made it cheap, handing the production lead to Japan's FANUC two decades later."
 BuildsOn:
-  - "[[Tooling Card - The Production Grinder]]"
   - "[[Tooling Card - Negative Feedback]]"
+  - "[[Tooling Card - The Jacquard Loom]]"
+  - "[[Tooling Card - The Jig Borer]]"
+  - "[[Tooling Card - The Production Grinder]]"
 Enables:
-  - "[[Tooling Card - The Mass-Produced CNC Controller]]"
   - "[[Tooling Card - Ion Beam Figuring]]"
+  - "[[Tooling Card - The Mass-Produced CNC Controller]]"
 Threads:
   - "[[Thread - Machine Tools]]"
 ---

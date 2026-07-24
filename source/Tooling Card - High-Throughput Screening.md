@@ -5,7 +5,7 @@ Kind: Make
 Tool: Robotic microplate drug-screening line
 Person: Pharma HTS groups (microplate from Gyula Takatsy)
 Place: Rahway, New Jersey, USA
-City: Rahway
+City: New Jersey
 Lat: 40.608
 Lon: -74.283
 Era: 1990s
@@ -16,6 +16,7 @@ Confidence: Direct
 Unlocked: testing a whole compound library against a target in days
 Significance: "Made drug hunting a numbers game: a robot tests hundreds of thousands of compounds against one target in days, not years."
 BuildsOn:
+  - "[[Tooling Card - Salvarsan]]"
 Enables:
   - "[[Tooling Card - The Single-Use Bioreactor]]"
 Threads:

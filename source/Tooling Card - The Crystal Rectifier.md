@@ -15,10 +15,10 @@ Mechanism: Convergence
 Confidence: Direct
 Unlocked: the transistor
 Significance: "Wartime radar forced the US to grow ultra-pure germanium and silicon crystals at scale, and that purification craft was already waiting when Bell Labs built the first transistor in 1947."
-BuildsOn:
 Enables:
-  - "[[Tooling Card - Zone Refining]]"
   - "[[Tooling Card - The Transistor]]"
+  - "[[Tooling Card - The Tunnel Diode]]"
+  - "[[Tooling Card - Zone Refining]]"
 Threads:
   - "[[Thread - Electronic Switching]]"
   - "[[Thread - Critical Materials]]"

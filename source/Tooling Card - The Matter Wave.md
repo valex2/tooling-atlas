@@ -18,6 +18,7 @@ Significance: "De Broglie's free published thesis showed electrons behave as wav
 BuildsOn:
   - "[[Tooling Card - Abbe's Diffraction Limit]]"
 Enables:
+  - "[[Tooling Card - Schrödinger's Wave Equation]]"
   - "[[Tooling Card - The Electron Microscope]]"
 Threads:
   - "[[Thread - Seeing Smaller]]"

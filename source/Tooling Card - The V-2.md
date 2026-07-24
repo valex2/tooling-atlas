@@ -16,6 +16,7 @@ Confidence: Direct
 Unlocked: the first big liquid-fuel rocket engine
 Significance: "The turbopump-fed, regeneratively cooled engine von Braun proved at Peenemünde is the template almost every large rocket has copied since. Its lead walked to America with the engineers who built it."
 BuildsOn:
+  - "[[Tooling Card - The Rocket Equation]]"
 Enables:
   - "[[Tooling Card - The R-7 Rocket]]"
 Threads:

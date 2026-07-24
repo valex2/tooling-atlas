@@ -16,9 +16,10 @@ Confidence: Direct
 Unlocked: a voice carried under an ocean
 Significance: "Building an amplifier that could sit unreachable on the ocean floor for twenty years took a tube made to be screened rather than made to be strong, and it put voice under the Atlantic ninety years after the telegraph crossed it."
 BuildsOn:
-  - "[[Tooling Card - The Triode]]"
+  - "[[Tooling Card - Low-Loss Optical Fibre]]"
   - "[[Tooling Card - Negative Feedback]]"
-Enables:
+  - "[[Tooling Card - The Erbium-Doped Fibre Amplifier]]"
+  - "[[Tooling Card - The Triode]]"
 Threads:
   - "[[Thread - Long-Distance Comms]]"
 ---

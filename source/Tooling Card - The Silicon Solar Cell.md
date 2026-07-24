@@ -16,11 +16,13 @@ Confidence: Direct
 Unlocked: power for satellites in orbit
 Significance: "The same silicon-doping craft that made the transistor produced a cell that could power a satellite indefinitely in orbit, where no wire or battery could reach."
 BuildsOn:
-  - "[[Tooling Card - Zone Refining]]"
-  - "[[Tooling Card - The Transistor]]"
   - "[[Tooling Card - The Czochralski Puller]]"
+  - "[[Tooling Card - The Siemens Process]]"
+  - "[[Tooling Card - The Transistor]]"
+  - "[[Tooling Card - Zone Refining]]"
 Enables:
   - "[[Tooling Card - Telstar]]"
+  - "[[Tooling Card - The PERC Solar Cell]]"
 Threads:
   - "[[Thread - Energy]]"
   - "[[Thread - Long-Distance Comms]]"

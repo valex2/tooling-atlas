@@ -16,9 +16,11 @@ Confidence: Direct
 Unlocked: read a whole human genome for the price of a phone
 Significance: "It made reading DNA cheap enough to do at scale, dropping the cost of a human genome from billions to hundreds of dollars."
 BuildsOn:
-  - "[[Tooling Card - PCR]]"
-  - "[[Tooling Card - The Laser]]"
   - "[[Tooling Card - DNA Sequencing]]"
+  - "[[Tooling Card - PCR]]"
+  - "[[Tooling Card - Pyrosequencing]]"
+  - "[[Tooling Card - The EMBL Nucleotide Sequence Data Library]]"
+  - "[[Tooling Card - The Laser]]"
 Enables:
   - "[[Tooling Card - DNA-Encoded Libraries]]"
   - "[[Tooling Card - The DNA Nanoball Array]]"
