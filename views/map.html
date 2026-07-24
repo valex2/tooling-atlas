@@ -38,6 +38,19 @@ svg.drag{cursor:grabbing}
 .mcap:empty{display:none}
 @keyframes mcap-pulse{from{color:var(--ink)}to{color:#5a544c}}
 .mcap.pulse{animation:mcap-pulse .9s ease-out}
+/* item 5: hop-by-hop stepper + speed toggle — small, unobtrusive playback controls */
+.stepper{display:inline-flex;gap:4px}
+.btn.step{padding:4px 9px;font-size:14px;line-height:1;min-width:26px}
+.btn[disabled]{opacity:.4;cursor:default}
+.btn[disabled]:hover{background:#fff}
+/* item 2: the cold-open PULSES #play to invite a replay of the migration — WITHOUT starting
+   the timer. A persistent ring (survives the smoke suite's animation-freeze and reduced-motion)
+   plus a breathing pulse only where motion is allowed. */
+.btn.invite{border-color:var(--ink);box-shadow:0 0 0 2px rgba(28,28,28,.16)}
+@media (prefers-reduced-motion:no-preference){
+ @keyframes play-invite{0%,100%{box-shadow:0 0 0 2px rgba(28,28,28,.16)}50%{box-shadow:0 0 0 5px rgba(28,28,28,.04)}}
+ .btn.invite{animation:play-invite 1.8s ease-in-out infinite}
+}
 /* phone: the 292px era rail can't share a narrow screen with the globe — stack them */
 @media (max-width:760px){
  html,body{height:auto}
@@ -53,6 +66,12 @@ svg.drag{cursor:grabbing}
 <p class="sub">Where each tool was first made — pick a thread and press play to watch the lead migrate, country to country.</p>
 <div class="bar">
   <button class="btn" id="play">▶ play</button>
+  <button class="btn" id="migrate">▶ watch the lead migrate</button>
+  <span class="stepper" role="group" aria-label="Step through the thread's hand-offs">
+    <button class="btn step" id="stepprev" aria-label="Previous hand-off on the thread" disabled aria-disabled="true">‹</button>
+    <button class="btn step" id="stepnext" aria-label="Next hand-off on the thread" disabled aria-disabled="true">›</button>
+  </span>
+  <button class="btn" id="speed" aria-label="Playback speed" title="Playback speed">1×</button>
   <span class="mcap" id="mcap" aria-hidden="true"></span>
   <span class="ylab" id="ylab">2030</span>
   <input type="range" id="yr" min="0" max="1000" value="1000" aria-label="Year">

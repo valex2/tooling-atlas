@@ -10,7 +10,7 @@ loop (never push red, no fabrication, reversible commits).
 | A | 1 | Thread identity beyond colour (fix label-drop bug, unify collision passes, per-slot dash, corner-legend fallback) | **done** |
 | B | 6, 11 | Default state argues: depth/distance fade + desaturate genealogy arcs; drop off-thread dot strokes; depth-sort dots | **done** |
 | C | 3, 4 | Live migration caption ("lead: Japan → Netherlands · 2017") + aria-live non-visual channel | **done** |
-| D | 2, 5 | Cold-open on a canonical migration (Chip Lithography spine) + "watch the lead migrate" button + hop stepper + speed toggle | pending |
+| D | 2, 5 | Cold-open on a canonical migration (Chip Lithography spine) + "watch the lead migrate" button + hop stepper + speed toggle | **done** |
 | E | 7, 9 | Making-center as first-class object (click-a-center dossier + keyboard list); follow builds-on/enables as a geographic hop | pending |
 | F | 8, 10 | Deep-link the moment (t=/rot=, gesture-gated); era ticks on the slider + click-an-era | pending |
 | G | 12 | Rootedness in the country layer (Make+Manufacture share as glyph/weight) — risky, careful, last | pending |
@@ -24,3 +24,4 @@ names the lead country + border-crossings.
 - Batch A (item 1): fixed the label-drop bug (break→continue; 24/72→0/72 unlabeled frames), unified thread+hub collision passes (no more overprint), per-slot stroke-dasharray backstop, and an off-SVG corner legend for threads whose label rotates off-globe. Default 0px.
 - Batch B (items 6+11): re-weighted the default genealogy web — distance fade + depth dim + recency, desaturated to one warm neutral, dropped co-located edges, small arrowheads, hard cap 120 arcs (was ~400); decluttered dots (no ring on off-thread dots, depth-sorted). render() ~3.7ms. The hairball now reads as a directional web; cross-region corridors pop.
 - Batch C (items 3+4): live caption near #play ('lead: <country> · <year>', 'A → B' on change, reduced-motion-safe); recency taper on path legs + play halo on the newest card; visually-hidden aria-live region + popover route text ('Chip Lithography: Luoyang 105 → … → Veldhoven 2019', duplicates collapsed); coarse era-crossing announcements. Default 0px.
+- Batch D (items 2+5): on empty hash the globe now COLD-OPENS on the Chip Lithography migration (full trace at T=2024, Eurasia-framed so the caption + globe agree, #play pulsing but not auto-running); deep-links still win. Toolbar gains 'watch the lead migrate' (one-click replay), a ‹ › hop stepper along the thread, and a 1×/2× speed toggle. Note: 'Chip Lithography' has no Britain in the data (China→Korea→Germany→US→Japan→NL→Taiwan) — the trace/caption are data-accurate; no false claim added. Baselines re-blessed both platforms.

@@ -47,6 +47,14 @@
   try {
     selThreads = getThreads();
   } catch (e) {}
+  // item 2: the canonical cold-open migration — the essay's Chip Lithography spine (its members
+  // run through China/Korea/Germany's printing lineage, then US → Japan → Netherlands → Taiwan).
+  // Shared by the empty-hash cold-open (end of file) and the "watch the lead migrate" button.
+  // COLD_LON/COLD_LAT frame the relevant making-centres instead of the default Atlantic centroid,
+  // which would put Japan and Taiwan on the far side of the globe.
+  const COLD_THREAD = "Chip Lithography";
+  const COLD_LON = 40,
+    COLD_LAT = 30;
   // History filter (the essay's spine): single-select scope on #hist=, read from
   // window.HISTORIES via the shared helpers. Independent of the multi-select thread
   // trace — it scopes the thread popover to that history's threads and dims off-history
@@ -75,6 +83,9 @@
   // this frame (with their colours). The legend chip strip is a static DOM node OUTSIDE the
   // SVG, rebuilt ONLY when this key changes — never per drag/play frame. null = never built.
   let _legendKey = null;
+  // item 5: cached enabled/disabled state of the ‹ › stepper, flipped only when a thread is
+  // (de)selected so a drag/play frame never touches those button nodes.
+  let _stepKey = null;
   // Item 3/4 state, closure-held across frames so render() stays a cheap textContent write:
   //   _prevLeadCountry — last frame's lead country, so a change (play/scrub crossing a border)
   //                      can surface a brief "Japan → Netherlands" transition string.
@@ -404,6 +415,21 @@
           })
           .join("");
       }
+    }
+    // item 5: the ‹ › stepper only acts with a thread selected — reflect that in the buttons.
+    // Cached on the selection flip (like the legend above) so a drag/play frame never touches
+    // these nodes.
+    const stepKey = selThreads.length ? "1" : "0";
+    if (stepKey !== _stepKey) {
+      _stepKey = stepKey;
+      const dis = !selThreads.length;
+      ["stepprev", "stepnext"].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) {
+          b.disabled = dis;
+          b.setAttribute("aria-disabled", dis ? "true" : "false");
+        }
+      });
     }
     // dots/countries are handled by one set of delegated listeners on the svg (set up once,
     // below) — no per-frame re-binding of hundreds of nodes while dragging/playing.
@@ -1085,8 +1111,32 @@
   });
   const yr = document.getElementById("yr"),
     ylab = document.getElementById("ylab");
+  // The cold-open (item 2) pulses #play to invite a replay; ANY playback engagement fulfils
+  // that invitation, so drop the emphasis the moment the user drives the timeline themselves.
+  function clearInvite() {
+    const b = document.getElementById("play");
+    if (b) b.classList.remove("invite");
+  }
+  // Slider value (0..1000) whose qYear() lands on (or nearest to) a given year — the inverse of
+  // qYear, used by the stepper and the "watch the lead migrate" button to move the range control
+  // in lockstep with T.
+  function yearSlider(y) {
+    let i = YS.indexOf(y);
+    if (i < 0) {
+      let bd = Infinity;
+      for (let k = 0; k < YS.length; k++) {
+        const d = Math.abs(YS[k] - y);
+        if (d < bd) {
+          bd = d;
+          i = k;
+        }
+      }
+    }
+    return Math.round((i / (YS.length - 1)) * 1000);
+  }
   yr.oninput = e => {
     stop();
+    clearInvite();
     T = qYear(+e.target.value / 1000);
     ylab.textContent = T;
     render();
@@ -1099,11 +1149,42 @@
     b.textContent = "▶ play";
     b.classList.remove("on");
   }
+  // item 5: speed toggle. The play sweep is a setInterval; the toggle multiplies its RATE by
+  // adjusting the interval (the step size is unchanged, so the same frames are shown, faster).
+  // playV is the current slider position, held in closure so a mid-play speed change can restart
+  // the interval WITHOUT losing where the sweep is.
+  let playSpeed = 1,
+    playV = 0;
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(
+      () => {
+        playV += 14;
+        if (playV >= 1000) {
+          playV = 1000;
+          T = qYear(1);
+          yr.value = 1000;
+          ylab.textContent = T;
+          render();
+          renderChips();
+          stop();
+          return;
+        }
+        T = qYear(playV / 1000);
+        yr.value = playV;
+        ylab.textContent = T;
+        render();
+        renderChips();
+      },
+      Math.max(16, Math.round(90 / playSpeed)),
+    );
+  }
   document.getElementById("play").onclick = function () {
     if (playing) {
       stop();
       return;
     }
+    clearInvite();
     // Reduced motion: no frame-by-frame sweep (a JS setInterval the CSS reduced-motion
     // rule can't touch). Jump straight to the final state — all tools, T = max year — in
     // one render, and never enter the playing state so the button stays "▶ play", unstuck.
@@ -1118,32 +1199,79 @@
     playing = true;
     this.textContent = "❚❚ pause";
     this.classList.add("on");
-    let v = +yr.value >= 1000 ? 0 : +yr.value;
-    timer = setInterval(() => {
-      v += 14;
-      if (v >= 1000) {
-        v = 1000;
-        T = qYear(1);
-        yr.value = 1000;
-        ylab.textContent = T;
-        render();
-        renderChips();
-        stop();
-        return;
-      }
-      T = qYear(v / 1000);
-      yr.value = v;
-      ylab.textContent = T;
-      render();
-      renderChips();
-    }, 90);
+    playV = +yr.value >= 1000 ? 0 : +yr.value;
+    startTimer();
   };
+  const speedBtn = document.getElementById("speed");
+  if (speedBtn) {
+    speedBtn.onclick = () => {
+      playSpeed = playSpeed === 1 ? 2 : 1;
+      speedBtn.textContent = playSpeed + "×";
+      if (playing) startTimer(); // re-arm the interval at the new rate, keeping playV
+    };
+  }
+  // item 5: hop-by-hop stepper. With a thread selected, step T to each successive card year
+  // along the FIRST selected thread's path so a hand-off can be READ, not caught flying past.
+  // ‹ = the previous card year (strictly < T), › = the next (strictly > T); render() keeps the
+  // batch-C caption and head-label in sync. Stepping halts any autoplay.
+  function threadYears() {
+    const t = selThreads[0];
+    if (!t) return [];
+    return [
+      ...new Set(CARDS.filter(c => c.threads.includes(t) && c.lat != null).map(c => c.year)),
+    ].sort((a, b) => a - b);
+  }
+  function step(dir) {
+    if (!selThreads.length) return;
+    stop();
+    clearInvite();
+    const years = threadYears();
+    if (!years.length) return;
+    let idx;
+    if (dir > 0) {
+      idx = years.findIndex(y => y > T);
+      if (idx < 0) idx = years.length - 1; // already at/after the last hand-off: stay on it
+    } else {
+      idx = 0;
+      for (let i = 0; i < years.length; i++) if (years[i] < T) idx = i; // largest year < T
+    }
+    T = years[idx];
+    yr.value = yearSlider(T);
+    ylab.textContent = T;
+    render();
+    renderChips();
+  }
+  const stepPrev = document.getElementById("stepprev"),
+    stepNext = document.getElementById("stepnext");
+  if (stepPrev) stepPrev.onclick = () => step(-1);
+  if (stepNext) stepNext.onclick = () => step(1);
   document.getElementById("reset").onclick = () => {
     rotLon = cLon;
     rotLat = Math.min(55, cLat + 6);
     scale = Math.min(W, H) * 0.46;
     render();
   };
+  // item 5: "watch the lead migrate" — the whole argument in one click, for a returning user who
+  // cleared the thread. Select the canonical thread, rewind T to its FIRST member year, and start
+  // the existing play handler (which itself honours reduced-motion by jumping to the final state).
+  const migrateBtn = document.getElementById("migrate");
+  if (migrateBtn)
+    migrateBtn.onclick = () => {
+      clearInvite();
+      selThreads = [COLD_THREAD];
+      try {
+        setThreads(selThreads);
+      } catch (e) {}
+      if (repaintThreads) repaintThreads();
+      const yrs = threadYears();
+      const y0 = yrs.length ? yrs[0] : qYear(0);
+      T = y0;
+      yr.value = yearSlider(y0);
+      ylab.textContent = T;
+      render();
+      renderChips();
+      if (!playing) document.getElementById("play").click();
+    };
   // "find a tool" — a results dropdown under the search box. Typing shows up to 8 name
   // matches (exact/prefix/word-start ranked first); hovering or arrowing a row PREVIEWS it
   // (spin-to + highlight ring, the old behaviour); clicking a row or pressing Enter also
@@ -1434,6 +1562,37 @@
       }
       render();
       showDetail(c);
+    }
+  } catch (e) {}
+  // item 2: cold-open on the canonical migration — EMPTY HASH ONLY. A first-timer otherwise lands
+  // on the all-dots genealogy web and needs three non-obvious steps (open picker → pick a thread →
+  // find play) before the globe argues anything. Gate a curated opening strictly on an empty hash:
+  // ANY card/thread/hist/t deep-link (all read above) is respected untouched. Clearing the thread
+  // returns to the improved all-dots genealogy view — nothing is lost, it just isn't the cold-open.
+  try {
+    const st = getState();
+    if (!st.card && !st.thread && !st.hist && !st.t) {
+      selThreads = [COLD_THREAD];
+      try {
+        setThreads(selThreads);
+      } catch (e) {}
+      // T = global max year, NOT the thread's earliest: at the earliest year only the first card
+      // sits on the globe (reads as broken). At the max the WHOLE …US → Japan → Netherlands →
+      // Taiwan path is drawn at rest, with the batch-C caption naming the current lead — which IS
+      // the argument ("leadership migrated across these countries"). Both were rendered; max wins.
+      T = qYear(1);
+      yr.value = yearSlider(T);
+      document.getElementById("ylab").textContent = T;
+      rotLon = COLD_LON;
+      rotLat = COLD_LAT;
+      if (repaintThreads) repaintThreads(); // popover shows the thread selected + its route
+      render();
+      renderChips();
+      // Pulse #play to invite the replay — WITHOUT starting the timer (autoplay on load is
+      // jarring). The pulse ANIMATION is gated to (prefers-reduced-motion:no-preference) in CSS,
+      // so under reduce only the static ring shows; the trace itself is always drawn.
+      const pb = document.getElementById("play");
+      if (pb) pb.classList.add("invite");
     }
   } catch (e) {}
 })();
