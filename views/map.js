@@ -164,20 +164,63 @@
     // is the "identity is missing from the map" set that the corner legend backstops.
     const labeled = new Set();
     if (!selThreads.length) {
-      // genealogy arcs (builds-on -> enables), only when no thread is selected
+      // Genealogy web (builds-on -> enables), default no-thread state. Was one kind-coloured,
+      // equally-weighted arc per edge — a hairball reading "everything connects to everything,"
+      // the opposite of the essay's directional-migration claim. Re-weighted here with pure
+      // per-arc arithmetic so LONG cross-region hops pop and short/local noise recedes:
+      //   distance fade  — great-circle angle 0..π mapped to a 0.15..1 factor (long links win)
+      //   depth dim      — midpoint facing (mean endpoint cosc, ≥0 on the front hemisphere)
+      //   recency        — the original tfrac(year) ramp, floored so deep history stays faint
+      // Drawn in ONE quiet warm neutral (kind still lives on the DOTS, so it stays recoverable)
+      // so the web no longer competes with the country shading. Co-located edges (an idea that
+      // stayed put is not migration) are dropped by an angular threshold, and the survivors are
+      // sorted by weight and HARD-CAPPED so the drag frame never pays for all 452 at once.
+      const ARC = "#9b8f7e"; // muted warm brown-grey, deliberately outside KCOL
+      const ARC_CAP = 120;
+      const arcs = [];
       for (const c of CARDS) {
         if (c.lat == null) continue;
         for (const en of c.en || []) {
           const b = byId[en];
           if (!b || b.lat == null || b.year > T) continue;
-          if (Math.abs(c.lat - b.lat) < 0.2 && Math.abs(c.lon - b.lon) < 0.2) continue;
+          // great-circle angular distance between the two endpoints (radians, 0..π)
+          const la = c.lat * D2R,
+            lb = b.lat * D2R;
+          const dot =
+            Math.sin(la) * Math.sin(lb) +
+            Math.cos(la) * Math.cos(lb) * Math.cos((c.lon - b.lon) * D2R);
+          const ang = Math.acos(Math.max(-1, Math.min(1, dot)));
+          // stayed-put / co-located: not a migration, drop it (~2.3°, subsumes the old
+          // 0.2° coord skip). Distance fade below then further recedes the merely-short.
+          if (ang < 0.04) continue;
           if (!vis(c.lon, c.lat) || !vis(b.lon, b.lat)) continue;
           const A = proj(c.lon, c.lat),
             B = proj(b.lon, b.lat);
-          const mx = (A[0] + B[0]) / 2,
-            my = (A[1] + B[1]) / 2 - Math.hypot(B[0] - A[0], B[1] - A[1]) * 0.18;
-          s += `<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${KC[b.kind]}" stroke-opacity="${(0.1 + 0.3 * tfrac(b.year)).toFixed(2)}" stroke-width="1"/>`;
+          const depth = (A[2] + B[2]) / 2; // both endpoints front-visible ⇒ ≥0
+          if (depth <= 0) continue;
+          const distf = 0.15 + 0.85 * (ang / Math.PI);
+          const rf = 0.4 + 0.6 * tfrac(b.year);
+          const op = 0.6 * distf * depth * rf;
+          arcs.push({ A, B, op });
         }
+      }
+      arcs.sort((x, y) => y.op - x.op);
+      const nArc = Math.min(ARC_CAP, arcs.length);
+      for (let i = 0; i < nArc; i++) {
+        const { A, B, op } = arcs[i];
+        const ostr = op.toFixed(2);
+        const mx = (A[0] + B[0]) / 2,
+          my = (A[1] + B[1]) / 2 - Math.hypot(B[0] - A[0], B[1] - A[1]) * 0.18;
+        s += `<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${ARC}" stroke-opacity="${ostr}" stroke-width="1"/>`;
+        // small arrowhead at B (the enabled/newer end) so the web reads as directional,
+        // reusing the thread-path arrowhead math against the arc's incoming tangent.
+        const tx = B[0] - mx,
+          ty = B[1] - my,
+          tl = Math.hypot(tx, ty) || 1,
+          ux = tx / tl,
+          uy = ty / tl,
+          ah = 4 * rsc;
+        s += `<path d="M${B[0].toFixed(1)} ${B[1].toFixed(1)} L${(B[0] - ux * ah - uy * ah * 0.5).toFixed(1)} ${(B[1] - uy * ah + ux * ah * 0.5).toFixed(1)} L${(B[0] - ux * ah + uy * ah * 0.5).toFixed(1)} ${(B[1] - uy * ah - ux * ah * 0.5).toFixed(1)} Z" fill="${ARC}" fill-opacity="${ostr}"/>`;
       }
     } else {
       // thread migration paths: each selected thread's cards joined in chronological order
@@ -245,22 +288,34 @@
         }
       });
     }
-    // dots
+    // dots — depth-sorted so front-of-globe dots draw over back ones (one sort over ≤283
+    // per frame is cheap). Emitted after the arcs, so every dot sits above the web.
+    const dots = [];
     for (const c of CARDS) {
       if (c.lat == null) continue;
       const fnd = c.id === foundId;
       if (c.year > T && !fnd) continue;
       const p = proj(c.lon, c.lat);
       if (p[2] < 0) continue;
+      dots.push({ c, p, fnd });
+    }
+    dots.sort((a, b) => a.p[2] - b.p[2]); // back (low facing) first, front last ⇒ hubs on top
+    for (const { c, p, fnd } of dots) {
       const r = (3 + Math.min(4, (c.en ? c.en.length : 0) * 0.8)) * rsc * (fnd ? 1.6 : 1);
       const onT = selThreads.length ? selThreads.find(t => c.threads.includes(t)) : null;
       // A scoped history dims any card outside it (spec §5 canvas step); All dims nothing.
       const offH = curHist && window.historyMatch && !window.historyMatch(c, curHist);
       const off = offH || (selThreads.length && !onT);
       const fo = fnd ? 1 : off ? 0.07 : 0.3 + 0.65 * tfrac(c.year);
-      const ring = fnd ? "#111" : onT ? threadColor(onT) : "#fff";
-      const rw = fnd ? "2.2" : onT ? "2" : ".8";
-      s += `<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fo}" stroke="${ring}" stroke-width="${rw}"/>`;
+      // Ring only where it CARRIES meaning: the found/searched dot and on-thread dots. Plain
+      // and off-thread dots drop the stroke entirely — the white ring was a speckle field
+      // competing with the traces. Kind still reads from the fill; no ring needed to find it.
+      const ring = fnd
+        ? ` stroke="#111" stroke-width="2.2"`
+        : onT
+          ? ` stroke="${threadColor(onT)}" stroke-width="2"`
+          : "";
+      s += `<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fo}"${ring}/>`;
     }
     // region labels (density clusters), sized by card count, collision-pruned (densest placed
     // first). Shares `placed` with the thread head-labels above — those were emitted first, so
