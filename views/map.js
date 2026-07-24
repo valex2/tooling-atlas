@@ -265,14 +265,69 @@
     // rows plus their handlers per frame was the single biggest cost in the drag loop.
     // Callers that actually change T or chipsOpen call renderChips() themselves.
   }
-  // hubs
-  const hg = {};
+  // hubs — CURATED CENTERS first, raw-city clusters for the long tail.
+  // The old rule named every ~5° coordinate blob after its single densest raw place-string.
+  // That inverted the essay's argument: it labeled Silicon Valley "NASA Ames" (one field
+  // station in it), buried Bell Labs (the corpus's largest single place) under a "Pharma labs"
+  // placeholder whose synthetic coordinate sat on Murray Hill, and fused Veldhoven/ASML — the
+  // EUV machine — into a 500 km "London" blob. Now a curated anchor table names the real
+  // making-centers the essay argues about; each card is ASSIGNED to the nearest anchor within
+  // its radius (degrees), and only cards no center claims fall through to the old density rule,
+  // so minor real places still read honestly. See docs/globe-centers-review.md.
+  // [name, lat, lon, radiusDeg]
+  const CENTERS = [
+    ["Silicon Valley", 37.44, -122.14, 0.4],
+    ["Bell Labs", 40.68, -74.4, 0.06],
+    ["London", 51.51, -0.13, 0.3],
+    ["Los Angeles Basin", 34.05, -118.3, 0.7],
+    ["Cambridge, England", 52.2, 0.12, 0.25],
+    ["Berkeley / East Bay", 37.86, -122.28, 0.13],
+    ["Berlin", 52.52, 13.4, 0.4],
+    ["Keihin / Greater Tokyo", 35.6, 139.7, 0.55],
+    ["Rhine-Neckar", 49.44, 8.56, 0.4],
+    ["IBM Hudson Valley", 41.5, -73.83, 0.55],
+    ["Cambridge / Greater Boston", 42.37, -71.11, 0.35],
+    ["New England machine-tool belt", 42.03, -71.6, 0.35],
+    ["Baikonur", 45.96, 63.31, 0.3],
+    ["Hsinchu", 24.8, 120.97, 0.2],
+    ["Veldhoven (ASML)", 51.42, 5.39, 0.2],
+    ["Toronto", 43.65, -79.38, 0.3],
+    ["Mainz", 50.0, 8.27, 0.15],
+    ["Toyota City", 35.08, 137.16, 0.25],
+    ["Beijing", 39.99, 116.3, 0.3],
+    ["Deccan / Hyderabad", 17.38, 78.49, 0.3],
+    ["Peenemünde", 54.14, 13.79, 0.2],
+  ];
+  const anchorOf = c => {
+    let best = null,
+      bd = Infinity;
+    for (const a of CENTERS) {
+      const d = Math.hypot(c.lat - a[1], c.lon - a[2]);
+      if (d <= a[3] && d < bd) {
+        bd = d;
+        best = a;
+      }
+    }
+    return best;
+  };
+  const anchored = new Map();
+  const rest = [];
   CARDS.forEach(c => {
     if (c.lat == null) return;
+    const a = anchorOf(c);
+    if (a) {
+      let h = anchored.get(a[0]);
+      if (!h) anchored.set(a[0], (h = { n: 0, city: a[0], lat: a[1], lon: a[2] }));
+      h.n++;
+    } else rest.push(c);
+  });
+  // long tail: the OLD rule, now applied only to cards no curated center claims —
+  // cluster leftovers by ~5° and name each by its densest raw city.
+  const hg = {};
+  rest.forEach(c => {
     const k = c.lat.toFixed(1) + "," + c.lon.toFixed(1);
     (hg[k] = hg[k] || []).push(c);
   });
-  // Key regions by card density: cluster nearby cities (~5°), name each by its densest city, size by total cards.
   const _pts = Object.values(hg)
     .map(g => ({
       n: g.length,
@@ -299,7 +354,12 @@
       m.n = t;
     } else _CL.push({ n: p.n, city: p.city, lat: p.lat, lon: p.lon });
   }
-  const HUBS = _CL.sort((a, b) => b.n - a.n).slice(0, 26);
+  // Curated centers place FIRST in the collision-pruner (they always win a label), then the
+  // biggest tail clusters fill the remaining slots.
+  const HUBS = [
+    ...[...anchored.values()].sort((a, b) => b.n - a.n),
+    ..._CL.sort((a, b) => b.n - a.n),
+  ].slice(0, 40);
   const PANELCSS =
     "position:fixed;top:0;right:0;width:330px;max-width:92vw;height:100%;background:#fff;border-left:.5px solid rgba(0,0,0,.15);box-shadow:-8px 0 30px rgba(0,0,0,.12);z-index:2000;overflow:auto;padding:18px 18px 50px;font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#1c1c1c";
   function countryChart(inC) {
