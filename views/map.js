@@ -821,6 +821,17 @@
       stop();
       return;
     }
+    // Reduced motion: no frame-by-frame sweep (a JS setInterval the CSS reduced-motion
+    // rule can't touch). Jump straight to the final state — all tools, T = max year — in
+    // one render, and never enter the playing state so the button stays "▶ play", unstuck.
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      T = qYear(1);
+      yr.value = 1000;
+      ylab.textContent = T;
+      render();
+      renderChips();
+      return;
+    }
     playing = true;
     this.textContent = "❚❚ pause";
     this.classList.add("on");
