@@ -38,6 +38,20 @@ svg.drag{cursor:grabbing}
 .mcap:empty{display:none}
 @keyframes mcap-pulse{from{color:var(--ink)}to{color:#5a544c}}
 .mcap.pulse{animation:mcap-pulse .9s ease-out}
+/* item 10: era ticks on the #yr slider. The slider wraps in .yrwrap (a flex column: the range on
+   top, a thin era strip below) so the strip never intercepts the thumb's own pointer. Each .etk is
+   a keyboard-reachable button spanning its era's segment, with a 1px boundary tick at its left; a
+   click jumps T to that era's start (map.js). --thd/--thr = native thumb width/radius: the ticks
+   are inset by them, calc(var(--thr) + f*(100% - var(--thd))), so a tick aligns with the thumb at
+   that year (the slider is quantile-mapped, and f already comes from yearSlider). Subtle at rest,
+   the boundary darkens/thickens on hover/keyboard-focus. */
+.yrwrap{--thd:14px;--thr:7px;position:relative;flex:1;min-width:160px;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.yrwrap input[type=range]{flex:none;width:100%;min-width:0;margin:0}
+.eratk{position:relative;height:9px}
+.etk{position:absolute;top:0;bottom:0;padding:0;border:0;background:none;cursor:pointer}
+.etk::before{content:"";position:absolute;left:0;top:0;width:1px;height:5px;background:rgba(0,0,0,.3)}
+.etk:hover::before,.etk:focus-visible::before{background:var(--ink);width:2px;height:9px}
+.etk:focus{outline:none}
 /* item 5: hop-by-hop stepper + speed toggle — small, unobtrusive playback controls */
 .stepper{display:inline-flex;gap:4px}
 .btn.step{padding:4px 9px;font-size:14px;line-height:1;min-width:26px}
@@ -87,7 +101,7 @@ svg.drag{cursor:grabbing}
   <button class="btn" id="speed" aria-label="Playback speed" title="Playback speed">1×</button>
   <span class="mcap" id="mcap" aria-hidden="true"></span>
   <span class="ylab" id="ylab">2030</span>
-  <input type="range" id="yr" min="0" max="1000" value="1000" aria-label="Year">
+  <span class="yrwrap"><input type="range" id="yr" min="0" max="1000" value="1000" aria-label="Year"><span class="eratk" id="eratk" role="group" aria-label="Jump to a historical era"></span></span>
   <button class="btn" id="reset">reset view</button><span style="position:relative;display:inline-block"><input id="msearch" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="mresults" aria-label="Find a tool" autocomplete="off" placeholder="find a tool…" style="border:.5px solid var(--line);border-radius:13px;padding:4px 11px;font-size:12px;width:150px"><div id="mresults" role="listbox" aria-label="Search results" style="display:none;position:absolute;top:32px;left:0;z-index:60;background:#fff;border:.5px solid var(--line);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.16);width:240px;max-width:80vw;max-height:320px;overflow:auto;padding:4px"></div></span><div class="histbar" id="histbar"></div><span style="position:relative;display:inline-block"><button class="btn" id="threadbtn" aria-expanded="false" aria-controls="threadpanel">threads ▾</button><div id="threadpanel" style="display:none;position:absolute;top:34px;right:0;z-index:60;background:#fff;border:.5px solid var(--line);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.16);width:236px;max-height:360px;overflow:auto;padding:6px"></div></span>
 </div>
 <!-- glyphs are filled from KGLY in shared.js by map.js: kind must survive colour-blindness and B/W printing -->

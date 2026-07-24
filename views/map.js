@@ -100,6 +100,14 @@
     _eraTimer = null,
     _pendingEraMsg = null,
     _routeKey = null;
+  // item 8 (deep-link the moment): the hash carries the instant the globe shows — #t=<year> and
+  // #rot=<lon,lat> — but it is written ONLY on gesture-END, never per render frame. render() runs
+  // on every drag/scrub/play frame; writing history.replaceState there would thrash the URL. So
+  // render() only (re)arms a 400ms debounce via scheduleHashWrite(); the single setState fires once
+  // the drag/scrub/play settles. _ready gates it so the initial hydrate/cold-open renders (which are
+  // not gestures) never write — the first WRITE is the user's first real move.
+  let _hashTimer = null,
+    _ready = false;
   let W = 0,
     H = 0,
     cx = 0,
@@ -514,6 +522,25 @@
     // NOT rebuilt here. render() runs on every mousemove while dragging; rebuilding 161
     // rows plus their handlers per frame was the single biggest cost in the drag loop.
     // Callers that actually change T or chipsOpen call renderChips() themselves.
+    // item 8: (re)arm the debounced hash write. This is the ONE hook that covers every entry
+    // point that mutates T/rotation (drag, scrub, zoom, keyboard, step, play, chip/center picks)
+    // — it only clears+sets a timer here (no DOM, no history), so it is cheap per frame; the
+    // actual replaceState fires 400ms after the LAST change, i.e. once the gesture settles.
+    scheduleHashWrite();
+  }
+  // item 8: debounced writer for #t/#rot. setState uses history.replaceState (composes with the
+  // existing #card/#thread/#hist params, and REPLACES rather than pushes — no history spam). Held
+  // to gesture-END by the 400ms debounce: a continuous drag/scrub or a play sweep (frames < 400ms
+  // apart) keeps resetting the timer, so exactly one write lands when motion stops.
+  function scheduleHashWrite() {
+    if (!_ready) return;
+    clearTimeout(_hashTimer);
+    _hashTimer = setTimeout(() => {
+      _hashTimer = null;
+      try {
+        setState({ t: String(T), rot: rotLon.toFixed(1) + "," + rotLat.toFixed(1) });
+      } catch (e) {}
+    }, 400);
   }
   // hubs — CURATED CENTERS first, raw-city clusters for the long tail.
   // The old rule named every ~5° coordinate blob after its single densest raw place-string.
@@ -1695,6 +1722,50 @@
       b.onclick = () => showCenter(decodeURIComponent(b.dataset.center));
     });
   })();
+  // item 10: era ticks on the #yr slider + click-an-era to jump. The slider is quantile-mapped
+  // (qYear/yearSlider), so it has no temporal orientation on its own. Mark each ERAS boundary at
+  // yearSlider(startYear) — the SAME mapping the thumb uses — so a tick lines up with where the
+  // thumb sits at that year, and make each era a keyboard-reachable button that JUMPS T to that
+  // era's start. --thr/--thd (thumb radius / width, in map.html) inset the tick track by the
+  // native thumb geometry so the mark under value V matches the thumb centre at value V. Built
+  // ONCE: positions are fixed functions of the YS quantiles, never recomputed per frame.
+  (function buildEraTicks() {
+    const host = document.getElementById("eratk");
+    if (!host) return;
+    const min = YS[0],
+      max = YS[YS.length - 1];
+    // only eras that overlap the data span get a tick (earlier eras would pile up at slider 0)
+    const bounds = ERAS.filter(e => e[2] > min && e[1] <= max);
+    host.innerHTML = bounds
+      .map((e, i) => {
+        const name = e[0],
+          start = e[1];
+        const f = Math.min(1, Math.max(0, yearSlider(start) / 1000));
+        const nf = i < bounds.length - 1 ? Math.min(1, Math.max(0, yearSlider(bounds[i + 1][1]) / 1000)) : 1;
+        // left = thumb-centre position for this year; width spans to the next boundary so the whole
+        // era segment is a click target (a 1px tick alone is unhittable). Both use (100% - --thd)
+        // and the --thr offset, matching the thumb's own travel.
+        const left = `calc(var(--thr) + ${f.toFixed(4)} * (100% - var(--thd)))`;
+        const width = `calc(${Math.max(0, nf - f).toFixed(4)} * (100% - var(--thd)))`;
+        return `<button type="button" class="etk" data-y="${start}" style="left:${left};width:${width}" aria-label="Jump to the ${TA.esc(name)} era, from ${start}" title="${TA.esc(name)} · ${start}"></button>`;
+      })
+      .join("");
+    host.querySelectorAll(".etk").forEach(b => {
+      b.onclick = () => {
+        stop();
+        clearInvite();
+        const y = +b.dataset.y;
+        // jump T to the era's start year; the thumb follows via the same yearSlider() mapping the
+        // tick is positioned with, so thumb and tick coincide. render()+renderChips() keep the
+        // globe, caption and tools list in step (and, being a gesture, schedule the #t hash write).
+        T = y;
+        yr.value = yearSlider(y);
+        ylab.textContent = T;
+        render();
+        renderChips();
+      };
+    });
+  })();
   T = qYear(1);
   document.getElementById("ylab").textContent = T;
   render();
@@ -1715,27 +1786,61 @@
       showDetail(c);
     }
   } catch (e) {}
-  // item 2: cold-open on the canonical migration — EMPTY HASH ONLY. A first-timer otherwise lands
-  // on the all-dots genealogy web and needs three non-obvious steps (open picker → pick a thread →
-  // find play) before the globe argues anything. Gate a curated opening strictly on an empty hash:
-  // ANY card/thread/hist/t deep-link (all read above) is respected untouched. Clearing the thread
-  // returns to the improved all-dots genealogy view — nothing is lost, it just isn't the cold-open.
+  // item 8 (HYDRATE side): restore the moment from the hash. #t=<year> sets T (and the slider via
+  // the existing yearSlider()); #rot=<lon,lat> sets the rotation. Runs ALONGSIDE the #card read
+  // above and BEFORE the cold-open below, so the cold-open can honour t/rot for year/rotation.
+  let _hadT = false,
+    _hadRot = false;
   try {
     const st = getState();
-    if (!st.card && !st.thread && !st.hist && !st.t) {
+    if (st.t) {
+      const y = parseInt(st.t, 10);
+      if (!isNaN(y)) {
+        T = y;
+        yr.value = yearSlider(y);
+        document.getElementById("ylab").textContent = T;
+        _hadT = true;
+      }
+    }
+    if (st.rot) {
+      const m = st.rot.split(",");
+      const lo = parseFloat(m[0]),
+        la = parseFloat(m[1]);
+      if (!isNaN(lo)) rotLon = lo;
+      if (!isNaN(la)) {
+        rotLat = Math.max(-90, Math.min(90, la));
+        _hadRot = true;
+      } else if (!isNaN(lo)) _hadRot = true;
+    }
+    if (_hadT || _hadRot) {
+      render();
+      renderChips();
+    }
+  } catch (e) {}
+  // item 2 + item 8: cold-open on the canonical migration. The trigger is an empty THREAD/CARD/HIST
+  // (the things that name a view) — NOT a whole-empty hash. Writing #t/#rot on gesture-end means a
+  // reloaded page is no longer literally empty, so gating on the whole hash would silently kill the
+  // cold open. A bare #t=1990 (no thread) therefore STILL cold-opens COLD_THREAD, just AT 1990: the
+  // decision is "no view chosen ⇒ show the canonical one," honouring any t/rot for the instant.
+  try {
+    const st = getState();
+    if (!st.card && !st.thread && !st.hist) {
       selThreads = [COLD_THREAD];
       try {
         setThreads(selThreads);
       } catch (e) {}
-      // T = global max year, NOT the thread's earliest: at the earliest year only the first card
-      // sits on the globe (reads as broken). At the max the WHOLE …US → Japan → Netherlands →
-      // Taiwan path is drawn at rest, with the batch-C caption naming the current lead — which IS
-      // the argument ("leadership migrated across these countries"). Both were rendered; max wins.
-      T = qYear(1);
-      yr.value = yearSlider(T);
-      document.getElementById("ylab").textContent = T;
-      rotLon = COLD_LON;
-      rotLat = COLD_LAT;
+      // T = global max year (the WHOLE …US → Japan → Netherlands → Taiwan path drawn at rest, the
+      // batch-C caption naming the current lead — which IS the argument), UNLESS #t pinned a year.
+      if (!_hadT) {
+        T = qYear(1);
+        yr.value = yearSlider(T);
+        document.getElementById("ylab").textContent = T;
+      }
+      // Frame the relevant making-centres, UNLESS #rot pinned a rotation.
+      if (!_hadRot) {
+        rotLon = COLD_LON;
+        rotLat = COLD_LAT;
+      }
       if (repaintThreads) repaintThreads(); // popover shows the thread selected + its route
       render();
       renderChips();
@@ -1746,4 +1851,8 @@
       if (pb) pb.classList.add("invite");
     }
   } catch (e) {}
+  // item 8: init/hydrate/cold-open are done — from here on any render() is a real gesture, so let
+  // the debounced hash writer arm. Nothing above wrote #t/#rot (those renders ran with _ready
+  // false), so a cold-open URL stays clean until the user's first move.
+  _ready = true;
 })();

@@ -12,7 +12,7 @@ loop (never push red, no fabrication, reversible commits).
 | C | 3, 4 | Live migration caption ("lead: Japan → Netherlands · 2017") + aria-live non-visual channel | **done** |
 | D | 2, 5 | Cold-open on a canonical migration (Chip Lithography spine) + "watch the lead migrate" button + hop stepper + speed toggle | **done** |
 | E | 7, 9 | Making-center as first-class object (click-a-center dossier + keyboard list); follow builds-on/enables as a geographic hop | **done** |
-| F | 8, 10 | Deep-link the moment (t=/rot=, gesture-gated); era ticks on the slider + click-an-era | pending |
+| F | 8, 10 | Deep-link the moment (t=/rot=, gesture-gated); era ticks on the slider + click-an-era | **done** |
 | G | 12 | Rootedness in the country layer (Make+Manufacture share as glyph/weight) — risky, careful, last | pending |
 
 Design defaults chosen (per roadmap, no user round-trip): cold-open thread = **Chip
@@ -26,3 +26,4 @@ names the lead country + border-crossings.
 - Batch C (items 3+4): live caption near #play ('lead: <country> · <year>', 'A → B' on change, reduced-motion-safe); recency taper on path legs + play halo on the newest card; visually-hidden aria-live region + popover route text ('Chip Lithography: Luoyang 105 → … → Veldhoven 2019', duplicates collapsed); coarse era-crossing announcements. Default 0px.
 - Batch D (items 2+5): on empty hash the globe now COLD-OPENS on the Chip Lithography migration (full trace at T=2024, Eurasia-framed so the caption + globe agree, #play pulsing but not auto-running); deep-links still win. Toolbar gains 'watch the lead migrate' (one-click replay), a ‹ › hop stepper along the thread, and a 1×/2× speed toggle. Note: 'Chip Lithography' has no Britain in the data (China→Korea→Germany→US→Japan→NL→Taiwan) — the trace/caption are data-accurate; no false claim added. Baselines re-blessed both platforms.
 - Batch E (items 7+9): curated centre labels are now clickable → a dossier panel of the cards anchored to that centre (counts ground-truth-verified against anchorOf); a keyboard-reachable 37-centre list (hidden until focused, 0px); and builds-on/enables links in a card's detail now FLY the globe to the linked card (globe-only wiring). CENTERS array untouched. Default 0px.
+- Batch F (items 8+10): the globe writes t=<year>&rot=<lon,lat> to the hash once per gesture (400ms-debounced, replaceState, never per frame) and restores that moment on load; the cold-open now triggers on empty thread/card/hist (so a bare #t=1990 still cold-opens the thread at 1990). 12 era-boundary ticks on the year slider, aligned to the thumb's quantile mapping, each a keyboard-reachable button that jumps T to that era. Baselines re-blessed both platforms.
