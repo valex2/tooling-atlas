@@ -253,7 +253,7 @@
       if (_lab.some(q => Math.abs(q.x - lx) < (q.w + w) / 2 + 2 && Math.abs(q.y - ly) < fs + 3))
         continue;
       _lab.push({ x: lx, y: ly, w });
-      s += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2.5px">${h.city}</text>`;
+      s += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2.5px;pointer-events:none">${h.city}</text>`;
     }
     svg.innerHTML = s;
     // dots/countries are handled by one set of delegated listeners on the svg (set up once,
@@ -602,47 +602,204 @@
     });
   }
   const showTip = TA.tooltip(tip, byId);
-  // interaction
-  let dn = false,
-    lx,
+  // interaction — Pointer Events unify mouse, touch and pen (the old model was mouse-only,
+  // so a phone/tablet could neither rotate nor zoom the globe). A single pointer that starts
+  // off a dot rotates; two pointers pinch-zoom; a pointer that never travels past TAP_SLOP
+  // stays a tap and opens the dot/country under it. Touch pointers are captured to the svg so
+  // a drag that leaves the element still delivers moves — the same reason the old mouse loop
+  // listened on window. render() runs per move exactly as before, so the delegated-listener
+  // performance model (no per-frame re-binding of hundreds of nodes) is untouched.
+  let lx,
     ly,
+    sx,
+    sy,
     moved = false,
     chipsOpen = true;
+  const pointers = new Map(); // active pointerId -> {x,y}
+  let dragId = null; // the pointer currently rotating, or null
+  let pinch = null; // {dist, scale} while two pointers are down
+  let lastTap = 0,
+    lastTapX = 0,
+    lastTapY = 0;
+  const TAP_SLOP = 6; // px a tap may drift before it becomes a drag (touch fingers jitter)
+  const clampScale = s => Math.max(80, Math.min(6000, s));
   const ERAS = window.ERAS;
-  svg.addEventListener("mousedown", e => {
-    if (e.target.classList.contains("dot")) return;
-    dn = true;
-    moved = false;
-    lx = e.clientX;
-    ly = e.clientY;
-    svg.classList.add("drag");
+  // Zoom in toward a screen point by inverse-projecting it to lon/lat, recentring the globe
+  // there, then scaling up. On this fixed-centre orthographic projection there is no pan
+  // offset, so "zoom toward" a point means pulling it to the centre.
+  function focusZoom(sx, sy, factor) {
+    const xp = (sx - cx) / scale,
+      yp = (cy - sy) / scale,
+      rho = Math.hypot(xp, yp);
+    if (rho > 1e-6 && rho <= 1) {
+      const cc = Math.asin(Math.min(1, rho)),
+        p0 = rotLat * D2R;
+      rotLat = Math.max(
+        -90,
+        Math.min(
+          90,
+          Math.asin(Math.cos(cc) * Math.sin(p0) + (yp * Math.sin(cc) * Math.cos(p0)) / rho) / D2R,
+        ),
+      );
+      rotLon =
+        rotLon +
+        Math.atan2(
+          xp * Math.sin(cc),
+          rho * Math.cos(cc) * Math.cos(p0) - yp * Math.sin(cc) * Math.sin(p0),
+        ) /
+          D2R;
+    }
+    scale = clampScale(scale * factor);
+    render();
+  }
+  // A clean tap (no drag) opens the dot/country under the point. Pointer capture redirects
+  // pointer events' target to the svg, so hit-test the live DOM at the release point instead.
+  function openAt(clientX, clientY) {
+    const el = document.elementFromPoint(clientX, clientY);
+    if (!el || !el.closest) return;
+    const d = el.closest(".dot");
+    if (d) {
+      try {
+        showDetail(byId[decodeURIComponent(d.dataset.id)]);
+      } catch (e) {}
+      return;
+    }
+    const ct = el.closest(".cty");
+    if (ct) showCountry(+ct.dataset.ci);
+  }
+  svg.addEventListener("pointerdown", e => {
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try {
+      svg.setPointerCapture(e.pointerId);
+    } catch (err) {}
+    if (pointers.size === 2) {
+      // second finger: switch from rotate to pinch-zoom
+      const p = [...pointers.values()];
+      pinch = { dist: Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) || 1, scale };
+      dragId = null;
+      moved = true; // a two-finger gesture is never a tap
+      svg.classList.remove("drag");
+    } else if (pointers.size === 1) {
+      moved = false;
+      lx = sx = e.clientX;
+      ly = sy = e.clientY;
+      // Starting on a dot must not rotate — it is a tap to open (mirrors the old
+      // mousedown early-return on .dot).
+      dragId = e.target.classList && e.target.classList.contains("dot") ? null : e.pointerId;
+      if (dragId != null) svg.classList.add("drag");
+      // Focusing the region on grab makes the keyboard controls immediately available.
+      try {
+        svg.focus({ preventScroll: true });
+      } catch (err) {}
+    }
     e.preventDefault();
   });
-  window.addEventListener("mousemove", e => {
-    if (!dn) return;
-    moved = true;
+  svg.addEventListener("pointermove", e => {
+    const pt = pointers.get(e.pointerId);
+    if (!pt) return;
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    if (pinch && pointers.size >= 2) {
+      const p = [...pointers.values()];
+      const d = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) || 1;
+      scale = clampScale(pinch.scale * (d / pinch.dist));
+      render();
+      return;
+    }
+    // Measure tap-vs-drag travel from the START of the gesture (lx/ly move every frame for
+    // the rotation delta, so measuring against them keeps every step under slop forever).
+    // Tracked even when this pointer does not rotate (it began on a dot), so a real drag that
+    // starts on a dot is still not mistaken for a tap.
+    if (
+      pointers.size === 1 &&
+      !moved &&
+      Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > TAP_SLOP
+    )
+      moved = true;
+    if (e.pointerId !== dragId) return;
     const k = 0.25 * (300 / scale);
     rotLon -= (e.clientX - lx) * k;
-    rotLat += (e.clientY - ly) * k;
-    rotLat = Math.max(-90, Math.min(90, rotLat));
+    rotLat = Math.max(-90, Math.min(90, rotLat + (e.clientY - ly) * k));
     lx = e.clientX;
     ly = e.clientY;
     render();
   });
-  window.addEventListener("mouseup", () => {
-    dn = false;
-    svg.classList.remove("drag");
-  });
+  function endPointer(e) {
+    const had = pointers.has(e.pointerId);
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) pinch = null;
+    if (e.pointerId === dragId) {
+      dragId = null;
+      svg.classList.remove("drag");
+    }
+    if (!had || moved || pointers.size !== 0) return; // only a clean, final tap opens/zooms
+    openAt(e.clientX, e.clientY);
+    // Double-tap / double-click to zoom in toward the point. Detected here rather than via
+    // the dblclick event, which is unreliable on touch under touch-action:none.
+    const now = Date.now();
+    if (
+      now - lastTap < 300 &&
+      Math.abs(e.clientX - lastTapX) + Math.abs(e.clientY - lastTapY) < 24
+    ) {
+      const r = svg.getBoundingClientRect();
+      focusZoom(e.clientX - r.left, e.clientY - r.top, 1.6);
+      lastTap = 0;
+    } else {
+      lastTap = now;
+      lastTapX = e.clientX;
+      lastTapY = e.clientY;
+    }
+  }
+  svg.addEventListener("pointerup", endPointer);
+  svg.addEventListener("pointercancel", endPointer);
   svg.addEventListener(
     "wheel",
     e => {
       e.preventDefault();
-      scale *= e.deltaY < 0 ? 1.15 : 0.87;
-      scale = Math.max(80, Math.min(6000, scale));
+      scale = clampScale(scale * (e.deltaY < 0 ? 1.15 : 0.87));
       render();
     },
     { passive: false },
   );
+  // Keyboard access to the globe (focusable via tabindex in the markup): arrows spin, +/-
+  // zoom, Home resets. Step is scale-aware so a zoomed-in globe nudges finely.
+  svg.addEventListener("keydown", e => {
+    const step = Math.max(1.5, Math.min(15, 8 * (300 / scale)));
+    let hit = true;
+    switch (e.key) {
+      case "ArrowLeft":
+        rotLon -= step;
+        break;
+      case "ArrowRight":
+        rotLon += step;
+        break;
+      case "ArrowUp":
+        rotLat = Math.min(90, rotLat + step);
+        break;
+      case "ArrowDown":
+        rotLat = Math.max(-90, rotLat - step);
+        break;
+      case "+":
+      case "=":
+        scale = clampScale(scale * 1.15);
+        break;
+      case "-":
+      case "_":
+        scale = clampScale(scale * 0.87);
+        break;
+      case "Home":
+        rotLon = cLon;
+        rotLat = Math.min(55, cLat + 6);
+        scale = Math.min(W, H) * 0.46;
+        break;
+      default:
+        hit = false;
+    }
+    if (hit) {
+      e.preventDefault();
+      render();
+    }
+  });
   const yr = document.getElementById("yr"),
     ylab = document.getElementById("ylab");
   yr.oninput = e => {
@@ -825,17 +982,8 @@
     else tip.style.display = "none";
   });
   svg.addEventListener("mouseleave", () => (tip.style.display = "none"));
-  svg.addEventListener("click", e => {
-    const d = e.target.closest(".dot");
-    if (d) {
-      try {
-        showDetail(byId[decodeURIComponent(d.dataset.id)]);
-      } catch (err) {}
-      return;
-    }
-    const ct = e.target.closest(".cty");
-    if (ct && !moved) showCountry(+ct.dataset.ci);
-  });
+  // Opening a dot/country is handled by the pointer flow above (openAt on a clean tap), so a
+  // drag never opens anything and a synthesized click is not relied on. No click listener here.
   T = qYear(1);
   document.getElementById("ylab").textContent = T;
   render();
