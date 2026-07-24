@@ -111,7 +111,7 @@ for v in SCANNED:
 # 3) the data-driven views actually reference the canonical cards. Deck/Table/Dashboard are
 # now redirect stubs (no cards.js), consolidated into views/browse.html — assert that instead.
 for v in ["views/map.html", "views/browse.html",
-          "views/atlas.html", "views/tree.html", "views/relay.html"]:
+          "views/tree.html", "views/relay.html"]:
     t = open(os.path.join(ROOT, v), encoding="utf-8").read()
     check("cards.js" in t, "%s loads data/cards.js" % v)
 
@@ -122,7 +122,7 @@ for v in ["views/map.html", "views/browse.html",
 TA_TAG = re.compile(r'<script src="[^"]*\bta\.js"')
 SHARED_TAG = re.compile(r'<script src="[^"]*\bshared\.js"')
 for v in ["index.html", "views/map.html", "views/browse.html",
-          "views/atlas.html", "views/tree.html", "views/relay.html"]:
+          "views/tree.html", "views/relay.html"]:
     t = open(os.path.join(ROOT, v), encoding="utf-8").read()
     mta, msh = TA_TAG.search(t), SHARED_TAG.search(t)
     check(bool(mta) and bool(msh) and mta.start() < msh.start(),

@@ -428,7 +428,6 @@ window.historyBar = function (el, onPick) {
 const NAV_PRIMARY = [
   ["Home", "index.html"],
   ["Globe", "views/map.html"],
-  ["Timeline", "views/atlas.html"],
   ["Tree", "views/tree.html"],
   ["Relay", "views/relay.html"],
 ];

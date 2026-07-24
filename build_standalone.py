@@ -6,7 +6,7 @@ renders inside a single-file preview. Run after regenerate.py (sync.sh does both
 import re, os, json
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VIEWS = [("Globe","views/map.html"),("Timeline","views/atlas.html"),("Tree","views/tree.html"),
+VIEWS = [("Globe","views/map.html"),("Tree","views/tree.html"),
          ("Relay","views/relay.html"),
          ("Browse","views/browse.html")]
 MS = [("01","Measure","var(--Measure-ink)","◇","see what is there — a microscope, an X-ray, a way to read DNA"),
@@ -16,7 +16,6 @@ MS = [("01","Measure","var(--Measure-ink)","◇","see what is there — a micros
 # line-art glyph per view (mirrors index.html)
 VGLY = {
  "Globe":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="16" cy="16" r="11"/><ellipse cx="16" cy="16" rx="5" ry="11"/><path d="M5 16h22M7 10h18M7 22h18"/></svg>',
- "Timeline":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 8h24M4 16h24M4 24h24"/><circle cx="10" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="20" cy="16" r="2" fill="currentColor" stroke="none"/><circle cx="14" cy="24" r="2" fill="currentColor" stroke="none"/></svg>',
  "Tree":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="16" r="2.4"/><circle cx="22" cy="8" r="2.4"/><circle cx="22" cy="24" r="2.4"/><path d="M9 15l11-6M9 17l11 6"/></svg>',
  "Relay":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="5" y="7" width="22" height="5" rx="1"/><rect x="5" y="14" width="22" height="5" rx="1"/><rect x="5" y="21" width="22" height="5" rx="1"/></svg>',
  "Browse":'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="9" y="6" width="17" height="21" rx="2"/><rect x="5" y="9" width="15" height="18" rx="2" fill="var(--card)"/></svg>',

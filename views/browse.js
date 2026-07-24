@@ -518,7 +518,7 @@
             .map(d => {
               const n = d.cards.length,
                 e = encodeURIComponent(d.k);
-              const links = `<span class="vlinks"><a href="map.html#thread=${e}" title="Trace on globe">⊙ globe</a><a href="atlas.html#thread=${e}" title="See its lane on the timeline">▤ timeline</a><a href="#mode=table&thread=${e}" title="List in the table">▦ table</a></span>`;
+              const links = `<span class="vlinks"><a href="map.html#thread=${e}" title="Trace on globe">⊙ globe</a><a href="#mode=table&thread=${e}" title="List in the table">▦ table</a></span>`;
               return `<div class="row"><a href="#mode=table&thread=${e}" class="lab" style="text-decoration:none;color:var(--mut)">${d.k}</a>${segBar(perKind(d.cards), n, tmax, 260)}<span class="n">${n}</span>${links}</div>`;
             })
             .join("")
@@ -551,7 +551,7 @@
   // `&thread=…` — so a click just changes the hash and the hashchange handler below re-hydrates
   // the filters FROM that hash. Because the hash carries only the one filter, Table lands clean:
   // no stale sibling filter accumulates, and the URL stays shareable, with no interceptor needed.
-  // (The globe/timeline vlinks stay real cross-view links to map.html / atlas.html.)
+  // (The globe vlink stays a real cross-view link to map.html.)
 
   // ===================== MODE DISPATCH =====================
   function renderActive() {

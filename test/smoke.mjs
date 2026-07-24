@@ -59,10 +59,11 @@ if (UPDATE) fs.mkdirSync(BASE, { recursive: true });
 const NO_PLATFORM_BASELINE = !UPDATE && !SELFCHECK && !fs.existsSync(BASE);
 
 const VIEWS = [
-  ['home', 'index.html'], ['globe', 'views/map.html'], ['timeline', 'views/atlas.html'],
+  ['home', 'index.html'], ['globe', 'views/map.html'],
   ['tree', 'views/tree.html'], ['relay', 'views/relay.html'],
-  // Deck/Table/Dashboard consolidated into Browse; captured once per mode. The three old
-  // files are now redirect stubs (browse.html#mode=…) and are deliberately NOT captured.
+  // Timeline removed: its thread-lane view is subsumed by the Tree (which adds the genealogy
+  // edges), its geography axis by the Globe/Relay, its job axis by Browse coverage.
+  // Deck/Table/Dashboard consolidated into Browse; captured once per mode.
   ['browse-cards', 'views/browse.html'],
   ['browse-table', 'views/browse.html#mode=table'],
   ['browse-coverage', 'views/browse.html#mode=coverage'],
