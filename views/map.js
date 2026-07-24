@@ -16,6 +16,37 @@
     return YS[i];
   }
   const maxc = Math.max(1, ...COUNTRIES.map(o => o.c));
+  // item 12 (rootedness): the globe's other half of the thesis — "the hardest making STAYS PUT".
+  // Count-shading (the alpha ramp below) says only WHERE the tools are; it can't say which places
+  // concentrate the hard, physical making (Make + Manufacture) versus the movable Measure/Model
+  // work. So compute, ONCE, each country's making-SHARE = (Make+Manufacture)/total of its cards,
+  // and precompute it PER COUNTRIES-entry (parallel to COUNTRIES, indexed by ci) so the render
+  // loop is a pure lookup + arithmetic — no per-frame scan. The join is by the card `country`
+  // string to the COUNTRIES `n` name; all 24 card-countries match a COUNTRIES.n exactly (verified),
+  // so no name-normalisation is needed. Countries with no cards get share 0 (they stay neutral).
+  const HARD_KINDS = new Set(["Make", "Manufacture"]);
+  const _mkAgg = {};
+  for (const c of CARDS) {
+    const k = c.country;
+    if (!k) continue;
+    const a = _mkAgg[k] || (_mkAgg[k] = { tot: 0, hard: 0 });
+    a.tot++;
+    if (HARD_KINDS.has(c.kind)) a.hard++;
+  }
+  // share in [0,1] for each COUNTRIES entry, 0 where the country has no cards / no match.
+  const ctyShare = COUNTRIES.map(o => {
+    const a = _mkAgg[o.n];
+    return a && a.tot ? a.hard / a.tot : 0;
+  });
+  // Encoding = a SUBTLE hue nudge of the SAME single fill: blend the warm-NEUTRAL grey toward the
+  // "Make" earth-tone (KCOL.Make #b06a1e) by MAKE_BLEND × share, keeping the count-driven ALPHA
+  // untouched. Toward Make means +red, −green, −blue ⇒ a high-making country reads slightly
+  // warmer/earthier; a low-making one stays neutral-grey. No new SVG node, no new layer — it can't
+  // clutter the arcs/dots/labels. MAKE_BLEND is the max blend at 100% making; kept low on purpose
+  // (a quiet, honest signal, not a second colour axis) — see the visual-pass note in the commit.
+  const NEUT_RGB = [150, 140, 120];
+  const MAKE_RGB = [176, 106, 30];
+  const MAKE_BLEND = 0.35;
   // centroid of data for initial view
   let cLon = 0,
     cLat = 0;
@@ -177,10 +208,18 @@
     s += g;
     // countries
     COUNTRIES.forEach((o, ci) => {
-      // warm NEUTRAL, deliberately outside KCOL: a busy country must not read as
-      // "Make" (KCOL.Make #b06a1e = rgba(176,106,30)). Same 0.12→0.72 alpha ramp.
-      const fill =
-        o.c > 0 ? `rgba(150,140,120,${(0.12 + (0.6 * o.c) / maxc).toFixed(3)})` : "#e7e3db";
+      // Count still drives ALPHA (the 0.12→0.72 ramp). Making-SHARE nudges the HUE of the same
+      // fill toward the Make earth-tone (item 12) — a busy-but-movable country stays warm-neutral
+      // grey; a busy-and-hard-making one reads a touch earthier. Empty countries stay #e7e3db.
+      let fill;
+      if (o.c > 0) {
+        const alpha = (0.12 + (0.6 * o.c) / maxc).toFixed(3);
+        const f = MAKE_BLEND * ctyShare[ci]; // 0 (neutral) … MAKE_BLEND (fully hard-making)
+        const r = Math.round(NEUT_RGB[0] + (MAKE_RGB[0] - NEUT_RGB[0]) * f);
+        const g = Math.round(NEUT_RGB[1] + (MAKE_RGB[1] - NEUT_RGB[1]) * f);
+        const b = Math.round(NEUT_RGB[2] + (MAKE_RGB[2] - NEUT_RGB[2]) * f);
+        fill = `rgba(${r},${g},${b},${alpha})`;
+      } else fill = "#e7e3db";
       for (const ring of o.r) {
         const d = ringPath(ring);
         if (d)
