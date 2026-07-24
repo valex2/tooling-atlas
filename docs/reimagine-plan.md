@@ -25,7 +25,7 @@ every ~30 min, **completely autonomously** (auto-push each green change).
 | 7 | data | New-card integrity: coords present, threads ∈ HISTORIES, region non-empty, builds-on/enables resolve | **done** (clean — 283/283 coords+threads+region, 0 orphan threads, 0 broken links) |
 | 8 | interaction | Globe "find a tool" search → fly the globe to the selected card | **done** |
 | 9 | narrative | Home onboarding refresh for the 283-card corpus (counts, four-histories clarity) | **done** (Home already dynamic+clear; fixed 1 stale hardcoded count) |
-| 10 | polish | Tree legibility at 283 nodes / deep-history era (105 AD) rendering | pending |
+| 10 | polish | Tree legibility at 283 nodes / deep-history era (105 AD) rendering | **done** (audited clean — lanes stagger to avoid overlap; new cards + era bands render cleanly at 283) |
 | 11 | polish | Relay legibility with more turns (ledger/coda) | pending |
 | 12 | a11y | Colour-contrast (WCAG) + ARIA roles + skip-link pass | pending |
 | 13 | polish | Cross-view typography/spacing/colour consistency pass | pending |
@@ -43,3 +43,4 @@ newly-found issues here. When the backlog is genuinely dry before 4h, add polish
 - item 6+7: data-hygiene audit — corpus clean (no region mis-tags, 0 orphan threads, 0 broken builds-on/enables links); normalized 1 stray byline (Cymer 'San Diego, USA' -> 'San Diego, California, USA')
 - item 8: globe "find a tool" now shows a ranked results dropdown (keyboard-navigable, aria combobox); arrow previews (spin-to), Enter/click flies to the card AND opens its detail panel
 - item 9: Home — the top gauge/history-cards/footnote are all data-driven and accurate; the only stale copy was the Browse sub's hardcoded '180 tools' -> reworded to 'The whole corpus' (staleness-proof)
+- item 10: Tree legibility audited at 283 nodes across the dense Cold War→AI-Age era — the thread-lane stagger keeps cards non-overlapping and the genealogy lines faint; no fix needed
