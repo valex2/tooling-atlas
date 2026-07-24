@@ -379,7 +379,14 @@
       if (placed.some(q => Math.abs(q.x - lx) < (q.w + w) / 2 + 2 && Math.abs(q.y - ly) < fs + 3))
         continue;
       placed.push({ x: lx, y: ly, w });
-      s += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2.5px;pointer-events:none">${h.city}</text>`;
+      // item 7: a curated making-centre label is a clickable object (opens its dossier via the
+      // delegated tap flow) — so it drops the `pointer-events:none` the inert tail-city labels keep,
+      // and carries a `.clab` class + its name. Pure attribute/cursor change: the label paints
+      // pixel-identically, so the default globe render is unchanged.
+      const isCenter = centerNames.has(h.city);
+      const pe = isCenter ? "cursor:pointer" : "pointer-events:none";
+      const tag = isCenter ? ` class="clab" data-center="${encodeURIComponent(h.city)}"` : "";
+      s += `<text${tag} x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2.5px;${pe}">${h.city}</text>`;
     }
     svg.innerHTML = s;
     // Corner-legend fallback: identity is NEVER colour-only. Any selected thread that placed
@@ -572,6 +579,10 @@
     }
     return best;
   };
+  // item 7: names of the curated centres, so the hub-label loop can tag those labels as
+  // clickable (`.clab`) while the raw long-tail city labels stay inert. Built once (not per
+  // frame); render() only executes after this runs.
+  const centerNames = new Set(CENTERS.map(a => a[0]));
   // Item 4: the ordered migration as TEXT — the non-visual twin of the arc. Each card maps to
   // its anchored CENTER (anchorOf) or falls back to its raw place; consecutive duplicates
   // collapse to "Silicon Valley ×3". Built ONLY when selThreads changes (announceRoutes below
@@ -763,6 +774,98 @@
       (y0 + 2) +
       '" font-size="7.5" fill="#6d6961">cumulative — dashed = world shape</text></svg>';
     return s;
+  }
+  // item 9 (and the dossier rows of item 7): fly the globe to a card — rotate to its lon/lat,
+  // zoom in if we are far out, and mark it as the found dot. This is the SAME rotate/zoom the
+  // find-a-tool pick and the #card deep-link use, factored out so a link-follow and a dossier
+  // row can both perform the geographic hop.
+  function flyTo(c) {
+    if (!c || c.lat == null) return;
+    foundId = c.id;
+    rotLon = c.lon;
+    rotLat = Math.max(-80, Math.min(80, c.lat));
+    if (scale < 320) scale = 420;
+    render();
+  }
+  // item 7: making-CENTRE dossier. Built on the showCountry panel pattern — a right-hand panel
+  // listing every card the centre ANCHORS (anchorOf(c) === this centre, the same assignment the
+  // labels use), sorted by year. Title = centre name; subtitle = count + era span. Each row opens
+  // the card's detail AND flies the globe to it (reusing flyTo above).
+  function showCenter(name) {
+    const center = CENTERS.find(a => a[0] === name);
+    if (!center) return;
+    const inC = CARDS.filter(c => c.lat != null && anchorOf(c) === center).sort(
+      (a, b) => a.year - b.year || a.id.localeCompare(b.id),
+    );
+    let p = document.getElementById("appdetail");
+    if (!p) {
+      p = document.createElement("div");
+      p.id = "appdetail";
+      p.style.cssText = PANELCSS;
+      document.body.appendChild(p);
+    }
+    const bk = {};
+    inC.forEach(c => (bk[c.kind] = (bk[c.kind] || 0) + 1));
+    const bars = window.KINDS.filter(k => bk[k])
+      .map(
+        k =>
+          '<span style="display:inline-block;background:' +
+          KC[k] +
+          "1f;color:" +
+          KINK[k] +
+          ';border-radius:8px;padding:1px 7px;margin:2px 3px 0 0;font-size:11px">' +
+          k +
+          " " +
+          bk[k] +
+          "</span>",
+      )
+      .join("");
+    const yrs = inC.map(c => c.year).filter(Boolean);
+    const span = yrs.length
+      ? yrs[0] === yrs[yrs.length - 1]
+        ? "" + yrs[0]
+        : yrs[0] + "–" + yrs[yrs.length - 1]
+      : "";
+    const list =
+      inC
+        .map(
+          c =>
+            '<div class="ctool" data-id="' +
+            encodeURIComponent(c.id) +
+            '" style="cursor:pointer;padding:3px 0;border-bottom:.5px solid #eee;font-size:12px"><span style="color:' +
+            KC[c.kind] +
+            '">●</span> ' +
+            c.name +
+            ' <span style="color:#6d6961">' +
+            c.year +
+            "</span></div>",
+        )
+        .join("") || "<div style='color:#6d6961'>No tools anchored here.</div>";
+    p.innerHTML =
+      '<div style="display:flex;justify-content:space-between"><div style="font-size:16px;font-weight:600">' +
+      TA.esc(name) +
+      '</div><button id="appdx" aria-label="Close panel" style="cursor:pointer;color:#777;font-size:18px;line-height:1;background:none;border:0;padding:2px 4px">✕</button></div><div style="color:#6f6f6f;font-size:12px;margin:2px 0 8px">making-centre · ' +
+      inC.length +
+      " tool" +
+      (inC.length != 1 ? "s" : "") +
+      (span ? " · " + span : "") +
+      "</div>" +
+      bars +
+      '<div style="margin-top:10px">' +
+      list +
+      "</div>";
+    p.style.display = "block";
+    document.getElementById("appdx").onclick = () => (p.style.display = "none");
+    p.querySelectorAll(".ctool").forEach(el => {
+      const c = byId[decodeURIComponent(el.dataset.id)];
+      el.onclick = () => {
+        flyTo(c);
+        try {
+          showDetail(c);
+        } catch (e) {}
+      };
+      kbd(el, () => el.onclick(), c ? "Open " + c.name + " (" + c.year + ")" : null);
+    });
   }
   function showCountry(ci) {
     const o = COUNTRIES[ci];
@@ -958,6 +1061,14 @@
     if (d) {
       try {
         showDetail(byId[decodeURIComponent(d.dataset.id)]);
+      } catch (e) {}
+      return;
+    }
+    // item 7: a curated centre label opens its dossier (checked before the country beneath it).
+    const cl = el.closest(".clab");
+    if (cl) {
+      try {
+        showCenter(decodeURIComponent(cl.dataset.center));
       } catch (e) {}
       return;
     }
@@ -1544,6 +1655,46 @@
   svg.addEventListener("mouseleave", () => (tip.style.display = "none"));
   // Opening a dot/country is handled by the pointer flow above (openAt on a clean tap), so a
   // drag never opens anything and a synthesized click is not relied on. No click listener here.
+  // item 9: follow a builds-on / enables link as a GEOGRAPHIC hop. shared.js showDetail wires each
+  // .xnav to re-open the linked card (swapping the panel); this delegated listener — GLOBE-ONLY, so
+  // it never touches xnav on the other views — adds the fly on top. It bubbles AFTER showDetail's
+  // own target-phase handler, and reads the link's target id from the (now-detached) span, so the
+  // panel swap and the globe rotation stay in sync. .xnav lives only inside the detail panel.
+  document.addEventListener("click", e => {
+    const x = e.target.closest && e.target.closest(".xnav");
+    if (!x) return;
+    const c2 = byId[decodeURIComponent(x.dataset.id)];
+    if (c2) flyTo(c2);
+  });
+  // item 7: keyboard-reachable list of making-centres. Appended INSIDE #wrap but hidden
+  // (opacity:0, pointer-events:none) until a child button receives focus (#centerlist:focus-within),
+  // so the DEFAULT globe render is pixel-identical and it never intercepts a pointer on the globe.
+  // A keyboard user tabbing off the globe svg lands on it; Enter opens the same dossier a label tap
+  // does. Native <button>s, so Enter/Space and Tab traversal come for free.
+  (function buildCenterList() {
+    const host = document.getElementById("wrap");
+    if (!host) return;
+    const items = CENTERS.map(a => ({ name: a[0], n: (anchored.get(a[0]) || { n: 0 }).n }))
+      .filter(o => o.n > 0)
+      .sort((a, b) => b.n - a.n);
+    if (!items.length) return;
+    const box = document.createElement("div");
+    box.id = "centerlist";
+    box.setAttribute("aria-label", "Making-centres — open a centre's dossier");
+    box.innerHTML =
+      '<div class="cl-h">making-centres</div>' +
+      items
+        .map(
+          o =>
+            `<button type="button" class="clbtn" data-center="${encodeURIComponent(o.name)}">` +
+            `<span class="cl-t">${TA.esc(o.name)}</span><span class="cl-n">${o.n}</span></button>`,
+        )
+        .join("");
+    host.appendChild(box);
+    box.querySelectorAll(".clbtn").forEach(b => {
+      b.onclick = () => showCenter(decodeURIComponent(b.dataset.center));
+    });
+  })();
   T = qYear(1);
   document.getElementById("ylab").textContent = T;
   render();

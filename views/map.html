@@ -51,6 +51,19 @@ svg.drag{cursor:grabbing}
  @keyframes play-invite{0%,100%{box-shadow:0 0 0 2px rgba(28,28,28,.16)}50%{box-shadow:0 0 0 5px rgba(28,28,28,.04)}}
  .btn.invite{animation:play-invite 1.8s ease-in-out infinite}
 }
+/* item 7: keyboard-reachable making-centre list. Hidden until a button inside it is focused, so
+   the default globe paints IDENTICALLY (opacity:0 + pointer-events:none ⇒ no pixels, no pointer
+   capture on the globe). Revealed on :focus-within for the keyboard path. */
+#centerlist{position:absolute;left:8px;top:8px;z-index:26;width:210px;max-height:74%;overflow:auto;
+  background:rgba(255,255,255,.97);border:.5px solid var(--line);border-radius:10px;
+  box-shadow:0 8px 26px rgba(0,0,0,.16);padding:6px;opacity:0;pointer-events:none;transition:opacity .12s}
+#centerlist:focus-within{opacity:1;pointer-events:auto}
+#centerlist .cl-h{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#6d6961;padding:2px 6px 4px}
+#centerlist .clbtn{display:flex;width:100%;gap:8px;align-items:center;justify-content:space-between;
+  background:none;border:0;border-radius:6px;padding:3px 6px;font-size:12px;cursor:pointer;color:var(--ink);text-align:left}
+#centerlist .clbtn:hover,#centerlist .clbtn:focus{background:#f3efe9;outline:2px solid rgba(28,28,28,.35);outline-offset:-2px}
+#centerlist .cl-t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#centerlist .cl-n{color:#6d6961;font-size:10.5px;flex:0 0 auto}
 /* phone: the 292px era rail can't share a narrow screen with the globe — stack them */
 @media (max-width:760px){
  html,body{height:auto}
