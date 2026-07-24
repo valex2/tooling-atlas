@@ -432,7 +432,7 @@
         x +
         '" y="' +
         (h - 3) +
-        '" font-size="8" fill="#bbb" text-anchor="middle">' +
+        '" font-size="8" fill="#6d6961" text-anchor="middle">' +
         y +
         "</text>";
     }
@@ -483,7 +483,7 @@
       x0 +
       '" y="' +
       (y0 + 2) +
-      '" font-size="7.5" fill="#9a9488">cumulative — dashed = world shape</text></svg>';
+      '" font-size="7.5" fill="#6d6961">cumulative — dashed = world shape</text></svg>';
     return s;
   }
   function showCountry(ci) {
@@ -524,11 +524,11 @@
             KC[c.kind] +
             '">●</span> ' +
             c.name +
-            ' <span style="color:#aaa">' +
+            ' <span style="color:#6d6961">' +
             c.year +
             "</span></div>",
         )
-        .join("") || "<div style='color:#bbb'>No tools recorded here.</div>";
+        .join("") || "<div style='color:#6d6961'>No tools recorded here.</div>";
     p.innerHTML =
       '<div style="display:flex;justify-content:space-between"><div style="font-size:16px;font-weight:600">' +
       name +
@@ -559,11 +559,11 @@
     if (!el) return;
     const list = CARDS.filter(c => c.year <= T);
     let html =
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#888">Tools through ' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#6d6961">Tools through ' +
       T +
       " (" +
       list.length +
-      ')</div><span id="chipstog" style="cursor:pointer;color:#888;font-size:13px">' +
+      ')</div><span id="chipstog" style="cursor:pointer;color:#6d6961;font-size:13px">' +
       (chipsOpen ? "▾" : "▸") +
       "</span></div>";
     if (chipsOpen) {
@@ -574,7 +574,7 @@
         const grp = list.filter(c => c.year >= a && c.year < b).sort((x, y) => y.year - x.year);
         if (!grp.length) continue;
         html +=
-          '<div style="font-size:9.5px;font-weight:600;color:#7a746a;margin:9px 0 2px;border-bottom:.5px solid #eee">' +
+          '<div style="font-size:9.5px;font-weight:600;color:#6d6961;margin:9px 0 2px;border-bottom:.5px solid #eee">' +
           nm +
           "</div>" +
           grp
@@ -582,7 +582,7 @@
               c =>
                 '<div class="chip2" data-id="' +
                 encodeURIComponent(c.id) +
-                '" style="cursor:pointer;display:flex;gap:6px;align-items:baseline;padding:2px 4px;border-radius:6px"><span style="color:#aaa;font-size:10px;min-width:30px">' +
+                '" style="cursor:pointer;display:flex;gap:6px;align-items:baseline;padding:2px 4px;border-radius:6px"><span style="color:#6d6961;font-size:10px;min-width:30px">' +
                 c.year +
                 '</span><span style="color:' +
                 KC[c.kind] +
@@ -976,8 +976,8 @@
             `<div style="display:flex;gap:6px;align-items:baseline">` +
             `<span style="color:${KC[c.kind]};font-size:9px">${gly}</span>` +
             `<span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${TA.esc(c.name)}</span>` +
-            `<span style="color:#aaa;font-size:10px">${c.year || ""}</span></div>` +
-            `<div style="color:#9a9488;font-size:10px;margin-left:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${TA.esc(placeOf(c))}</div>` +
+            `<span style="color:#6d6961;font-size:10px">${c.year || ""}</span></div>` +
+            `<div style="color:#6d6961;font-size:10px;margin-left:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${TA.esc(placeOf(c))}</div>` +
             `</div>`
           );
         })
@@ -1071,7 +1071,7 @@
           .map(t => {
             const on = selThreads.includes(t);
             const col = on ? threadColor(t) : "#ccc";
-            return `<div class="trow" data-t="${encodeURIComponent(t)}" style="display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:6px;cursor:pointer;font-size:12px;${on ? "background:#f3efe9" : ""}"><span style="width:10px;height:10px;border-radius:50%;background:${col};flex:0 0 auto;border:.5px solid rgba(0,0,0,.2)"></span><span style="flex:1">${t}</span><span style="color:#aaa;font-size:10.5px">${counts[t]}</span></div>`;
+            return `<div class="trow" data-t="${encodeURIComponent(t)}" style="display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:6px;cursor:pointer;font-size:12px;${on ? "background:#f3efe9" : ""}"><span style="width:10px;height:10px;border-radius:50%;background:${col};flex:0 0 auto;border:.5px solid rgba(0,0,0,.2)"></span><span style="flex:1">${t}</span><span style="color:#6d6961;font-size:10.5px">${counts[t]}</span></div>`;
           })
           .join("") +
         (selThreads.length

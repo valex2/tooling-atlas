@@ -498,7 +498,7 @@
           gx + CFG.FOLDW / 2,
           top + H - 21,
           `cut`,
-          `text-anchor="middle" font-size="8" fill="#9a948b"`,
+          `text-anchor="middle" font-size="8" fill="#6d6961"`,
         );
     }
 
@@ -528,7 +528,7 @@
       AXW,
       top + 11,
       `evidence-weighted before ${SCALE.linFrom} · linear after · ${f(SCALE.linRate * 10)} px per decade`,
-      `text-anchor="end" font-size="9" fill="#9a948b"`,
+      `text-anchor="end" font-size="9" fill="#6d6961"`,
     );
     return { back, front, h: H };
   }
@@ -560,7 +560,7 @@
       x,
       ty,
       `${Math.round(m.cover * 100)}% held · ${m.single} of ${m.turns.length} turns on one card`,
-      `font-size="9.5" fill="#8a857c"`,
+      `font-size="9.5" fill="#6d6961"`,
     );
     if (flagship)
       lay.prose.forEach((l, i) => {

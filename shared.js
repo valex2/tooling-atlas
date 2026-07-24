@@ -176,11 +176,11 @@ window.showDetail = function (c) {
     '<div style="font-size:13px;line-height:1.55;margin-top:10px">' +
     (c.sig || "") +
     "</div>" +
-    '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-top:14px">Threads</div>' +
+    '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#6d6961;margin-top:14px">Threads</div>' +
     chips(c.threads) +
-    '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-top:10px">Builds on</div>' +
+    '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#6d6961;margin-top:10px">Builds on</div>' +
     nav(c.bo) +
-    '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#999;margin-top:6px">Enables</div>' +
+    '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#6d6961;margin-top:6px">Enables</div>' +
     nav(c.en) +
     '<button id="appcard" style="cursor:pointer;display:inline-block;margin:16px 8px 0 0;background:' +
     ink +
@@ -451,7 +451,7 @@ function buildNav() {
       const act = on
         ? "background:#1c1c1c;color:#fff;"
         : muted
-          ? "background:#fff;color:#8a857c;border-color:rgba(0,0,0,.10);"
+          ? "background:#fff;color:#6d6961;border-color:rgba(0,0,0,.10);"
           : "background:#fff;color:#1c1c1c;";
       // aria-current marks the active view for screen readers (the dark pill is a
       // colour-only signal otherwise).
@@ -497,7 +497,7 @@ function helpHTML() {
   ];
   return (
     '<div style="background:#fff;max-width:560px;margin:10vh auto;border-radius:14px;padding:24px 26px;font:14px/1.6 -apple-system,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative">' +
-    '<button id="helpx" type="button" aria-label="Close" style="position:absolute;top:14px;right:18px;cursor:pointer;color:#999;font-size:20px;line-height:1;background:none;border:0;padding:0">✕</button>' +
+    '<button id="helpx" type="button" aria-label="Close" style="position:absolute;top:14px;right:18px;cursor:pointer;color:#777;font-size:20px;line-height:1;background:none;border:0;padding:0">✕</button>' +
     "<div style=\"font-family:Charter,'Iowan Old Style',Georgia,serif;font-size:20px;font-weight:600;margin-bottom:8px\">The four jobs a tool does</div>" +
     '<p style="margin:0 0 12px">Every tool here does one of four jobs, and they fall in order.</p>' +
     ms
@@ -561,17 +561,23 @@ function injectChrome() {
       "#appnav{position:fixed;top:8px;right:10px;z-index:1000;display:flex;gap:4px;flex-wrap:wrap;font-family:-apple-system,BlinkMacSystemFont,sans-serif}" +
       ":focus-visible{outline:2px solid #1c1c1c;outline-offset:2px;border-radius:3px}" +
       "a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid #1c1c1c;outline-offset:2px}" +
+      // Skip link: first focusable element, parked off-screen until it takes focus, then it
+      // drops into the top-left over everything (z-index above nav). Hidden-until-focused, so
+      // it moves no default pixels. #maincontent (tabindex=-1) is the per-view focus target.
+      ".ta-skip{position:fixed;left:8px;top:-48px;z-index:2100;background:#1c1c1c;color:#fff;padding:8px 14px;border-radius:0 0 9px 9px;font:600 13px/1 -apple-system,BlinkMacSystemFont,sans-serif;text-decoration:none;transition:top .15s}" +
+      ".ta-skip:focus{top:0;outline:2px solid #fff;outline-offset:-4px}" +
+      "#maincontent:focus{outline:none}" +
       ".num,.yr,.ylab,.car,td{font-variant-numeric:tabular-nums}" + // align digits like an instrument
       "#appnav a:focus-visible{outline-offset:1px}" +
       "@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}" +
       // History selector — the PRIMARY way in, one block so pills look identical everywhere and
       // read larger/bolder than the .tchip thread chips. Histories FILTER; they get no colour channel.
       ".histbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:6px 0 0}" +
-      ".hlab{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#8a857c;margin-right:2px}" +
+      ".hlab{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#6d6961;margin-right:2px}" +
       ".hchip{border:.5px solid var(--line,rgba(0,0,0,.12));background:#fff;border-radius:13px;padding:4px 12px;font-size:12.5px;font-weight:600;cursor:pointer;color:#1c1c1c}" +
-      ".hchip.sec{color:#8a857c;border-color:rgba(0,0,0,.10)}" +
+      ".hchip.sec{color:#6d6961;border-color:rgba(0,0,0,.10)}" +
       ".hchip.on{background:#1c1c1c;color:#fff;border-color:#1c1c1c}" +
-      ".hchip .hn{font-weight:400;color:#aaa;font-size:10.5px}" +
+      ".hchip .hn{font-weight:400;color:#6d6961;font-size:10.5px}" +
       ".hchip.on .hn{color:#cfc9bf}" +
       ".hdiv{width:1px;height:15px;background:rgba(0,0,0,.16);align-self:center;margin:0 2px}" +
       "@media (max-width:640px){#appnav{position:static!important;justify-content:flex-end;padding:6px 8px 0}body>.top>h1,body>.top h1{margin-top:4px}}";
@@ -581,6 +587,27 @@ function injectChrome() {
   if (nav) {
     nav.setAttribute("role", "navigation");
     nav.setAttribute("aria-label", "Views");
+  }
+  // Skip link as the FIRST body child, so a Tab from page load lands on it before the nav.
+  // Activation moves focus to #maincontent WITHOUT touching location.hash (which carries the
+  // view's state — card/thread/mode); a bare href jump would clobber that, so preventDefault.
+  if (document.body && !document.getElementById("ta-skip")) {
+    const sk = document.createElement("a");
+    sk.id = "ta-skip";
+    sk.className = "ta-skip";
+    sk.href = "#maincontent";
+    sk.textContent = "Skip to main content";
+    sk.addEventListener("click", function (e) {
+      const m = document.getElementById("maincontent");
+      if (!m) return;
+      e.preventDefault();
+      if (!m.hasAttribute("tabindex")) m.setAttribute("tabindex", "-1");
+      m.focus();
+      try {
+        m.scrollIntoView();
+      } catch (_) {}
+    });
+    document.body.insertBefore(sk, document.body.firstChild);
   }
 }
 document.addEventListener("keydown", e => {

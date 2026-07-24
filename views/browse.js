@@ -545,7 +545,7 @@
         rsum += n;
         cells += `<td class="${n === 0 ? "gap" : ""}">${n || "·"}</td>`;
       }
-      h += `<tr><td class="era">${name} <span style="color:#bbb">${a}–${b - 1}</span></td>${cells}<td>${rsum}</td></tr>`;
+      h += `<tr><td class="era">${name} <span style="color:#6d6961">${a}–${b - 1}</span></td>${cells}<td>${rsum}</td></tr>`;
     }
     h += "</table>";
     document.getElementById("cov-matrix").innerHTML = h;

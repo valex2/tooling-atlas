@@ -26,8 +26,8 @@ every ~30 min, **completely autonomously** (auto-push each green change).
 | 8 | interaction | Globe "find a tool" search → fly the globe to the selected card | **done** |
 | 9 | narrative | Home onboarding refresh for the 283-card corpus (counts, four-histories clarity) | **done** (Home already dynamic+clear; fixed 1 stale hardcoded count) |
 | 10 | polish | Tree legibility at 283 nodes / deep-history era (105 AD) rendering | **done** (audited clean — lanes stagger to avoid overlap; new cards + era bands render cleanly at 283) |
-| 11 | polish | Relay legibility with more turns (ledger/coda) | pending |
-| 12 | a11y | Colour-contrast (WCAG) + ARIA roles + skip-link pass | pending |
+| 11 | polish | Relay legibility with more turns (ledger/coda) | **done** (audited clean — chart/ledger/coda read well at 283 cards, 273 turns, 26-panel table) |
+| 12 | a11y | Colour-contrast (WCAG) + ARIA roles + skip-link pass | **done** |
 | 13 | polish | Cross-view typography/spacing/colour consistency pass | pending |
 | 14 | perf | Bundle size (2 MB) — safe reductions without a build step | pending |
 | 15 | meta | Per-view meta description / OG / favicon | pending |
@@ -44,3 +44,5 @@ newly-found issues here. When the backlog is genuinely dry before 4h, add polish
 - item 8: globe "find a tool" now shows a ranked results dropdown (keyboard-navigable, aria combobox); arrow previews (spin-to), Enter/click flies to the card AND opens its detail panel
 - item 9: Home — the top gauge/history-cards/footnote are all data-driven and accurate; the only stale copy was the Browse sub's hardcoded '180 tools' -> reworded to 'The whole corpus' (staleness-proof)
 - item 10: Tree legibility audited at 283 nodes across the dense Cold War→AI-Age era — the thread-lane stagger keeps cards non-overlapping and the genealogy lines faint; no fix needed
+- item 11: Relay audited clean at 283 cards (chart + 26-panel coda legible; custom per-thread blurbs informative)
+- item 12: a11y — sub-AA secondary greys across all views consolidated to #6d6961 (now 4.5:1+), help-close #777, coverage links opacity fix; skip-to-main-content link via shared injection (role=main on each view)

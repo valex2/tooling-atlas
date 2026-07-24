@@ -125,7 +125,7 @@
         mj = y % 50 === 0;
       h += `<div class="gl ${mj ? "maj" : ""}" style="left:${gx}px;top:${24 + ERABAND}px;height:${layoutH - 30 - ERABAND}px"></div>`;
       if (mj)
-        h += `<div class="yr" style="left:${gx + 2}px;top:${8 + ERABAND}px;color:#999;font-weight:600">${y}</div>`;
+        h += `<div class="yr" style="left:${gx + 2}px;top:${8 + ERABAND}px;color:#6d6961;font-weight:600">${y}</div>`;
     }
     for (const m of meta) h += `<div class="lanelab" style="top:${m[1]}px">${m[0]}</div>`;
     for (const c of CARDS) {

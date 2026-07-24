@@ -27,7 +27,7 @@ svg.drag{cursor:grabbing}
 #mresults:empty{display:none}
 .tip{position:fixed;pointer-events:none;background:var(--card);border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:50}
 .tip .t{font-weight:600}.tip .m{color:var(--mut);font-size:10.5px;margin:2px 0 4px}.tip .s{font-size:11px;line-height:1.4}
-.hint{position:absolute;left:16px;bottom:8px;font-size:11px;color:#b9b4ab}
+.hint{position:absolute;left:16px;bottom:8px;font-size:11px;color:#6d6961}
 /* phone: the 292px era rail can't share a narrow screen with the globe — stack them */
 @media (max-width:760px){
  html,body{height:auto}
@@ -38,7 +38,7 @@ svg.drag{cursor:grabbing}
 }
 </style></head><body>
 <div id="appnav"></div>
-<div class="top">
+<div class="top" id="maincontent" role="main" tabindex="-1">
 <h1>Globe</h1>
 <p class="sub">Where each tool was first made — pick a thread and press play to watch the lead migrate, country to country.</p>
 <div class="bar">
