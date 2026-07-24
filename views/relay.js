@@ -918,4 +918,13 @@
     e.preventDefault();
     open(id);
   });
+
+  // C1 READ side: a tool focused in another view (or a copy-pasted Relay URL) arrives via
+  // the #card= hash. Open its detail panel, mirroring Tree/Globe/Browse — Relay wrote this
+  // param on every node click (showDetail → setState) but never hydrated it, so the round
+  // trip dropped the card here alone.
+  try {
+    const _f = getState().card || "";
+    if (_f && byId[_f]) showDetail(byId[_f]);
+  } catch (e) {}
 })();
