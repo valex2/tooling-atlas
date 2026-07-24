@@ -28,10 +28,10 @@ every ~30 min, **completely autonomously** (auto-push each green change).
 | 10 | polish | Tree legibility at 283 nodes / deep-history era (105 AD) rendering | **done** (audited clean — lanes stagger to avoid overlap; new cards + era bands render cleanly at 283) |
 | 11 | polish | Relay legibility with more turns (ledger/coda) | **done** (audited clean — chart/ledger/coda read well at 283 cards, 273 turns, 26-panel table) |
 | 12 | a11y | Colour-contrast (WCAG) + ARIA roles + skip-link pass | **done** |
-| 13 | polish | Cross-view typography/spacing/colour consistency pass | pending |
-| 14 | perf | Bundle size (2 MB) — safe reductions without a build step | pending |
+| 13 | polish | Cross-view typography/spacing/colour consistency pass | **done** (audited clean — identical --ink/--mut/--bg/--line tokens + font stack across all 5 views; nav+palette shared; greys unified in item 12) |
+| 14 | perf | Bundle size (2 MB) — safe reductions without a build step | **done** (audited — 4 embedded copies already slimmed of front/back; countries geometry 1x; the 4-copy structure is a check-guarded invariant; no safe reduction without risky rearchitecture) |
 | 15 | meta | Per-view meta description / OG / favicon | **done** |
-| 16 | polish | Browse filters/search + coverage matrix with the new threads | pending |
+| 16 | polish | Browse filters/search + coverage matrix with the new threads | **done** (audited clean — cards/table/coverage all render at 283 cards/27 threads; new Agriculture+Navigation present; no overflow, no console errors) |
 
 The list may grow: a "completeness critic" pass at the end of each iteration can append
 newly-found issues here. When the backlog is genuinely dry before 4h, add polish rounds.
@@ -47,3 +47,11 @@ newly-found issues here. When the backlog is genuinely dry before 4h, add polish
 - item 11: Relay audited clean at 283 cards (chart + 26-panel coda legible; custom per-thread blurbs informative)
 - item 12: a11y — sub-AA secondary greys across all views consolidated to #6d6961 (now 4.5:1+), help-close #777, coverage links opacity fix; skip-to-main-content link via shared injection (role=main on each view)
 - item 15: meta — destaled index description (dropped removed 'timeline', added 'migration relay'); added the shared 4-colour favicon + theme-color to the four views (they had titles/OG but no tab icon)
+
+## Completeness-critic — worthwhile follow-ups for the human (NOT done autonomously)
+- **Globe thread-migration paths carry identity by COLOUR ALONE** (shared.js TPAL comment flags this): unlike the Tree, the globe's selected-thread paths/arrowheads have no text labels, so thread identity there is undecodable for colour-blind users without opening the picker. Labelling the paths (as the Tree does) would close a real a11y gap. Substantive; left for review.
+- **Re-run the missing-cards gap analysis on the 283-card corpus** — the vault resync filled most gaps; a fresh pass would show what non-US making is still absent (and whether any thread is now thin).
+- **Bundle Home shell** (built in build_standalone.py, separate from index.html) doesn't get the skip-to-content link the iframe'd views got (item 12).
+- **Providence, RI** tags "US (other)" while its machine-tool-belt partner Worcester, MA tags "US Northeast" — a taxonomy call (add Rhode Island to the Northeast lane?), not a place-string bug.
+- **Real OG preview images** per view (currently text-only OG tags); would need image generation.
+- **Globe drag inertia / momentum** — deferred as gold-plating; add if desired.
