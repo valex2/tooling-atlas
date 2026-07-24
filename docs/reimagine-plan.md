@@ -30,7 +30,7 @@ every ~30 min, **completely autonomously** (auto-push each green change).
 | 12 | a11y | Colour-contrast (WCAG) + ARIA roles + skip-link pass | **done** |
 | 13 | polish | Cross-view typography/spacing/colour consistency pass | pending |
 | 14 | perf | Bundle size (2 MB) — safe reductions without a build step | pending |
-| 15 | meta | Per-view meta description / OG / favicon | pending |
+| 15 | meta | Per-view meta description / OG / favicon | **done** |
 | 16 | polish | Browse filters/search + coverage matrix with the new threads | pending |
 
 The list may grow: a "completeness critic" pass at the end of each iteration can append
@@ -46,3 +46,4 @@ newly-found issues here. When the backlog is genuinely dry before 4h, add polish
 - item 10: Tree legibility audited at 283 nodes across the dense Cold War→AI-Age era — the thread-lane stagger keeps cards non-overlapping and the genealogy lines faint; no fix needed
 - item 11: Relay audited clean at 283 cards (chart + 26-panel coda legible; custom per-thread blurbs informative)
 - item 12: a11y — sub-AA secondary greys across all views consolidated to #6d6961 (now 4.5:1+), help-close #777, coverage links opacity fix; skip-to-main-content link via shared injection (role=main on each view)
+- item 15: meta — destaled index description (dropped removed 'timeline', added 'migration relay'); added the shared 4-colour favicon + theme-color to the four views (they had titles/OG but no tab icon)
