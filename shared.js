@@ -260,7 +260,7 @@ window.threadMatch = function (card, arr) {
 
 // HISTORIES: the essay's spine. ONE source of truth, read by every view; re-derived by none.
 // A thread has exactly one history EXCEPT Chip Lithography (optics AND semi), by the essay.
-// spine:true marks the four fields the essay actually traces; floor/other render demoted.
+// spine:true marks the four fields the essay actually traces; "other" renders demoted.
 window.HISTORIES = [
   {
     key: "optics",
@@ -314,20 +314,19 @@ window.HISTORIES = [
     ],
   },
   {
-    key: "floor",
-    label: "The Floor",
-    tag: "the materials the stack stands on",
-    spine: false,
-    blurb: "The raw materials and process chemistry the whole stack stands on.",
-    threads: ["Critical Materials", "Bulk Materials", "The Open Reservoir"],
-  },
-  {
     key: "other",
     label: "Other fields",
     tag: "threads the essay does not trace",
     spine: false,
-    blurb: "Energy, power, orbit.",
-    threads: ["Energy", "Electricity & Batteries", "Reaching Orbit"],
+    blurb: "Materials, chemistry, energy, power, orbit.",
+    threads: [
+      "Critical Materials",
+      "Bulk Materials",
+      "The Open Reservoir",
+      "Energy",
+      "Electricity & Batteries",
+      "Reaching Orbit",
+    ],
   },
 ];
 

@@ -65,7 +65,6 @@
  a.hc .hcn{float:right;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--mut);margin-top:6px}
  a.hc .hct{display:block;font-family:var(--serif);font-style:italic;font-size:14px;color:#4a4135;margin-top:2px}
  a.hc .hcb{display:block;font-size:12.5px;line-height:1.5;color:var(--mut);margin-top:8px}
- a.hc.floor{grid-column:1/-1;background:#faf9f6}
  a.hc.sec .hcl{color:var(--mut)}
  .histfoot{color:var(--mut);font-size:13px;margin:12px 0 0}
  .histfoot a{color:#4a4135;text-underline-offset:2px}
@@ -141,10 +140,8 @@
    '<span class="hcb">'+h.blurb+'</span></a>';
  };
  var spine=H.filter(function(h){return h.spine}),
-     floor=H.filter(function(h){return h.key==="floor"})[0],
      other=H.filter(function(h){return h.key==="other"})[0];
- var html='<div class="histgrid">'+spine.map(function(h){return card(h)}).join("")+
-  (floor?card(floor,"floor"):"")+'</div>';
+ var html='<div class="histgrid">'+spine.map(function(h){return card(h)}).join("")+'</div>';
  if(other) html+='<p class="histfoot">Also present, though the essay does not trace them: '+
   '<a href="views/tree.html#hist=other">'+other.label+'</a> — '+
   other.blurb.replace(/\.$/,"")+' ('+tin("other").length+' threads).</p>';
