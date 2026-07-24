@@ -1,0 +1,23 @@
+# Globe roadmap — implementation (all 12 items)
+
+Executing `docs/globe-improvements.md` in sequential batches (all touch map.js render/
+interaction, so no parallelism). Each batch: implement → check + smoke + console → bless
+both platforms on visual change → commit → push → green CI. Same hard rules as the reimagine
+loop (never push red, no fabrication, reversible commits).
+
+| Batch | Items | Focus | Status |
+|-------|-------|-------|--------|
+| A | 1 | Thread identity beyond colour (fix label-drop bug, unify collision passes, per-slot dash, corner-legend fallback) | pending |
+| B | 6, 11 | Default state argues: depth/distance fade + desaturate genealogy arcs; drop off-thread dot strokes; depth-sort dots | pending |
+| C | 3, 4 | Live migration caption ("lead: Japan → Netherlands · 2017") + aria-live non-visual channel | pending |
+| D | 2, 5 | Cold-open on a canonical migration (Chip Lithography spine) + "watch the lead migrate" button + hop stepper + speed toggle | pending |
+| E | 7, 9 | Making-center as first-class object (click-a-center dossier + keyboard list); follow builds-on/enables as a geographic hop | pending |
+| F | 8, 10 | Deep-link the moment (t=/rot=, gesture-gated); era ticks on the slider + click-an-era | pending |
+| G | 12 | Rootedness in the country layer (Make+Manufacture share as glyph/weight) — risky, careful, last | pending |
+
+Design defaults chosen (per roadmap, no user round-trip): cold-open thread = **Chip
+Lithography** (Britain→US→Japan→Netherlands→Taiwan spine); dash patterns per slot; caption
+names the lead country + border-crossings.
+
+## Shipped log
+- (batches append here)
