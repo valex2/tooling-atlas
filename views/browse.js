@@ -174,21 +174,25 @@
     if (decade) html += ` · <span class="tpill" id="cdec">${decade}s ✕</span>`;
     countEl.innerHTML = html;
     const cd = document.getElementById("cdec");
-    if (cd)
+    if (cd) {
       cd.onclick = () => {
         decade = "";
         syncHash();
         renderActive();
       };
-    countEl.querySelectorAll(".tpill[data-t]").forEach(
-      el =>
-        (el.onclick = () => {
-          const t = decodeURIComponent(el.dataset.t);
-          selT = selT.filter(x => x !== t);
-          syncHash();
-          renderActive();
-        }),
-    );
+      // A removable filter pill acts as a button — make it Tab-reachable + Enter/Space (kbd),
+      // else a keyboard user has no way to drop one filter (the reset button clears them all).
+      kbd(cd, () => cd.onclick(), "Remove decade filter " + decade + "s");
+    }
+    countEl.querySelectorAll(".tpill[data-t]").forEach(el => {
+      el.onclick = () => {
+        const t = decodeURIComponent(el.dataset.t);
+        selT = selT.filter(x => x !== t);
+        syncHash();
+        renderActive();
+      };
+      kbd(el, () => el.onclick(), "Remove thread filter " + decodeURIComponent(el.dataset.t));
+    });
   }
 
   // Shared working set: hist + kind + thread(multi) + goal + decade + search. Empty ⇒ the whole

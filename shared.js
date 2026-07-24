@@ -446,18 +446,22 @@ function buildNav() {
         h = file.indexOf("views/") === 0 ? file.slice(6) : "../" + file;
       }
       const key = file.split("/").pop();
+      const on = key === cur;
       // active branch byte-identical to before; resting BROWSE pills read muted.
-      const act =
-        key === cur
-          ? "background:#1c1c1c;color:#fff;"
-          : muted
-            ? "background:#fff;color:#8a857c;border-color:rgba(0,0,0,.10);"
-            : "background:#fff;color:#1c1c1c;";
+      const act = on
+        ? "background:#1c1c1c;color:#fff;"
+        : muted
+          ? "background:#fff;color:#8a857c;border-color:rgba(0,0,0,.10);"
+          : "background:#fff;color:#1c1c1c;";
+      // aria-current marks the active view for screen readers (the dark pill is a
+      // colour-only signal otherwise).
       return (
         '<a href="' +
         h +
         location.hash +
-        '" style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);' +
+        '"' +
+        (on ? ' aria-current="page"' : "") +
+        ' style="text-decoration:none;padding:2px 9px;border-radius:11px;border:.5px solid rgba(0,0,0,.15);' +
         act +
         'font-size:11.5px">' +
         label +
@@ -493,7 +497,7 @@ function helpHTML() {
   ];
   return (
     '<div style="background:#fff;max-width:560px;margin:10vh auto;border-radius:14px;padding:24px 26px;font:14px/1.6 -apple-system,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative">' +
-    '<span id="helpx" style="position:absolute;top:14px;right:18px;cursor:pointer;color:#999;font-size:20px">✕</span>' +
+    '<button id="helpx" type="button" aria-label="Close" style="position:absolute;top:14px;right:18px;cursor:pointer;color:#999;font-size:20px;line-height:1;background:none;border:0;padding:0">✕</button>' +
     "<div style=\"font-family:Charter,'Iowan Old Style',Georgia,serif;font-size:20px;font-weight:600;margin-bottom:8px\">The four jobs a tool does</div>" +
     '<p style="margin:0 0 12px">Every tool here does one of four jobs, and they fall in order.</p>' +
     ms
