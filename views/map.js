@@ -775,8 +775,20 @@
     "wheel",
     e => {
       e.preventDefault();
-      scale = clampScale(scale * (e.deltaY < 0 ? 1.15 : 0.87));
-      render();
+      if (e.deltaY < 0) {
+        // Zoom IN toward the cursor, reusing the double-tap focus math: focusZoom pulls
+        // the point under the cursor toward centre, then scales up. It only recentres
+        // when the cursor is over the disc (rho<=1) and otherwise just scales about
+        // centre, so a wheel off the globe still zooms without error.
+        const r = svg.getBoundingClientRect();
+        focusZoom(e.clientX - r.left, e.clientY - r.top, 1.15);
+      } else {
+        // Zoom OUT stays centred — a plain shrink about the middle. Recentring on the way
+        // out too made the globe spin toward the cursor while shrinking, which reads as
+        // jarring; a calm centred step-back is what you want when pulling back out.
+        scale = clampScale(scale * 0.87);
+        render();
+      }
     },
     { passive: false },
   );

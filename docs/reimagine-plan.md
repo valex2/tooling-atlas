@@ -19,7 +19,7 @@ every ~30 min, **completely autonomously** (auto-push each green change).
 ## Backlog (prioritized; pick the next unstarted, re-scope if the audit shows no real issue)
 | # | Track | Item | Status |
 |---|-------|------|--------|
-| 4 | interaction | Globe wheel/trackpad zoom toward the cursor (deferred follow-up) | pending |
+| 4 | interaction | Globe wheel/trackpad zoom toward the cursor (deferred follow-up) | **done** |
 | 5 | a11y | Keyboard + focus-visible audit across nav + Browse/Tree/Globe controls | pending |
 | 6 | data | Audit the ~100 new cards' place strings for region mis-tags; normalize (vault) | pending |
 | 7 | data | New-card integrity: coords present, threads ∈ HISTORIES, region non-empty, builds-on/enables resolve | pending |
@@ -38,3 +38,4 @@ newly-found issues here. When the backlog is genuinely dry before 4h, add polish
 
 ## Shipped log
 - (iterations append here: `<commit> — <one-line what changed>`)
+- `<pending>` — item 4: globe wheel/trackpad zoom now zooms toward the cursor (reuses focusZoom; zoom-out stays centered)
