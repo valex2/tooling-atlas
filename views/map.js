@@ -892,22 +892,151 @@
     scale = Math.min(W, H) * 0.46;
     render();
   };
-  document.getElementById("msearch").oninput = e => {
-    const q = e.target.value.toLowerCase();
-    if (!q) {
-      foundId = null;
-      render();
-      return;
+  // "find a tool" — a results dropdown under the search box. Typing shows up to 8 name
+  // matches (exact/prefix/word-start ranked first); hovering or arrowing a row PREVIEWS it
+  // (spin-to + highlight ring, the old behaviour); clicking a row or pressing Enter also
+  // opens its detail panel via the shared showDetail(). Keyboard-first and role=listbox so
+  // AT can traverse it; aria-activedescendant tracks the highlighted row.
+  (function () {
+    const inp = document.getElementById("msearch"),
+      box = document.getElementById("mresults");
+    if (!inp || !box) return;
+    let results = [],
+      active = -1;
+    const placeOf = c => c.place || c.country || "";
+    // rank: exact name (0) < prefix (1) < word-start (2) < substring (3); ties by match
+    // position, then name length, then name — so "the transistor" beats a mid-word hit.
+    function search(q) {
+      q = q.trim().toLowerCase();
+      if (!q) return [];
+      const out = [];
+      for (const c of CARDS) {
+        if (c.lat == null) continue;
+        const n = c.name.toLowerCase(),
+          i = n.indexOf(q);
+        if (i < 0) continue;
+        const s = n === q ? 0 : i === 0 ? 1 : /[^a-z0-9]/.test(n[i - 1]) ? 2 : 3;
+        out.push({ c, s, i });
+      }
+      out.sort(
+        (a, b) =>
+          a.s - b.s ||
+          a.i - b.i ||
+          a.c.name.length - b.c.name.length ||
+          a.c.name.localeCompare(b.c.name),
+      );
+      return out.slice(0, 8).map(o => o.c);
     }
-    const c = CARDS.find(c => c.lat != null && c.name.toLowerCase().includes(q));
-    if (c) {
+    // Preview = the old as-you-type behaviour: highlight the dot and spin (and zoom in once)
+    // toward it. No detail panel — that is reserved for an explicit pick.
+    function preview(c) {
       foundId = c.id;
       rotLon = c.lon;
       rotLat = Math.max(-80, Math.min(80, c.lat));
       if (scale < 320) scale = 420;
       render();
     }
-  };
+    // Pick = preview + open the shared detail panel (what every other view does on click).
+    function pick(c) {
+      preview(c);
+      try {
+        showDetail(c);
+      } catch (e) {}
+    }
+    function setActive(i, doPreview) {
+      active = i;
+      box.querySelectorAll(".mrow").forEach(r => {
+        const on = +r.dataset.idx === active;
+        r.setAttribute("aria-selected", on ? "true" : "false");
+        if (on) r.scrollIntoView({ block: "nearest" });
+      });
+      if (active >= 0) {
+        inp.setAttribute("aria-activedescendant", "mrow-" + active);
+        if (doPreview) preview(results[active]);
+      } else inp.removeAttribute("aria-activedescendant");
+    }
+    function close(clearFound) {
+      box.style.display = "none";
+      box.innerHTML = "";
+      results = [];
+      active = -1;
+      inp.setAttribute("aria-expanded", "false");
+      inp.removeAttribute("aria-activedescendant");
+      if (clearFound && foundId != null) {
+        foundId = null;
+        render();
+      }
+    }
+    function paint() {
+      box.innerHTML = results
+        .map((c, idx) => {
+          const gly = KGLY[c.kind] || "";
+          return (
+            `<div class="mrow" id="mrow-${idx}" role="option" data-idx="${idx}" aria-selected="false">` +
+            `<div style="display:flex;gap:6px;align-items:baseline">` +
+            `<span style="color:${KC[c.kind]};font-size:9px">${gly}</span>` +
+            `<span style="flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${TA.esc(c.name)}</span>` +
+            `<span style="color:#aaa;font-size:10px">${c.year || ""}</span></div>` +
+            `<div style="color:#9a9488;font-size:10px;margin-left:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${TA.esc(placeOf(c))}</div>` +
+            `</div>`
+          );
+        })
+        .join("");
+      box.style.display = "block";
+      inp.setAttribute("aria-expanded", "true");
+      box.querySelectorAll(".mrow").forEach(r => {
+        const idx = +r.dataset.idx;
+        // keep focus in the input on press so the row click still fires against a live box
+        r.addEventListener("mousedown", e => e.preventDefault());
+        r.addEventListener("mouseenter", () => setActive(idx, true));
+        r.addEventListener("click", () => {
+          setActive(idx, false);
+          pick(results[idx]);
+          close();
+        });
+      });
+    }
+    inp.addEventListener("input", () => {
+      const q = inp.value.trim();
+      if (!q) {
+        close(true);
+        return;
+      }
+      results = search(q);
+      if (!results.length) {
+        close(true);
+        return;
+      }
+      paint();
+      setActive(0, true); // auto-highlight + preview the top hit as you type
+    });
+    inp.addEventListener("keydown", e => {
+      const open = box.style.display !== "none" && results.length;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (open) close();
+        else inp.blur();
+        return;
+      }
+      if (!open) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActive((active + 1) % results.length, true);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActive((active - 1 + results.length) % results.length, true);
+      } else if (e.key === "Enter" && active >= 0) {
+        e.preventDefault();
+        pick(results[active]);
+        close();
+      }
+    });
+    // Clicking anywhere outside the box/input closes the dropdown and drops the highlight.
+    document.addEventListener("click", e => {
+      if (e.target.closest && e.target.closest("#msearch,#mresults")) return;
+      if (box.style.display !== "none") close(true);
+    });
+  })();
   // multi-select thread picker — each selected thread traces its migration path in its own colour
   (function () {
     const btn = document.getElementById("threadbtn"),
