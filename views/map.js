@@ -297,6 +297,25 @@
     ["Beijing", 39.99, 116.3, 0.3],
     ["Deccan / Hyderabad", 17.38, 78.49, 0.3],
     ["Peenemünde", 54.14, 13.79, 0.2],
+    // Added with the 283-card vault resync (14 of these 16 non-US), each adversarially
+    // verified to catch its own cards without stealing from a neighbour. See
+    // docs/globe-centers-review.md for the method.
+    ["Paris", 48.85, 2.31, 0.19],
+    ["Baghdad (House of Wisdom)", 33.31, 44.36, 0.05],
+    ["San Diego / La Jolla", 32.78, -117.2, 0.2],
+    ["Zurich", 47.38, 8.54, 0.06],
+    ["Osaka (advanced materials)", 34.69, 135.5, 0.15],
+    ["Jena", 50.93, 11.59, 0.05],
+    ["South Holland (Leiden–Delft–The Hague)", 52.08, 4.4, 0.16],
+    ["Manchester", 53.48, -2.24, 0.05],
+    ["West Midlands (Coalbrookdale–Black Country)", 52.55, -2.15, 0.36],
+    ["New York City", 40.71, -74.01, 0.1],
+    ["Geneva", 46.21, 6.11, 0.1],
+    ["Venice / Murano", 45.45, 12.345, 0.08],
+    ["Pisa", 43.72, 10.4, 0.05],
+    ["Glasgow", 55.86, -4.25, 0.05],
+    ["Pearl River Delta (Shenzhen–Hong Kong)", 22.43, 114.11, 0.2],
+    ["Vancouver (UBC)", 49.27, -123.18, 0.1],
   ];
   const anchorOf = c => {
     let best = null,
