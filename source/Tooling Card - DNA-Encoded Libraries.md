@@ -4,7 +4,7 @@ Name: DNA-Encoded Libraries
 Kind: Make
 Tool: small molecules each tagged with a DNA barcode of its recipe
 Person: Sydney Brenner and Richard Lerner
-Place: La Jolla, USA
+Place: La Jolla, California, USA
 City: La Jolla
 Lat: 32.8328
 Lon: -117.2713
@@ -22,7 +22,7 @@ Enables:
 Threads:
   - "[[Thread - Therapeutics]]"
 ---
-*Make · La Jolla, USA · 1990s*
+*Make · La Jolla, California, USA · 1990s*
 **Sydney Brenner and Richard Lerner** · small molecules tagged with DNA recipe barcodes
 
 **Front.** In 1992, two scientists at Scripps in La Jolla wrote a short [paper in PNAS](https://www.pnas.org/doi/10.1073/pnas.89.12.5381) about a problem in finding new drugs. A chemist could make a huge pile of candidate molecules, but had to test them one by one to see which stuck to a target, with no fast way to know which molecule in a mixed batch was which. Brenner and Lerner's fix was to build each molecule with a short strand of DNA attached, where the order of DNA letters spelled out the exact recipe used to make that molecule. Now you could mix hundreds of millions of molecules in one tube and still tell them apart, because each carried its own [readable label](https://en.wikipedia.org/wiki/DNA-encoded_chemical_library): a molecule's recipe written onto a tag a machine could later read.

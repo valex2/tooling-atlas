@@ -4,7 +4,7 @@ Name: The Graphite Anode
 Kind: Manufacture
 Tool: round and acid-purify graphite to 99.95%
 Person: China's anode-material makers
-Place: Heilongjiang, China
+Place: Jixi, Heilongjiang, China
 City: Jixi
 Lat: 45.30
 Lon: 130.97
@@ -23,7 +23,7 @@ Threads:
   - "[[Thread - Electricity & Batteries]]"
   - "[[Thread - Critical Materials]]"
 ---
-*Manufacture · Heilongjiang, China · 2010s*
+*Manufacture · Jixi, Heilongjiang, China · 2010s*
 **China's anode-material makers** · round and acid-purify graphite to 99.95%
 
 **Front.** The negative end of a lithium battery is graphite, and the cell is fussy about which graphite. Raw flake mined from the ground is flat and full of grit, and a flat flake packs badly and traps lithium poorly. So Chinese plants take the flake and grind it in a stream of air until each grain tumbles into a tiny rounded ball, then soak the powder in [hydrofluoric acid to dissolve away the rock and metals](https://www.mdpi.com/2072-666X/15/7/827) until the carbon is [99.95 percent pure or better](https://modeldiplomat.com/learn/glossary/graphite-refining). For the man-made kind they bake petroleum coke in electric furnaces at [2,800 to 3,000 degrees Celsius for days](https://www.azom.com/article.aspx?ArticleID=14321) until the carbon rearranges into clean graphite sheets. The hard part is never the graphite. It is the recipe and the yield: turning cheap dirty flake into a rounded, ultra-pure, acid-washed ball that a battery line will accept, a step done at scale almost nowhere else.

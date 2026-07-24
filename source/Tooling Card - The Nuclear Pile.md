@@ -4,7 +4,7 @@ Name: The Nuclear Pile
 Kind: Make
 Tool: Graphite-uranium pile with cadmium control rods
 Person: Enrico Fermi
-Place: Chicago, USA
+Place: Chicago, Illinois, USA
 City: Chicago
 Lat: 41.7918
 Lon: -87.6011
@@ -23,7 +23,7 @@ Enables:
 Threads:
   - "[[Thread - Energy]]"
 ---
-*Make · Chicago, USA · 1940s*
+*Make · Chicago, Illinois, USA · 1940s*
 **Enrico Fermi** · graphite-uranium pile with cadmium rods
 
 **Front.** On 2 December 1942, [Enrico Fermi](https://www.aps.org/apsnews/2011/12/self-sustained-nuclear-chain-reaction) and about 49 people crowded onto a squash court under the west stands of the University of Chicago's Stagg Field. The problem was simple to state and hard to prove: when a uranium nucleus splits it throws off neutrons, and if enough of those neutrons split more nuclei, the reaction feeds itself, but no one had ever made that happen in a way they could hold steady. Fermi's answer was a [20-foot stack](https://news.uchicago.edu/explainer/first-nuclear-reactor-explained) of [400 tons of graphite and about 50 tons of uranium](https://ahf.nuclearmuseum.org/chicago-pile-1-ushering-atomic-age/), laid in 57 layers, with wooden rods coated in cadmium pushed through it. The graphite slowed the stray neutrons so they would split the next nucleus; the cadmium rods soaked them up; and pulling a rod out a little at a time let the count of neutrons climb until the pile sustained itself, the first time anyone had run a fission chain reaction and kept their hand on the dial.

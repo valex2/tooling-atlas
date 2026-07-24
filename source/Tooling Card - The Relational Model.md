@@ -20,7 +20,7 @@ BuildsOn:
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---
-*Model · San Jose, USA · 1970s*
+*Model · San Jose, California, USA · 1970s*
 **Edgar Codd** · data as tables you question by logic
 
 **Front.** By 1970 a company's data lived in files threaded together by pointers, so to pull anything out a programmer had to know exactly where it sat and how to walk the path to it. Change the storage and every program broke. [Edgar Codd](https://www.ibm.com/history/edgar-codd), a mathematician at IBM's San Jose lab, wrote a [paper that year](https://en.wikipedia.org/wiki/Edgar_F._Codd) proposing something cleaner: keep the data in plain [tables](https://www.ibm.com/history/relational-database), rows and columns, and let a person ask for what they want by stating the logic of it, while the machine works out how to fetch it. The question you ask, in his scheme, was finally cut loose from where the bytes actually live.

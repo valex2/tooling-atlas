@@ -20,7 +20,7 @@ BuildsOn:
 Threads:
   - "[[Thread - The Network]]"
 ---
-*Model · Mountain View, USA · 2000s*
+*Model · Mountain View, California, USA · 2000s*
 **Jeff Dean and Sanjay Ghemawat** · two functions, a thousand machines
 
 **Front.** Indexing the whole web by the early 2000s meant chewing through more data than any single computer could hold, so the work had to spread across thousands of cheap machines at once. Doing that by hand was a nightmare: machines fail constantly at that scale, and someone had to split the data, hand out the work, and stitch the answers back together. At Google, [Jeff Dean and Sanjay Ghemawat](https://research.google/pubs/mapreduce-simplified-data-processing-on-large-clusters/) noticed that almost all of these jobs had the same shape, and in [2004 they wrote it down as a model](https://research.google/pubs/mapreduce-simplified-data-processing-on-large-clusters/) with two parts: a *map* step that does one small thing to every piece of data, and a *reduce* step that combines the results. A programmer now wrote only those two short functions and the system did the rest, [splitting the data, scheduling the work, and quietly working around machines that died mid-job](https://en.wikipedia.org/wiki/MapReduce).

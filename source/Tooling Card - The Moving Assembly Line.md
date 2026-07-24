@@ -4,7 +4,7 @@ Name: The Moving Assembly Line
 Kind: Manufacture
 Tool: a conveyor that brings the work to the worker
 Person: Henry Ford
-Place: Highland Park, USA
+Place: Highland Park, Michigan, USA
 City: Highland Park
 Lat: 42.41
 Lon: -83.10
@@ -24,7 +24,7 @@ Enables:
 Threads:
   - "[[Thread - Production Systems]]"
 ---
-*Manufacture · Highland Park, USA · 1910s*
+*Manufacture · Highland Park, Michigan, USA · 1910s*
 **Henry Ford** · the work moves, the worker stands still
 
 **Front.** Building a [Model T](https://corporate.ford.com/articles/history/moving-assembly-line/) in 1913 meant a crew swarming a parked car, walking off to fetch each part, fitting it by hand, and waiting on each other. At his [Highland Park plant near Detroit](https://corporate.ford.com/articles/history/highland-park/), Henry Ford and his engineers borrowed a trick from the [Chicago and Cincinnati meat-packing houses, where carcasses rode an overhead trolley past butchers who each made one cut](https://www.history.com/this-day-in-history/october-7/moving-assembly-line-at-ford). On [7 October 1913](https://www.history.com/this-day-in-history/october-7/moving-assembly-line-at-ford) they ran a slow moving line in reverse: a conveyor carried each chassis past men who stood still, each doing one small fixed task as it crept by. No new machine, just the work rearranged so it came to the worker, and the time to build a chassis fell from [twelve and a half hours to ninety-three minutes](https://guides.loc.gov/this-month-in-business-history/October/Ford).

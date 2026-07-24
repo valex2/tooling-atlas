@@ -4,7 +4,7 @@ Name: The Chemically Amplified Resist
 Kind: Manufacture
 Tool: a light-sensitive film where one photon frees an acid that clears hundreds of sites
 Person: Hiroshi Ito, C. Grant Willson and Jean Fréchet
-Place: San Jose, USA
+Place: San Jose, California, USA
 City: San Jose
 Lat: 37.34
 Lon: -121.89
@@ -25,7 +25,7 @@ Threads:
   - "[[Thread - Chip Lithography]]"
   - "[[Thread - Critical Materials]]"
 ---
-*Manufacture · San Jose, USA · 1980s*
+*Manufacture · San Jose, California, USA · 1980s*
 **Hiroshi Ito, C. Grant Willson and Jean Fréchet** · a film that multiplies each photon
 
 **Front.** In 1979 a chemist in IBM's San Jose polymer group, [Grant Willson](https://www.sciencehistory.org/stories/magazine/patterning-the-world-the-rise-of-chemically-amplified-photoresists/), was handed a lamp problem. To draw finer circuits IBM had to print with shorter light, 248 nanometres, and at that wavelength the mercury lamp in its new Perkin-Elmer printers gave [about a thirtieth of the light](https://www.sciencehistory.org/stories/magazine/patterning-the-world-the-rise-of-chemically-amplified-photoresists/) it gave at the wavelengths already in use. The films of the day needed the light that was missing. Willson could ask for a lamp thirty times brighter or a film thirty times more sensitive, and he took the film. Jean Fréchet, on sabbatical from Ottawa, suggested a polymer that comes apart when acid touches it, and Hiroshi Ito, hired out of Syracuse in the summer of 1980, did the mixing. By [1982 the three had a working film](https://en.wikipedia.org/wiki/C._Grant_Willson): polystyrene with tBOC groups locked onto its side chains, and a pinch of onium salt stirred through it. Light knocks a proton off the salt. A bake then sends that one acid molecule walking through the film stripping tBOC groups, and each stripping throws off more acid, so a single photon clears hundreds of sites rather than one. The film came out [a hundred to two hundred times more sensitive](https://www.sciencehistory.org/stories/magazine/patterning-the-world-the-rise-of-chemically-amplified-photoresists/) than what it replaced.

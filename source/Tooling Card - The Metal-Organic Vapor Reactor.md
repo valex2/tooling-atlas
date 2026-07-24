@@ -4,7 +4,7 @@ Name: The Metal-Organic Vapor Reactor
 Kind: Manufacture
 Tool: grow crystal layers from metal-organic gas
 Person: Harold Manasevit
-Place: Anaheim, United States
+Place: Anaheim, California, USA
 City: Anaheim
 Lat: 33.84
 Lon: -117.91
@@ -24,7 +24,7 @@ Threads:
   - "[[Thread - Critical Materials]]"
   - "[[Thread - Energy]]"
 ---
-*Manufacture · Anaheim, United States · 1960s*
+*Manufacture · Anaheim, California, USA · 1960s*
 **Harold Manasevit** · crystal grown from metal-organic gas
 
 **Front.** In February 1968, a chemist named [Harold Manasevit](https://en.wikipedia.org/wiki/Harold_M._Manasevit) at North American Rockwell's Autonetics division in [Anaheim](https://en.wikipedia.org/wiki/Metalorganic_vapour-phase_epitaxy) wanted to grow a sheet of single-crystal gallium arsenide straight onto a plain insulating slab like sapphire. The usual furnace tricks gave a rough, jumbled film. His fix was a different way to feed the crystal. He held the slab on a [red-hot block of graphite](https://en.wikipedia.org/wiki/Metalorganic_vapour-phase_epitaxy), the susceptor, and ran a carrier gas over it carrying two things: [trimethylgallium](https://en.wikipedia.org/wiki/Metalorganic_vapour-phase_epitaxy), a metal-organic liquid bubbled into vapor, and arsine, a hydride gas. The heat cracks both at the surface, and the loose gallium and arsenic lock into place. The crystal builds up atom-layer on atom-layer, and you set the thickness and the mix by turning gas valves. Manasevit [published the result](https://pubs.aip.org/aip/apl/article-abstract/12/4/156/40950/SINGLE-CRYSTAL-GALLIUM-ARSENIDE-ON-INSULATING) and named the method MOCVD, for the metal-organic gas at its heart.

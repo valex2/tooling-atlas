@@ -4,7 +4,7 @@ Name: The Integrated Circuit
 Kind: Make
 Tool: the integrated circuit
 Person: Jack Kilby and Robert Noyce
-Place: Mountain View, USA
+Place: Mountain View, California, USA
 Lat: 37.39
 Lon: -122.08
 City: Mountain View

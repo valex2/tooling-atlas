@@ -4,7 +4,7 @@ Name: The Laser
 Kind: Make
 Tool: Ruby-rod laser
 Person: Theodore Maiman
-Place: Malibu, USA
+Place: Malibu, California, USA
 City: Malibu
 Lat: 34.0259
 Lon: -118.7798
@@ -27,7 +27,7 @@ Threads:
   - "[[Thread - Long-Distance Comms]]"
   - "[[Thread - Chip Lithography]]"
 ---
-*Make · Malibu, USA · 1960s*
+*Make · Malibu, California, USA · 1960s*
 **Theodore Maiman** · a ruby rod that makes one-colour light
 
 **Front.** The idea had been written down in 1958 by [Charles Townes and Arthur Schawlow](https://physics.aps.org/story/v15/st4), but two years on no one had built a working device. [Theodore Maiman](https://www.hrl.com/about/laser), a physicist at Hughes Research Labs in Malibu on a small budget, got there first while bigger labs raced. He took a finger-sized rod of synthetic ruby, about [1 cm across and 2 cm long](https://en.wikipedia.org/wiki/Ruby_laser), silvered both ends like tiny mirrors, and wound a bright flash lamp around it. The flash kicks the atoms up, and they dump their energy back as light, with each new bit of light coaxing out more just like it. On [16 May 1960](https://www.historypod.net/05/16/16th-may-1960-the-first-laser-was-successfully-operated-by-theodore-maiman-at-the-hughes-research-laboratories-in-malibu-california/) out came a pulse of deep-red light at one pure colour, [694.3 nm](https://en.wikipedia.org/wiki/Ruby_laser), the waves all in step, a beam you could aim and squeeze to a point.

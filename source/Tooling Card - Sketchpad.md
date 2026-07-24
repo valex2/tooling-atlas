@@ -22,7 +22,7 @@ Enables:
 Threads:
   - "[[Thread - Prototyping & CAD]]"
 ---
-*Model · Cambridge, USA · 1960s*
+*Model · Cambridge, Massachusetts, USA · 1960s*
 **Ivan Sutherland** · light-pen drawing the machine keeps correct
 
 **Front.** In 1963 a graduate student at MIT named [Ivan Sutherland](https://amturing.acm.org/award_winners/sutherland_3467412.cfm) wanted to draw on a computer. Until then a design lived as ink on paper, and to change it you erased and redrew by hand. For his doctoral work he wrote a program called [Sketchpad](https://en.wikipedia.org/wiki/Sketchpad) that let him draw lines and shapes straight onto the screen of the [TX-2 computer](https://en.wikipedia.org/wiki/TX-2) with a light pen. He could also hand the machine a rule, that two lines stay parallel, or the same length, or meet at a right angle, and the drawing would move itself to obey. What he had really done was move the design off the paper and into the computer, as geometry you could grab and pull while the machine kept it correct.

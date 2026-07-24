@@ -23,7 +23,7 @@ Enables:
 Threads:
   - "[[Thread - The Network]]"
 ---
-*Make · Cambridge, USA · 1960s*
+*Make · Cambridge, Massachusetts, USA · 1960s*
 **Frank Heart and the BBN team** · a small box that forwards packets
 
 **Front.** In 1969 a small Cambridge firm, [Bolt Beranek and Newman](https://goodscienceproject.org/articles/the-third-university-of-cambridge-bbn-and-the-development-of-the-arpanet/), took an ARPA contract to wire a handful of distant computers into one network. The trouble was that the machines were made by different companies and spoke different languages, and the phone lines between them could only hold a message in one piece. [Frank Heart's team](https://whomadetheinternet.com/frank-heart-and-bbn-team/) took a [ruggedized Honeywell DDP-516 minicomputer](https://en.wikipedia.org/wiki/Interface_Message_Processor) and wrote about six thousand words of code that did one job: take in a message, chop it into small blocks, read the address on each block, and pass it down a [50-kilobit-per-second leased line](https://en.wikipedia.org/wiki/ARPANET) toward the next box. For the first time a separate machine sat between the big computer and the wire and did nothing but read addresses and forward.

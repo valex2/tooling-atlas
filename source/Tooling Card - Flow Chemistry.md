@@ -4,7 +4,7 @@ Name: Flow Chemistry
 Kind: Manufacture
 Tool: Continuous-flow reactors (reagents pumped through narrow tubes)
 Person: Klavs Jensen, Timothy Jamison, Allan Myerson (MIT)
-Place: Cambridge, USA
+Place: Cambridge, Massachusetts, USA
 City: Cambridge
 Lat: 42.3601
 Lon: -71.0942
@@ -21,7 +21,7 @@ Enables:
 Threads:
   - "[[Thread - Therapeutics]]"
 ---
-*Manufacture · Cambridge, USA · 2010s*
+*Manufacture · Cambridge, Massachusetts, USA · 2010s*
 **Klavs Jensen, Timothy Jamison, Allan Myerson (MIT)** · reagents pumped through narrow tubes
 
 **Front.** In early 2016 three MIT chemical engineers wheeled out a machine the size of a [refrigerator](https://news.mit.edu/2016/portable-pharmacy-on-demand-0331) and made finished medicine come out the other end. The old way is the flask: dump reagents into a big vat, stir, wait, then clean it out and start the next batch, which is slow and dangerous when a step runs hot. Their machine did it the new way, called flow: it pumped the chemicals as thin streams through [narrow tubes and small reactors](https://news.mit.edu/2016/portable-pharmacy-on-demand-0331), so each drop spent exactly the right time at the right heat and pressure, up to 250 °C and 17 atmospheres in a channel you could hold. Because the reacting bit is tiny and never stops moving, you can run a step that would blow up a vat, and you scale not by building a bigger tank but by [running the stream longer](https://www.pharmasalmanac.com/articles/flow-chemistry-pathway-for-continuous-api-manufacturing). The control over each drop was the whole gain. The box made [about 1,000 doses a day](https://news.mit.edu/2016/portable-pharmacy-on-demand-0331) of Benadryl, lidocaine, Valium, or Prozac, switching drugs in a couple of hours.

@@ -4,7 +4,7 @@ Name: The Fluorescence-Activated Cell Sorter
 Kind: Measure
 Tool: a machine that reads the light off one cell at a time and flicks it into a tube
 Person: Leonard Herzenberg with Russell Hulett and William Bonner
-Place: Stanford, United States
+Place: Stanford, California, USA
 City: Stanford
 Lat: 37.43
 Lon: -122.17
@@ -22,7 +22,7 @@ Enables:
 Threads:
   - "[[Thread - Therapeutics]]"
 ---
-*Measure · Stanford, United States · 1960s*
+*Measure · Stanford, California, USA · 1960s*
 **Leonard Herzenberg with Russell Hulett and William Bonner** · reads the glow off one cell at a time
 
 **Front.** Leonard Herzenberg, a geneticist at Stanford, spent his days at a microscope counting mouse spleen cells that had been stained to glow. It was slow, his eyes were bad, and the cells he wanted stayed stuck in the dish with all the rest. "There's got to be some kind of machine that can do this," [he said](https://med.stanford.edu/news/all-news/2013/10/leonard-herzenberg-geneticist-who-developed-key-cell-sorting-technology-dies.html), and in 1967 he went to Los Alamos, where a physicist named Mack Fulwyler had built one that [sized each cell by the dip in electric current as it squeezed through a small hole](https://pubmed.ncbi.nlm.nih.gov/5891056/), shook the stream into droplets, and charged the droplet holding the cell it wanted so two plates could flick it sideways into a jar. Herzenberg came home with the blueprints and rebuilt the machine with Russell Hulett and William Bonner to look at cells instead of feeling them. A thin thread of cell suspension ran down the middle of a faster sheath of salt water, a trick [an English pathologist had published in 1953](https://www.nature.com/articles/171037b0) to line particles up single file; light hit each cell as it passed, a tube behind the glass read how brightly it glowed, and the charge went on the droplet only if the glow was high. In [the paper they published on 7 November 1969](https://pubmed.ncbi.nlm.nih.gov/4898615/) the bright fraction came out four to ten times richer in antibody-making cells, and the cells were still alive. Fulwyler's machine sorted on how big a cell was; this one sorted on a dye someone had chosen to stick to it, so it could be pointed at whatever molecule you had a stain for.

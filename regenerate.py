@@ -257,7 +257,11 @@ USSUB=[("US Northeast",["New Jersey","Murray Hill","Massachusetts","Cambridge, U
   "Wisconsin","Indiana"]),
  ("Silicon Valley / California",["California","Silicon Valley","Santa Clara","Stanford",
   "Berkeley","Hawthorne","Mountain View","San Francisco","San Diego","Pasadena","Caltech",
-  "Palo Alto","Menlo","Sunnyvale","Cupertino"])]
+  "Palo Alto","Menlo","Sunnyvale","Cupertino","San Jose","Malibu","Anaheim","La Jolla",
+  "Emeryville","Canoga Park"])]
+# City keywords back up the state token: a card whose Place omits "California" (a data slip the
+# region tags used to inherit silently) still lands in-lane. Only consulted for US cards
+# (COUNTRY_LANE resolves every non-US country first), so a same-named foreign city cannot misfire.
 # Lane display order, west to east with the US split out. Emitted per card as
 # `regionOrd` rather than as a separate global: build_standalone.py re-serialises
 # cards.js from cards.json for every view but the Deck, so a second `window.*`

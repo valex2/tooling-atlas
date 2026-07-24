@@ -20,7 +20,7 @@ BuildsOn:
 Threads:
   - "[[Thread - The Network]]"
 ---
-*Make · Cambridge, USA · 1960s*
+*Make · Cambridge, Massachusetts, USA · 1960s*
 **Robert Creasy and Mendel Rosenblum** · one machine pretending to be many
 
 **Front.** In the mid-1960s a computer was a single, very expensive machine that ran one job at a time. A crash by one user took everyone down with it. At [IBM's Cambridge Scientific Center](https://en.wikipedia.org/wiki/CP/CMS), a team led by [Robert Creasy](https://www.taskade.com/blog/virtualization-history) tried a strange fix: a thin layer of software that hands each user a whole *pretend* computer, a [complete virtual machine](https://en.wikipedia.org/wiki/CP/CMS) with its own memory and devices, while underneath there is still just the one real machine sharing itself out. Their system, [CP-67, went into daily use in 1967](https://en.wikipedia.org/wiki/CP/CMS). Each virtual machine was walled off from the rest, so one could crash and the others never noticed. The computer itself had become something you could copy in software.

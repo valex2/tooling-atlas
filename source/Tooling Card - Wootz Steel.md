@@ -4,7 +4,7 @@ Name: Wootz Steel
 Kind: Manufacture
 Tool: iron and carbon sealed in a clay crucible
 Person: Deccan crucible smiths
-Place: Deccan, India
+Place: Hyderabad, Deccan, India
 City: Hyderabad
 Lat: 17.38
 Lon: 78.49
@@ -21,7 +21,7 @@ Threads:
   - "[[Thread - Bulk Materials]]"
   - "[[Thread - Critical Materials]]"
 ---
-*Manufacture · Deccan, India · 1700s*
+*Manufacture · Hyderabad, Deccan, India · 1700s*
 **Deccan crucible smiths** · iron and carbon cooked slowly in sealed clay
 
 **Front.** For two thousand years smiths in south India and Sri Lanka made a steel no one else could match by sealing scraps of iron, charcoal, and green leaves inside a small clay pot and closing it tight. They heated the pot in a charcoal fire to above [1,300°C](https://en.wikipedia.org/wiki/Wootz_steel) until the iron drank in carbon and went liquid, then let it cool slowly so a puck of hard, high-carbon steel set inside. Two things made it work: the patient cooling, and the [ore itself](http://dtrinkle.matse.illinois.edu/MatSE584/articles/key_role_impurities/key_role.html). A trace of vanadium, as little as [40 parts per million](https://scienceinsights.org/does-damascus-steel-still-exist-old-vs-modern/), pulled the carbon into fine sheets of carbide that banded through the metal. Forged in the Middle East into [Damascus blades](https://en.wikipedia.org/wiki/Damascus_steel), it took a watery surface pattern and held an edge that plain European steel could not.

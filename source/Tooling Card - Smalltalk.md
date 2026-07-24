@@ -22,7 +22,7 @@ BuildsOn:
 Threads:
   - "[[Thread - Software Abstraction]]"
 ---
-*Model · Palo Alto, USA · 1970s*
+*Model · Palo Alto, California, USA · 1970s*
 **Alan Kay** · software made of objects that send messages
 
 **Front.** A program in the early 1970s was still mostly a long list of steps that pushed raw data around, and big ones grew into a tangle no one could hold in their head. At [Xerox PARC](https://en.wikipedia.org/wiki/Smalltalk), a researcher named [Alan Kay](https://en.wikipedia.org/wiki/Alan_Kay) had a different picture: let the program be made of many small parts, each one holding its own data and the code that works on it, and let them get things done by [sending messages to each other](https://www.purl.org/stefan_ram/pub/doc_kay_oop_en). In [September 1972 he bet it could be built in about a page of code](https://en.wikipedia.org/wiki/Smalltalk), and within about a week Dan Ingalls had a working version running. Kay called the parts objects, and the whole way of working [object-oriented](https://en.wikipedia.org/wiki/Alan_Kay).
