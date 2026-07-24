@@ -4,7 +4,7 @@ Name: Cymer Excimer Laser Source
 Kind: Make
 Tool: excimer DUV light source
 Person: Robert Akins & Richard Sandstrom
-Place: San Diego, USA
+Place: San Diego, California, USA
 City: San Diego
 Lat: 32.72
 Lon: -117.16
@@ -25,7 +25,7 @@ BuildsOn:
 Threads:
   - "[[Thread - Chip Lithography]]"
 ---
-*Make · San Diego, USA · 1980s*
+*Make · San Diego, California, USA · 1980s*
 **Robert Akins & Richard Sandstrom** · factory-grade deep-ultraviolet chip laser
 
 **Front.** In 1986, two laser physicists in San Diego, [Robert Akins and Richard Sandstrom](https://www.asml.com/en/company/about-asml/cymer), quit six years of defense work on laser weapons and sat in a beach bar weighing what to do next; one idea on the table was [buying a Wendy's franchise](https://www.referenceforbusiness.com/history2/33/Cymer-Inc.html). Chip factories then printed circuits with mercury-lamp light, and the circuit lines had shrunk about as far as that light could draw. A laser filled with krypton and fluorine gas made far shorter light, at [248 nanometers](https://www.cymer.com/light-source-technology/), but lab versions broke down after hours, useless in a factory that never stops. Nearly broke, the two spent Saturdays machining laser electrodes in the UC San Diego shop, ran up a [$250,000 bill](https://www.encyclopedia.com/books/politics-and-business-magazines/cymer-inc) they could not pay for two years, mortgaged their houses, and piece by piece hardened the fussy gas laser into a sealed machine that fired day and night.
