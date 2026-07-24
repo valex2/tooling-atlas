@@ -69,7 +69,12 @@
   // means another thread.
   const threadColor = t => window.threadColor(threadSlot, t) || "#9b968c";
   const svg = document.getElementById("g"),
-    tip = document.getElementById("tip");
+    tip = document.getElementById("tip"),
+    wrap = document.getElementById("wrap");
+  // Corner-legend cache key: the set of selected threads that placed NO on-globe head-label
+  // this frame (with their colours). The legend chip strip is a static DOM node OUTSIDE the
+  // SVG, rebuilt ONLY when this key changes — never per drag/play frame. null = never built.
+  let _legendKey = null;
   let W = 0,
     H = 0,
     cx = 0,
@@ -150,6 +155,14 @@
       }
     });
     const rsc = Math.max(0.6, Math.min(3, scale / (Math.min(W, H) * 0.46)));
+    // ONE shared placed-labels array for BOTH thread head-labels and hub/city labels, so the
+    // two passes test against each other. Thread labels are emitted FIRST (palette caps at 5
+    // slots ⇒ ≤5 of them), then hubs run against the SAME array — a hub label that collides
+    // with a thread label is dropped, so a trace (the focus) never gets overprinted.
+    const placed = [];
+    // Selected threads that landed an on-globe head-label THIS frame. selThreads minus this
+    // is the "identity is missing from the map" set that the corner legend backstops.
+    const labeled = new Set();
     if (!selThreads.length) {
       // genealogy arcs (builds-on -> enables), only when no thread is selected
       for (const c of CARDS) {
@@ -172,9 +185,13 @@
       // (matching how the Timeline labels its traces) so a thread is legible even when
       // its colour is ambiguous or neutral. Collision-pruned so many selected threads
       // do not clutter — a label that would overlap an already-placed one is dropped.
-      const _tlab = [];
       selThreads.forEach(t => {
         const col = threadColor(t);
+        // Per-slot dash backstop: identity survives even when colour is ambiguous (protanopia)
+        // or the head-label is off-globe. threadSlot.get(t) is undefined past slot 5 (neutral
+        // thread) — the index guard leaves those undashed rather than crashing.
+        const dash = ["", "5 3", "1 3", "7 3 1 3", "2 2"][threadSlot.get(t)] || "";
+        const da = dash ? ` stroke-dasharray="${dash}"` : "";
         const mem = CARDS.filter(c => c.threads.includes(t) && c.lat != null && c.year <= T).sort(
           (a, b) => a.year - b.year || a.id.localeCompare(b.id),
         );
@@ -194,7 +211,7 @@
             dy = B[1] - A[1];
           const mx = (A[0] + B[0]) / 2 - dy * 0.18,
             my = (A[1] + B[1]) / 2 + dx * 0.18;
-          s += `<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${col}" stroke-opacity=".85" stroke-width="${(2 * Math.min(1.6, rsc)).toFixed(1)}" stroke-linecap="round"/>`;
+          s += `<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${col}" stroke-opacity=".85" stroke-width="${(2 * Math.min(1.6, rsc)).toFixed(1)}" stroke-linecap="round"${da}/>`;
           const tx = B[0] - mx,
             ty = B[1] - my,
             tl = Math.hypot(tx, ty) || 1,
@@ -214,10 +231,15 @@
             ly = P[1] - 10 * Math.min(1.4, rsc),
             w = t.length * fs * 0.56 + 6;
           if (
-            _tlab.some(q => Math.abs(q.x - lx) < (q.w + w) / 2 + 2 && Math.abs(q.y - ly) < fs + 3)
+            placed.some(q => Math.abs(q.x - lx) < (q.w + w) / 2 + 2 && Math.abs(q.y - ly) < fs + 3)
           )
-            break;
-          _tlab.push({ x: lx, y: ly, w });
+            // Was `break` — abandoning the whole thread on the FIRST collision, so a whole
+            // trace could render label-less. `continue` walks back newest→older until a
+            // member lands a non-colliding, on-globe anchor. Newest = current lead, so we
+            // only fall back when forced.
+            continue;
+          placed.push({ x: lx, y: ly, w });
+          labeled.add(t);
           s += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="600" fill="${col}" stroke="#f5f3ef" stroke-width="3" paint-order="stroke" style="pointer-events:none">${TA.esc(t)}</text>`;
           break;
         }
@@ -240,8 +262,9 @@
       const rw = fnd ? "2.2" : onT ? "2" : ".8";
       s += `<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fo}" stroke="${ring}" stroke-width="${rw}"/>`;
     }
-    // region labels (density clusters), sized by card count, collision-pruned (densest placed first)
-    const _lab = [];
+    // region labels (density clusters), sized by card count, collision-pruned (densest placed
+    // first). Shares `placed` with the thread head-labels above — those were emitted first, so
+    // a hub label overlapping a thread label is dropped (the trace wins its slot).
     for (const h of HUBS) {
       if (!vis(h.lon, h.lat)) continue;
       const p = proj(h.lon, h.lat);
@@ -250,12 +273,46 @@
         ly = p[1] - 9,
         lx = p[0],
         w = h.city.length * fs * 0.56 + 6;
-      if (_lab.some(q => Math.abs(q.x - lx) < (q.w + w) / 2 + 2 && Math.abs(q.y - ly) < fs + 3))
+      if (placed.some(q => Math.abs(q.x - lx) < (q.w + w) / 2 + 2 && Math.abs(q.y - ly) < fs + 3))
         continue;
-      _lab.push({ x: lx, y: ly, w });
+      placed.push({ x: lx, y: ly, w });
       s += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${fs.toFixed(1)}" font-weight="600" fill="#333" style="paint-order:stroke;stroke:#f5f3ef;stroke-width:2.5px;pointer-events:none">${h.city}</text>`;
     }
     svg.innerHTML = s;
+    // Corner-legend fallback: identity is NEVER colour-only. Any selected thread that placed
+    // no on-globe head-label this frame (rotated off-globe, or crowded out) gets a fixed
+    // swatch+name chip. This is a STATIC DOM node OUTSIDE the SVG — rebuilt ONLY when the
+    // no-label set (or a chip's colour) changes, so a drag that keeps the set stable touches
+    // no DOM here. render() must stay per-frame cheap; wholesale rebuilding this every frame
+    // would defeat that. The colour is folded into the key so a slot reassignment repaints.
+    const noLabel = selThreads.filter(t => !labeled.has(t));
+    const key = noLabel.map(t => t + "" + threadColor(t)).join("");
+    if (key !== _legendKey) {
+      _legendKey = key;
+      let leg = document.getElementById("tlegend");
+      if (!noLabel.length) {
+        if (leg) leg.remove();
+      } else {
+        if (!leg) {
+          leg = document.createElement("div");
+          leg.id = "tlegend";
+          leg.setAttribute("aria-hidden", "false");
+          leg.setAttribute(
+            "aria-label",
+            "Selected threads not labelled on the globe (rotated out of view)",
+          );
+          leg.style.cssText =
+            "position:absolute;left:8px;top:8px;display:flex;flex-direction:column;gap:4px;z-index:20;pointer-events:none;max-width:60%";
+          wrap.appendChild(leg);
+        }
+        leg.innerHTML = noLabel
+          .map(t => {
+            const col = threadColor(t);
+            return `<span style="display:flex;align-items:center;gap:6px;background:rgba(245,243,239,.92);border:.5px solid rgba(0,0,0,.15);border-radius:11px;padding:2px 8px 2px 6px;font-size:11px;font-weight:600;color:#333;box-shadow:0 1px 3px rgba(0,0,0,.12)"><span style="width:10px;height:10px;border-radius:50%;background:${col};flex:0 0 auto;border:.5px solid rgba(0,0,0,.2)"></span>${TA.esc(t)}</span>`;
+          })
+          .join("");
+      }
+    }
     // dots/countries are handled by one set of delegated listeners on the svg (set up once,
     // below) — no per-frame re-binding of hundreds of nodes while dragging/playing.
     document.getElementById("hint").textContent =

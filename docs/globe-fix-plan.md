@@ -7,7 +7,7 @@ loop (never push red, no fabrication, reversible commits).
 
 | Batch | Items | Focus | Status |
 |-------|-------|-------|--------|
-| A | 1 | Thread identity beyond colour (fix label-drop bug, unify collision passes, per-slot dash, corner-legend fallback) | pending |
+| A | 1 | Thread identity beyond colour (fix label-drop bug, unify collision passes, per-slot dash, corner-legend fallback) | **done** |
 | B | 6, 11 | Default state argues: depth/distance fade + desaturate genealogy arcs; drop off-thread dot strokes; depth-sort dots | pending |
 | C | 3, 4 | Live migration caption ("lead: Japan → Netherlands · 2017") + aria-live non-visual channel | pending |
 | D | 2, 5 | Cold-open on a canonical migration (Chip Lithography spine) + "watch the lead migrate" button + hop stepper + speed toggle | pending |
@@ -21,3 +21,4 @@ names the lead country + border-crossings.
 
 ## Shipped log
 - (batches append here)
+- Batch A (item 1): fixed the label-drop bug (break→continue; 24/72→0/72 unlabeled frames), unified thread+hub collision passes (no more overprint), per-slot stroke-dasharray backstop, and an off-SVG corner legend for threads whose label rotates off-globe. Default 0px.
