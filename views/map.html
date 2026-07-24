@@ -30,6 +30,14 @@ svg.drag{cursor:grabbing}
 .tip{position:fixed;pointer-events:none;background:var(--card);border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:50}
 .tip .t{font-weight:600}.tip .m{color:var(--mut);font-size:10.5px;margin:2px 0 4px}.tip .s{font-size:11px;line-height:1.4}
 .hint{position:absolute;left:16px;bottom:8px;font-size:11px;color:#6d6961}
+/* item 4: visually-hidden live region — the only non-visual channel for the migration */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* item 3: live migration caption, sits by #play. :empty ⇒ display:none so the no-thread
+   default paints IDENTICALLY (a display:none flex child adds no gap, no layout shift). */
+.mcap{font-weight:600;font-size:12px;color:#5a544c;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mcap:empty{display:none}
+@keyframes mcap-pulse{from{color:var(--ink)}to{color:#5a544c}}
+.mcap.pulse{animation:mcap-pulse .9s ease-out}
 /* phone: the 292px era rail can't share a narrow screen with the globe — stack them */
 @media (max-width:760px){
  html,body{height:auto}
@@ -45,6 +53,7 @@ svg.drag{cursor:grabbing}
 <p class="sub">Where each tool was first made — pick a thread and press play to watch the lead migrate, country to country.</p>
 <div class="bar">
   <button class="btn" id="play">▶ play</button>
+  <span class="mcap" id="mcap" aria-hidden="true"></span>
   <span class="ylab" id="ylab">2030</span>
   <input type="range" id="yr" min="0" max="1000" value="1000" aria-label="Year">
   <button class="btn" id="reset">reset view</button><span style="position:relative;display:inline-block"><input id="msearch" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="mresults" aria-label="Find a tool" autocomplete="off" placeholder="find a tool…" style="border:.5px solid var(--line);border-radius:13px;padding:4px 11px;font-size:12px;width:150px"><div id="mresults" role="listbox" aria-label="Search results" style="display:none;position:absolute;top:32px;left:0;z-index:60;background:#fff;border:.5px solid var(--line);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.16);width:240px;max-width:80vw;max-height:320px;overflow:auto;padding:4px"></div></span><div class="histbar" id="histbar"></div><span style="position:relative;display:inline-block"><button class="btn" id="threadbtn" aria-expanded="false" aria-controls="threadpanel">threads ▾</button><div id="threadpanel" style="display:none;position:absolute;top:34px;right:0;z-index:60;background:#fff;border:.5px solid var(--line);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.16);width:236px;max-height:360px;overflow:auto;padding:6px"></div></span>
@@ -55,6 +64,7 @@ svg.drag{cursor:grabbing}
 <div id="wrap"><svg id="g" role="img" tabindex="0" aria-label="Interactive globe of where each tool was invented. Drag or arrow keys to spin; scroll, pinch, or the plus and minus keys to zoom; double-tap to focus."></svg></div><div id="chips"></div>
 <div class="tip" id="tip"></div>
 <div class="hint" id="hint"></div>
+<div class="sr-only" id="mlive" aria-live="polite" aria-atomic="true"></div>
 <script src="../ta.js"></script>
 <script src="../data/cards.js"></script>
 <script src="../data/countries.js"></script>

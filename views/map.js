@@ -75,6 +75,20 @@
   // this frame (with their colours). The legend chip strip is a static DOM node OUTSIDE the
   // SVG, rebuilt ONLY when this key changes — never per drag/play frame. null = never built.
   let _legendKey = null;
+  // Item 3/4 state, closure-held across frames so render() stays a cheap textContent write:
+  //   _prevLeadCountry — last frame's lead country, so a change (play/scrub crossing a border)
+  //                      can surface a brief "Japan → Netherlands" transition string.
+  //   _capTimer        — settles the transition string back to the steady caption.
+  //   _prevEra         — the ERAS band T last sat in, so aria-live speaks only on a crossing.
+  //   _eraTimer / _pendingEraMsg — debounce so a fast slider drag across several eras announces
+  //                      only the last one (a play step lands its crossings seconds apart).
+  //   _routeKey        — selThreads signature; the route string is rebuilt ONLY when it changes.
+  let _prevLeadCountry = null,
+    _capTimer = null,
+    _prevEra = null,
+    _eraTimer = null,
+    _pendingEraMsg = null,
+    _routeKey = null;
   let W = 0,
     H = 0,
     cx = 0,
@@ -163,6 +177,10 @@
     // Selected threads that landed an on-globe head-label THIS frame. selThreads minus this
     // is the "identity is missing from the map" set that the corner legend backstops.
     const labeled = new Set();
+    // First selected thread's chronological members (year ≤ T), captured in the loop below and
+    // reused after it for the caption, the newest-card halo, and the coarse era announcement —
+    // all pure reads off data already computed for the path, no extra per-node cost.
+    let firstMem = null;
     if (!selThreads.length) {
       // Genealogy web (builds-on -> enables), default no-thread state. Was one kind-coloured,
       // equally-weighted arc per edge — a hairball reading "everything connects to everything,"
@@ -228,7 +246,7 @@
       // (matching how the Timeline labels its traces) so a thread is legible even when
       // its colour is ambiguous or neutral. Collision-pruned so many selected threads
       // do not clutter — a label that would overlap an already-placed one is dropped.
-      selThreads.forEach(t => {
+      selThreads.forEach((t, ti) => {
         const col = threadColor(t);
         // Per-slot dash backstop: identity survives even when colour is ambiguous (protanopia)
         // or the head-label is off-globe. threadSlot.get(t) is undefined past slot 5 (neutral
@@ -238,30 +256,35 @@
         const mem = CARDS.filter(c => c.threads.includes(t) && c.lat != null && c.year <= T).sort(
           (a, b) => a.year - b.year || a.id.localeCompare(b.id),
         );
+        if (ti === 0) firstMem = mem;
         for (let i = 0; i < mem.length - 1; i++) {
           const a = mem[i],
             b = mem[i + 1];
+          // Recency taper: leg i joins mem[i]→mem[i+1], so i=0 is the OLDEST leg. Fade opacity
+          // by i/(mem.length-1) with a 0.35 floor (deep history stays visible), giving every
+          // path an inherent direction of travel — newest hops brightest.
+          const rec = mem.length > 1 ? Math.max(0.35, i / (mem.length - 1)) : 1;
           if (!vis(a.lon, a.lat) || !vis(b.lon, b.lat)) continue;
           const A = proj(a.lon, a.lat),
             B = proj(b.lon, b.lat);
           const same = Math.abs(a.lat - b.lat) < 0.2 && Math.abs(a.lon - b.lon) < 0.2;
           if (same) {
             const rr = 5 * rsc;
-            s += `<circle cx="${A[0].toFixed(1)}" cy="${(A[1] - rr).toFixed(1)}" r="${rr.toFixed(1)}" fill="none" stroke="${col}" stroke-opacity=".55" stroke-width="1.4"/>`;
+            s += `<circle cx="${A[0].toFixed(1)}" cy="${(A[1] - rr).toFixed(1)}" r="${rr.toFixed(1)}" fill="none" stroke="${col}" stroke-opacity="${(0.55 * rec).toFixed(2)}" stroke-width="1.4"/>`;
             continue;
           }
           const dx = B[0] - A[0],
             dy = B[1] - A[1];
           const mx = (A[0] + B[0]) / 2 - dy * 0.18,
             my = (A[1] + B[1]) / 2 + dx * 0.18;
-          s += `<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${col}" stroke-opacity=".85" stroke-width="${(2 * Math.min(1.6, rsc)).toFixed(1)}" stroke-linecap="round"${da}/>`;
+          s += `<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="${col}" stroke-opacity="${(0.85 * rec).toFixed(2)}" stroke-width="${(2 * Math.min(1.6, rsc)).toFixed(1)}" stroke-linecap="round"${da}/>`;
           const tx = B[0] - mx,
             ty = B[1] - my,
             tl = Math.hypot(tx, ty) || 1,
             ux = tx / tl,
             uy = ty / tl,
             ah = 6 * rsc;
-          s += `<path d="M${B[0].toFixed(1)} ${B[1].toFixed(1)} L${(B[0] - ux * ah - uy * ah * 0.55).toFixed(1)} ${(B[1] - uy * ah + ux * ah * 0.55).toFixed(1)} L${(B[0] - ux * ah + uy * ah * 0.55).toFixed(1)} ${(B[1] - uy * ah - ux * ah * 0.55).toFixed(1)} Z" fill="${col}" fill-opacity=".9"/>`;
+          s += `<path d="M${B[0].toFixed(1)} ${B[1].toFixed(1)} L${(B[0] - ux * ah - uy * ah * 0.55).toFixed(1)} ${(B[1] - uy * ah + ux * ah * 0.55).toFixed(1)} L${(B[0] - ux * ah + uy * ah * 0.55).toFixed(1)} ${(B[1] - uy * ah - ux * ah * 0.55).toFixed(1)} Z" fill="${col}" fill-opacity="${(0.9 * rec).toFixed(2)}"/>`;
         }
         // head-label at the newest visible tool on this thread's path
         for (let i = mem.length - 1; i >= 0; i--) {
@@ -287,6 +310,20 @@
           break;
         }
       });
+      // Item 3: during play, halo the single newest card at/just-before T on the first thread —
+      // an extra ring in the innerHTML string (NOT a re-bound node) so the eye tracks a moving
+      // marker. Drawn only while playing, so the settled default states are untouched.
+      if (playing && firstMem && firstMem.length) {
+        const lead = firstMem[firstMem.length - 1];
+        if (vis(lead.lon, lead.lat)) {
+          const P = proj(lead.lon, lead.lat);
+          if (P[2] >= 0) {
+            const hr = (9 * rsc).toFixed(1),
+              hc = threadColor(selThreads[0]);
+            s += `<circle cx="${P[0].toFixed(1)}" cy="${P[1].toFixed(1)}" r="${hr}" fill="none" stroke="${hc}" stroke-width="1.5" stroke-opacity=".9"/>`;
+          }
+        }
+      }
     }
     // dots — depth-sorted so front-of-globe dots draw over back ones (one sort over ≤283
     // per frame is cheap). Emitted after the arcs, so every dot sits above the web.
@@ -372,6 +409,74 @@
     // below) — no per-frame re-binding of hundreds of nodes while dragging/playing.
     document.getElementById("hint").textContent =
       `${CARDS.filter(c => c.lat != null && c.year <= T).length} of ${CARDS.length} tools through ${T}`;
+    // Item 3: live migration caption (single-thread only; hidden for none/multi). Pure text off
+    // firstMem — a cheap textContent write, no per-node cost, on a STATIC node updated in place.
+    const cap = document.getElementById("mcap");
+    if (cap) {
+      if (selThreads.length === 1 && firstMem && firstMem.length) {
+        const lead = firstMem[firstMem.length - 1];
+        const country = lead.country || lead.place || "—";
+        const base = `lead: ${country} · ${lead.year}`;
+        if (_prevLeadCountry !== null && _prevLeadCountry !== country) {
+          // Frontier crossed a border this frame (play/scrub): show the transition briefly,
+          // then settle. The colour pulse is MOTION, so it is suppressed under
+          // prefers-reduced-motion; the text itself always changes.
+          cap.textContent = `${_prevLeadCountry} → ${country}`;
+          const reduce =
+            window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (reduce) {
+            cap.classList.remove("pulse"); // no motion under reduce, and clear any prior pulse
+          } else {
+            cap.classList.remove("pulse");
+            void cap.offsetWidth; // restart the keyframe
+            cap.classList.add("pulse");
+          }
+          clearTimeout(_capTimer);
+          _capTimer = setTimeout(() => {
+            cap.textContent = base;
+            _capTimer = null;
+          }, 1500);
+        } else if (!_capTimer) {
+          cap.textContent = base;
+        }
+        _prevLeadCountry = country;
+      } else {
+        // no thread, or >1 selected: empty ⇒ .mcap:empty{display:none}, so no layout shift
+        clearTimeout(_capTimer);
+        _capTimer = null;
+        _prevLeadCountry = null;
+        cap.textContent = "";
+      }
+    }
+    // Item 4: coarse era-crossing announcement to the aria-live region. Speaks ONLY when T
+    // crosses an ERAS boundary (never per frame), and is debounced so a fast slider drag across
+    // several eras announces just the last one — a play step lands its crossings seconds apart.
+    if (selThreads.length && firstMem && firstMem.length) {
+      let eraName = null;
+      for (const e of ERAS)
+        if (T >= e[1] && T < e[2]) {
+          eraName = e[0];
+          break;
+        }
+      if (_prevEra === null) {
+        _prevEra = eraName; // prime silently on first paint — never announce the initial state
+      } else if (eraName && eraName !== _prevEra) {
+        _prevEra = eraName;
+        const lead = firstMem[firstMem.length - 1];
+        const a = anchorOf(lead);
+        // "lead" defined defensibly as the newest card's anchored center (fall back to place)
+        const where = a ? a[0] : lead.place ? lead.place.split(",")[0].trim() : lead.country || "";
+        _pendingEraMsg = `Entering the ${eraName}, ${T}; lead now in ${where}`;
+        clearTimeout(_eraTimer);
+        _eraTimer = setTimeout(() => {
+          const live = document.getElementById("mlive");
+          if (live) live.textContent = _pendingEraMsg;
+          _eraTimer = null;
+        }, 400);
+      }
+    } else {
+      _prevEra = null; // no thread: re-prime fresh on the next selection
+    }
     // The era rail depends only on T and chipsOpen, never on rotation/zoom — so it is
     // NOT rebuilt here. render() runs on every mousemove while dragging; rebuilding 161
     // rows plus their handlers per frame was the single biggest cost in the drag loop.
@@ -441,6 +546,41 @@
     }
     return best;
   };
+  // Item 4: the ordered migration as TEXT — the non-visual twin of the arc. Each card maps to
+  // its anchored CENTER (anchorOf) or falls back to its raw place; consecutive duplicates
+  // collapse to "Silicon Valley ×3". Built ONLY when selThreads changes (announceRoutes below
+  // and the popover paint()), NEVER per render frame.
+  const centerOf = c => {
+    const a = anchorOf(c);
+    if (a) return a[0];
+    return (c.place ? c.place.split(",")[0].trim() : "") || c.country || "somewhere";
+  };
+  const routeString = t => {
+    const mem = CARDS.filter(c => c.threads.includes(t) && c.lat != null).sort(
+      (a, b) => a.year - b.year || a.id.localeCompare(b.id),
+    );
+    const steps = [];
+    for (const c of mem) {
+      const nm = centerOf(c);
+      const last = steps[steps.length - 1];
+      if (last && last.name === nm) last.n++;
+      else steps.push({ name: nm, year: c.year, n: 1 });
+    }
+    return steps.map(s => (s.n > 1 ? `${s.name} ×${s.n}` : `${s.name} ${s.year}`)).join(" → ");
+  };
+  // Write the route(s) to the aria-live region. Self-guards on a selThreads signature so it is a
+  // no-op when called for an unrelated repaint (e.g. a history-scope change), announcing only on
+  // a genuine thread-selection change.
+  function announceRoutes() {
+    const key = selThreads.join("|");
+    if (key === _routeKey) return;
+    _routeKey = key;
+    const live = document.getElementById("mlive");
+    if (!live) return;
+    live.textContent = selThreads.length
+      ? selThreads.map(t => `${t}: ${routeString(t)}`).join(". ")
+      : "";
+  }
   const anchored = new Map();
   const rest = [];
   CARDS.forEach(c => {
@@ -1183,7 +1323,13 @@
           .map(t => {
             const on = selThreads.includes(t);
             const col = on ? threadColor(t) : "#ccc";
-            return `<div class="trow" data-t="${encodeURIComponent(t)}" style="display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:6px;cursor:pointer;font-size:12px;${on ? "background:#f3efe9" : ""}"><span style="width:10px;height:10px;border-radius:50%;background:${col};flex:0 0 auto;border:.5px solid rgba(0,0,0,.2)"></span><span style="flex:1">${t}</span><span style="color:#6d6961;font-size:10.5px">${counts[t]}</span></div>`;
+            const row = `<div class="trow" data-t="${encodeURIComponent(t)}" style="display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:6px;cursor:pointer;font-size:12px;${on ? "background:#f3efe9" : ""}"><span style="width:10px;height:10px;border-radius:50%;background:${col};flex:0 0 auto;border:.5px solid rgba(0,0,0,.2)"></span><span style="flex:1">${t}</span><span style="color:#6d6961;font-size:10.5px">${counts[t]}</span></div>`;
+            // Item 4: the same ordered migration the arc encodes, as text under each selected
+            // row — so colour-blind / low-vision sighted users get the route too, not just AT.
+            const route = on
+              ? `<div class="troute" style="font-size:10px;color:#6d6961;line-height:1.35;margin:-1px 0 4px 24px;white-space:normal">${TA.esc(routeString(t))}</div>`
+              : "";
+            return row + route;
           })
           .join("") +
         (selThreads.length
@@ -1224,6 +1370,9 @@
         const back = pan.querySelector(keep);
         if (back) back.focus();
       }
+      // Route string to the aria-live region — self-guarded, so it announces only when the
+      // set of selected threads actually changed (not on a history-scope repaint).
+      announceRoutes();
     }
     // aria-expanded on the button is the only thing that tells AT whether the panel is
     // open — the label ("3 threads") is identical in both states.
