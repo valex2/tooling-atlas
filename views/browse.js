@@ -275,14 +275,15 @@
     const others = c.threads.map(t => `<span class="xchip" data-t="${t}">${t}</span>`).join("");
     const marks = [];
     if (c.threads.length > 1) marks.push(c.threads.length + " threads");
-    return `<div class="scene"><div class="card" id="card-${cssid(c.name)}">
+    return `<div class="scene${c.front && c.front.length > 950 ? " ov" : ""}"><div class="card" id="card-${cssid(c.name)}">
   <div class="face front"><div class="stripe" style="background:${KCV[c.kind]}"></div>
     <div class="corner">${marks.join(" · ")}</div>
     <div class="pad"><div class="hd">${c.kind} · ${c.place} · ${decadeLabel(c.year)}</div>
       <div class="who">${c.name}</div><div class="maker">${c.person}</div><div class="tool">${c.tool}</div>
       <div class="txt">${c.front}</div></div>
-    <div class="foot"><span class="tag" style="background:${KCV[c.kind]}1f;color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.kind}</span>
+    <div class="foot"><div class="cfade" aria-hidden="true"></div><span class="tag" style="background:${KCV[c.kind]}1f;color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.kind}</span>
       <span class="tag">${c.year}</span>
+      <button class="morebtn" type="button" aria-expanded="false">more ↓</button>
       <button class="flipbtn" type="button" style="margin-left:auto">Show aftermath ⟲</button></div>
   </div>
   <div class="face back" inert><div class="stripe" style="background:${KCV[c.kind]}"></div>
@@ -377,6 +378,23 @@
             if (vis) vis.focus();
           }),
       );
+    });
+    // Front-prose truncation affordance: most fronts clip mid-sentence in the fixed-height pad
+    // with no cue. `.scene.ov` (set at render time by front length > 950 chars — a DETERMINISTIC
+    // proxy for "overflows the pad"; a post-layout scrollHeight measurement was flaky across runs,
+    // esp. mobile) reveals a bottom fade + a "more" button; "more" grows the card front IN PLACE
+    // (.card.expand) and toggles back. stopPropagation keeps it from triggering the card's
+    // click-to-flip; it's a real <button> (Tab + Enter/Space) with aria-expanded, flip untouched.
+    modebody.querySelectorAll(".scene.ov").forEach(scene => {
+      const card = scene.querySelector(".card");
+      const more = scene.querySelector(".morebtn");
+      if (!card || !more) return;
+      more.onclick = e => {
+        e.stopPropagation();
+        const on = card.classList.toggle("expand");
+        more.setAttribute("aria-expanded", on ? "true" : "false");
+        more.textContent = on ? "less ↑" : "more ↓";
+      };
     });
   }
 
@@ -571,21 +589,40 @@
         return `<a class="row" href="#mode=table&country=${e}" style="text-decoration:none;color:inherit"><span class="lab" title="${k}">${ctryLabel(k)}</span>${segBar(perKind(list), n, cmax, 220)}<span class="n">${n}</span><span class="n" style="color:var(--accent)" title="Made here: ${made} of ${n} are Make or Manufacture">${pctMade}%</span></a>`;
       })
       .join("");
-    // by decade (stacked by kind)
+    // by decade (stacked by kind). The pre-1800 tail is ~32 sparse, mostly single-card decade rows
+    // (39 cards total) that bury the dense modern shape — so bin everything before 1800 into coarse
+    // era/century buckets and keep per-decade rows only from 1800 on, where the density lives.
+    // Binned rows are aggregate DISPLAY rows (a plain <div>, no drill link): Table filters ONE exact
+    // decade, so a link on a multi-decade bin would claim 16 tools and land on 1. Per-decade rows
+    // from 1800 keep their honest one-decade drill.
+    const PREBINS = [
+      ["before 1600", 0, 1600],
+      ["1600–99", 1600, 1700],
+      ["1700–99", 1700, 1800],
+    ];
     const decCards = {};
     scope.forEach(c => {
-      if (!c.year) return;
+      if (!c.year || c.year < 1800) return;
       const d = Math.floor(c.year / 10) * 10;
       (decCards[d] = decCards[d] || []).push(c);
     });
-    const decs = Object.keys(decCards)
+    const decRows = [];
+    PREBINS.forEach(([lab, a, b]) => {
+      const cards = scope.filter(c => c.year && c.year >= a && c.year < b);
+      if (cards.length) decRows.push({ lab, cards, decade: null });
+    });
+    Object.keys(decCards)
       .map(Number)
-      .sort((a, b) => a - b);
-    const dmax = Math.max(1, ...decs.map(d => decCards[d].length));
-    document.getElementById("cov-decade").innerHTML = decs
-      .map(d => {
-        const n = decCards[d].length;
-        return `<a class="row" href="#mode=table&decade=${d}" style="text-decoration:none;color:inherit"><span class="lab" style="width:46px">${d}s</span>${segBar(perKind(decCards[d]), n, dmax, 240)}<span class="n">${n}</span></a>`;
+      .sort((a, b) => a - b)
+      .forEach(d => decRows.push({ lab: d + "s", cards: decCards[d], decade: d }));
+    const dmax = Math.max(1, ...decRows.map(r => r.cards.length));
+    document.getElementById("cov-decade").innerHTML = decRows
+      .map(r => {
+        const n = r.cards.length;
+        const inner = `<span class="lab" style="width:70px">${r.lab}</span>${segBar(perKind(r.cards), n, dmax, 232)}<span class="n">${n}</span>`;
+        return r.decade == null
+          ? `<div class="row binrow" title="Aggregate of ${n} tools ${r.lab} — per-decade drill-down begins at 1800">${inner}</div>`
+          : `<a class="row" href="#mode=table&decade=${r.decade}" style="text-decoration:none;color:inherit">${inner}</a>`;
       })
       .join("");
     // threads by size (stacked by kind), grouped under the histories

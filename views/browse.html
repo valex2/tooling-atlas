@@ -76,7 +76,19 @@ select{border:.5px solid var(--line);border-radius:13px;padding:5px 10px;font-si
 #modebody.m-cards .txt a.xcard{color:#7a5a30;text-decoration-color:rgba(122,90,48,.4);}
 #modebody.m-cards .txt a.xcard:hover{background:#f4ece1;}
 #modebody.m-cards .label{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:7px;}
-#modebody.m-cards .foot{flex:none;border-top:.5px solid var(--line);padding:8px 17px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#fbfaf8;}
+#modebody.m-cards .foot{position:relative;flex:none;border-top:.5px solid var(--line);padding:8px 17px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#fbfaf8;}
+/* front-prose truncation affordance: fade over the clip + a "more" button, shown only on cards
+   whose front actually overflows (.scene.ov). The fade rides just above the foot so it never
+   inflates the pad's scrollHeight (which the overflow test reads). "more" grows the card in place. */
+#modebody.m-cards .cfade{display:none;position:absolute;left:0;right:0;bottom:100%;height:42px;pointer-events:none;background:linear-gradient(rgba(255,255,255,0),var(--card));}
+#modebody.m-cards .scene.ov .cfade{display:block;}
+#modebody.m-cards .card.expand .cfade{display:none;}
+#modebody.m-cards .morebtn{display:none;border:.5px solid var(--line);background:#fff;border-radius:9px;padding:2px 9px;font:inherit;font-size:11px;color:var(--mut);cursor:pointer;}
+#modebody.m-cards .morebtn:hover{background:#efece6;color:var(--ink);}
+#modebody.m-cards .scene.ov .morebtn{display:inline-block;}
+#modebody.m-cards .card.expand{height:auto;min-height:430px;}
+#modebody.m-cards .card.expand .front{position:relative;}
+#modebody.m-cards .card.expand .pad{overflow:visible;}
 #modebody.m-cards .tag{font-size:11px;padding:2px 8px;border-radius:9px;background:#f0ede7;color:#555;}
 #modebody.m-cards .corner{position:absolute;top:9px;right:11px;font-size:10.5px;color:var(--mut);z-index:2;}
 #modebody.m-cards .xlinks{margin-top:12px;border-top:.5px dashed var(--line);padding-top:10px;}
@@ -113,6 +125,7 @@ tr.flash td{animation:flashrow 1.8s ease-out;}
 #modebody.m-coverage .card h2{font-size:14px;font-weight:600;margin:0 0 12px;}
 #modebody.m-coverage .row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12px;}
 #modebody.m-coverage .row .lab{width:150px;text-align:right;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#modebody.m-coverage .binrow .lab{font-style:italic;}
 #modebody.m-coverage .bar{height:13px;border-radius:3px;}
 #modebody.m-coverage .row .n{font-size:11px;color:var(--mut);}
 #modebody.m-coverage .vlinks{margin-left:6px;white-space:nowrap;opacity:.8;transition:opacity .12s;}

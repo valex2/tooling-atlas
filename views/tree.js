@@ -19,14 +19,27 @@
   // Log-in-time x-axis (default): compress the sparse pre-1800 range, expand the dense
   // 20th–21st c. See TA.timeScale in ta.js.
   const xs = TA.timeScale({ x0, width: WIDTH, minY, maxY, k: LOGK }).xs;
-  // auto lanes by primary thread, ordered by earliest member
+  // auto lanes by primary thread. Ordered by the essay's FOUR spines (window.HISTORIES:
+  // Optics, Machine Tools, Semiconductors, Genetic Engineering, then Other fields) so the Tree
+  // reads top-to-bottom as the essay's structure and a scoped #hist= groups its threads together;
+  // within a history the lanes keep the old earliest-card order.
   const prim = c => (c.threads && c.threads.length ? c.threads[0] : "—");
   const tmin = {};
   CARDS.forEach(c => {
     const t = prim(c);
     tmin[t] = Math.min(tmin[t] ?? 9999, c.year || 9999);
   });
-  const lanes = [...new Set(CARDS.map(prim))].sort((a, b) => tmin[a] - tmin[b]);
+  // history key -> spine order; a lane's home is its primary thread's first history (Chip
+  // Lithography -> optics). Threads in no history (or the "—" no-thread lane) sort to the end.
+  const HORD = {};
+  (window.HISTORIES || []).forEach((h, i) => (HORD[h.key] = i));
+  const laneHist = t => {
+    const ks = window.historyOf ? window.historyOf(t) : [];
+    return ks.length && HORD[ks[0]] != null ? HORD[ks[0]] : 99;
+  };
+  const lanes = [...new Set(CARDS.map(prim))].sort(
+    (a, b) => laneHist(a) - laneHist(b) || tmin[a] - tmin[b] || (a < b ? -1 : 1),
+  );
   // Cross-border genealogy: an edge is cross-border when its two endpoints' clean `country`
   // fields differ (298 of 452 edges — 66%). borderNode collects every card that touches such
   // an edge, so the "trace border crossings" toggle can lift exactly those nodes.
@@ -103,6 +116,48 @@
     return meta;
   }
   const { anc, desc } = TA.lineage(byId);
+  // Hover-preview lineage: on node hover WHEN NOTHING IS SELECTED, lift that node's ancestry +
+  // descendants (its lit set) out of the quiet resting web and dim the rest — no state change, no
+  // full re-render, just per-element opacity/class toggles. The lit set (some nodes light ~58)
+  // is CACHED per id so repeated hovers don't recompute anc()/desc().
+  const litCache = new Map();
+  const litFor = id => {
+    let s = litCache.get(id);
+    if (!s) {
+      s = new Set([id]);
+      anc(id, s);
+      desc(id, s);
+      litCache.set(id, s);
+    }
+    return s;
+  };
+  let hovering = false;
+  function hoverPreview(id) {
+    // Only active in the calm resting state — selection, border-trace and search own the canvas
+    // when they're on, and each already paints its own edge/node opacities.
+    if (sel || traceBorder || q) return;
+    const paths = svg.querySelectorAll("path");
+    if (id == null) {
+      if (!hovering) return;
+      hovering = false;
+      paths.forEach(p => {
+        p.setAttribute("stroke-opacity", "0.12");
+        p.setAttribute("stroke-width", "1");
+      });
+      stage.querySelectorAll(".c.hovdim").forEach(e => e.classList.remove("hovdim"));
+      return;
+    }
+    hovering = true;
+    const lit = litFor(id);
+    paths.forEach(p => {
+      const on = lit.has(decodeURIComponent(p.dataset.a)) && lit.has(decodeURIComponent(p.dataset.b));
+      p.setAttribute("stroke-opacity", on ? "0.8" : "0.06");
+      p.setAttribute("stroke-width", on ? "1.6" : "1");
+    });
+    stage.querySelectorAll(".c").forEach(e => {
+      e.classList.toggle("hovdim", !lit.has(decodeURIComponent(e.dataset.id)));
+    });
+  }
   function pinLabels() {
     document.querySelectorAll("#stage .lanelab").forEach(e => {
       if (e.dataset.bl == null) e.dataset.bl = parseFloat(e.style.left) || 0;
@@ -178,7 +233,9 @@
           op = xb ? 0.55 : 0.04;
           sw = xb ? 1.5 : 1;
         } else {
-          op = 0.25;
+          // Resting layer dropped 0.25 -> 0.12 so the at-rest 452-edge web reads as quiet texture
+          // rather than a hairball; hover-preview (below) lifts one node's lineage out of it.
+          op = 0.12;
           sw = 1;
         }
         const dash = xb ? ' stroke-dasharray="4 3"' : "";
@@ -187,7 +244,8 @@
           x2 = b.x,
           y2 = b.y + H / 2,
           mx = (x1 + x2) / 2;
-        e += `<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${sw}"${dash}/>`;
+        // data-a/data-b (encoded card ids) let hoverPreview() re-opacity edges without a re-render.
+        e += `<path data-a="${encodeURIComponent(c.id)}" data-b="${encodeURIComponent(en)}" d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${sw}"${dash}/>`;
         // Mark a cross-border hop on the lit lineage with a dot at the bezier midpoint.
         if (lit && on && xb)
           e += `<circle cx="${mx}" cy="${(y1 + y2) / 2}" r="3" fill="${KC[byId[en].kind]}" fill-opacity="0.9"/>`;
@@ -204,7 +262,11 @@
         render();
       };
       el.onmousemove = ev => showTip(id, ev);
-      el.onmouseleave = () => (tip.style.display = "none");
+      el.onmouseenter = () => hoverPreview(id);
+      el.onmouseleave = () => {
+        tip.style.display = "none";
+        hoverPreview(null);
+      };
       kbd(el, () => el.onclick(), byId[id] && byId[id].name);
     });
     pinLabels();
