@@ -7,7 +7,9 @@
   const byId = TA.byId(CARDS);
   const ERAS = window.ERAS;
   const EVENTS = window.EVENTS;
-  const minY = 540,
+  const minY = 100, // extended from 540 so Cai Lun's Paper (105) & Euclid (300) sit at their
+    // true positions instead of clamping to the axis edge. Log-in-time means the dense modern
+    // era only compresses ~6% (tradeoff verified acceptable); the sparse pre-1500 gains room.
     maxY = 2030,
     x0 = 170,
     W = 118,
@@ -25,8 +27,19 @@
     tmin[t] = Math.min(tmin[t] ?? 9999, c.year || 9999);
   });
   const lanes = [...new Set(CARDS.map(prim))].sort((a, b) => tmin[a] - tmin[b]);
+  // Cross-border genealogy: an edge is cross-border when its two endpoints' clean `country`
+  // fields differ (298 of 452 edges — 66%). borderNode collects every card that touches such
+  // an edge, so the "trace border crossings" toggle can lift exactly those nodes.
+  const borderNode = new Set();
+  for (const c of CARDS)
+    for (const en of c.en || [])
+      if (byId[en] && c.country !== byId[en].country) {
+        borderNode.add(c.id);
+        borderNode.add(en);
+      }
   let sel = null,
     q = "",
+    traceBorder = false, // resting web -> literal picture of ideas jumping countries
     hist = "",
     pos = {},
     layoutH = 0,
@@ -128,12 +141,22 @@
         h += `<div class="yr" style="left:${gx + 2}px;top:${8 + ERABAND}px;color:#6d6961;font-weight:600">${y}</div>`;
     }
     for (const m of meta) h += `<div class="lanelab" style="top:${m[1]}px">${m[0]}</div>`;
+    let nMatch = 0;
     for (const c of CARDS) {
       if (!pos[c.id]) continue; // card's lane was filtered out by the history scope
-      const dimd = (lit && !lit.has(c.id)) || !inHist(c);
-      const hl = (lit && lit.has(c.id) && c.id !== sel) || (q && c.name.toLowerCase().includes(q));
+      const match = q && c.name.toLowerCase().includes(q);
+      if (match) nMatch++;
+      // Dimming stacks: history scope, then the active mode (lineage OR border-trace), then
+      // search. A search always dims its non-matches so a hit reads even on the wide stage.
+      let dimd = !inHist(c);
+      if (lit) dimd = dimd || !lit.has(c.id);
+      else if (traceBorder) dimd = dimd || !borderNode.has(c.id);
+      if (q) dimd = dimd || !match;
+      const hl = (lit && lit.has(c.id) && c.id !== sel) || match;
       h += `<div class="c${dimd ? " dim" : ""}${c.id === sel ? " sel" : ""}${hl ? " hl" : ""}" data-id="${encodeURIComponent(c.id)}" style="left:${c._x}px;top:${c._y}px;border-left-color:${KC[c.kind]}"><div class="ti" style="color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.name}</div><div class="yt">${c.kind} · ${c.year}</div></div>`;
     }
+    const qc = document.getElementById("qcount");
+    if (qc) qc.textContent = q ? `${nMatch} of ${CARDS.length}` : "";
     [...stage.querySelectorAll(".c,.lanelab,.gl,.yr,.bg")].forEach(e => e.remove());
     stage.insertAdjacentHTML("beforeend", h);
     let e = "";
@@ -143,14 +166,31 @@
       for (const en of c.en || []) {
         const b = pos[en];
         if (!b) continue;
+        const xb = c.country !== byId[en].country; // edge crosses a national border
         const on = lit ? lit.has(c.id) && lit.has(en) : true;
-        const op = lit ? (on ? 0.9 : 0.05) : 0.25;
+        // Opacity by mode: lineage lights its path; border-trace faints same-country edges and
+        // lifts cross-border ones; resting keeps every edge at 0.25. Cross-border always dashes.
+        let op, sw;
+        if (lit) {
+          op = on ? 0.9 : 0.05;
+          sw = on ? 2 : 1;
+        } else if (traceBorder) {
+          op = xb ? 0.55 : 0.04;
+          sw = xb ? 1.5 : 1;
+        } else {
+          op = 0.25;
+          sw = 1;
+        }
+        const dash = xb ? ' stroke-dasharray="4 3"' : "";
         const x1 = a.x + W,
           y1 = a.y + H / 2,
           x2 = b.x,
           y2 = b.y + H / 2,
           mx = (x1 + x2) / 2;
-        e += `<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${lit && on ? 2 : 1}"/>`;
+        e += `<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" fill="none" stroke="${KC[byId[en].kind]}" stroke-opacity="${op}" stroke-width="${sw}"${dash}/>`;
+        // Mark a cross-border hop on the lit lineage with a dot at the bezier midpoint.
+        if (lit && on && xb)
+          e += `<circle cx="${mx}" cy="${(y1 + y2) / 2}" r="3" fill="${KC[byId[en].kind]}" fill-opacity="0.9"/>`;
       }
     }
     svg.innerHTML = e;
@@ -170,11 +210,32 @@
     pinLabels();
   }
   const showTip = TA.tooltip(tip, byId);
+  // Locate the earliest (leftmost) match and centre it in the scroll region, so a search on the
+  // 4300px-wide stage actually takes you to a hit instead of silently marking one off-screen.
+  function scrollToFirstMatch() {
+    if (!q) return;
+    let best = null;
+    for (const c of CARDS)
+      if (pos[c.id] && c.name.toLowerCase().includes(q) && (!best || pos[c.id].x < pos[best].x))
+        best = c.id;
+    if (!best) return;
+    scroll.scrollLeft = Math.max(0, pos[best].x + W / 2 - scroll.clientWidth / 2);
+    scroll.scrollTop = Math.max(0, pos[best].y + H / 2 - scroll.clientHeight / 2);
+    pinLabels();
+  }
   document.getElementById("q").oninput = e => {
     q = e.target.value.toLowerCase();
     try {
       setState({ q: q });
     } catch (e) {}
+    render();
+    scrollToFirstMatch();
+  };
+  document.getElementById("btrace").onclick = () => {
+    traceBorder = !traceBorder;
+    const b = document.getElementById("btrace");
+    b.classList.toggle("on", traceBorder);
+    b.setAttribute("aria-pressed", traceBorder ? "true" : "false");
     render();
   };
   try {
@@ -183,7 +244,14 @@
   document.getElementById("reset").onclick = () => {
     sel = null;
     q = "";
+    traceBorder = false;
     document.getElementById("q").value = "";
+    const b = document.getElementById("btrace");
+    b.classList.remove("on");
+    b.setAttribute("aria-pressed", "false");
+    try {
+      setState({ q: "" });
+    } catch (e) {}
     render();
   };
   // history selector (shared.js historyBar): single-select FILTER on #hist=,
