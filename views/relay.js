@@ -457,6 +457,47 @@
   const RULE = "#c2bbae";
   const LABEL = "#5f594f";
 
+  // Cameo footholds. A flagship blurb names a country ("then Veldhoven", "the web is Swiss")
+  // that holds only ONE card here, so it renders as an anonymous grey post at the argument's
+  // climax with no way back to the sentence. cameoOf finds exactly those marks — a single-card
+  // turn, coloured neutral (not one of the four legend hues), whose country the blurb actually
+  // names, by country name, by demonym, or by the card's own city. It surfaces nothing the
+  // blurb does not say, and adds no fifth hue: the tag is grey text at the mark.
+  const DEMONYM = {
+    Switzerland: "Swiss",
+    China: "Chinese",
+    Canada: "Canadian",
+    Netherlands: "Dutch",
+    Japan: "Japanese",
+    France: "French",
+    Italy: "Italian",
+    Sweden: "Swedish",
+    "South Korea": "Korean",
+    Taiwan: "Taiwanese",
+    India: "Indian",
+    Russia: "Russian",
+    Germany: "German",
+    "United Kingdom": "British",
+    USA: "American",
+  };
+  function cameoOf(model) {
+    const blurb = PANEL_COPY[model.label] || "";
+    if (!blurb) return [];
+    const out = [];
+    for (const r of model.turns) {
+      if (r.n !== 1 || colorOf(r.g) !== CTRY_NEUTRAL) continue; // one grey card only
+      const cities = String(r.cards[0].place || "")
+        .split(/[,\s]+/)
+        .filter(w => w.length > 3);
+      const named =
+        blurb.includes(r.g) ||
+        (DEMONYM[r.g] && blurb.includes(DEMONYM[r.g])) ||
+        cities.some(t => blurb.includes(t));
+      if (named) out.push({ g: r.g, year: r.start });
+    }
+    return out;
+  }
+
   // The axis band. Drawn twice: once at the top, once again above the index strip so
   // the small panels are never orphaned from their scale.
   // Returns two layers. `back` goes under the panels; `front` goes over them, because a
@@ -533,40 +574,43 @@
     return { back, front, h: H };
   }
 
-  function drawGutter(m, lay, M, flagship) {
-    const x = 8;
-    let s = lay.name
-      .map((l, i) =>
-        text(
-          x,
-          lay.top + 11 + i * (flagship ? 14 : 12),
-          esc(l),
-          `font-size="${flagship ? 12.5 : 10.5}" font-weight="600" fill="#1c1c1c"`,
-        ),
-      )
-      .join("");
-    let ty = lay.top + lay.head + (flagship ? 25 : 23);
+  // The gutter is HTML, not SVG, so it can be pinned to the left edge under horizontal scroll
+  // (see #gutlayer in relay.html and the pin handler in MOUNT). It is laid out at the SAME
+  // coordinates drawGutter drew — every offset is relative to the panel's own top, so the
+  // column stays glued to its panel through vertical scroll. `slotH` is the panel's full
+  // vertical slot (height + any min-height padding), so the opaque background of one panel
+  // meets the next with no seam for a scrolled-in mark to show through.
+  //
+  // A local text-line emitter: `by` is the SVG baseline the old code used; HTML boxes are
+  // positioned by their top, so drop the ascent (~0.8·fontSize) to land the baseline there.
+  function drawGutterHTML(m, lay, flagship, slotH) {
+    const gl = (by, fs, wt, col, s) =>
+      `<div class="gl" style="left:8px;right:6px;top:${f(by - fs * 0.8)}px;font-size:${fs}px;` +
+      `line-height:1;font-weight:${wt};color:${col}">${s}</div>`;
+    const fsName = flagship ? 12.5 : 10.5,
+      step = flagship ? 14 : 12;
+    let parts = lay.name.map((l, i) => gl(11 + i * step, fsName, 600, "#1c1c1c", esc(l))).join("");
+    let ty = lay.head + (flagship ? 25 : 23);
     // coverage meter — the panel's whole finding, before any mark is read
     const mw = flagship ? 116 : 92;
-    s += rect(x, ty - 6, mw, 5, `fill="#e2ddd3" rx="2.5"`);
+    parts += `<div class="gl" style="left:8px;top:${f(ty - 6)}px;width:${mw}px;height:5px;background:#e2ddd3;border-radius:2.5px"></div>`;
     if (m.cover > 0)
-      s += rect(x, ty - 6, Math.max(mw * m.cover, 1.5), 5, `fill="#3a352d" rx="2.5"`);
+      parts += `<div class="gl" style="left:8px;top:${f(ty - 6)}px;width:${f(Math.max(mw * m.cover, 1.5))}px;height:5px;background:#3a352d;border-radius:2.5px"></div>`;
     ty += flagship ? 13 : 11;
     // One stat line, not three: coverage + the honesty figure (how many turns are a single
     // card). The raw card count, the longest hold and the widest silence are DROPPED from the
     // gutter — the hold bar and the silence span already print those in the chart itself, so
     // the gutter was duplicating labels. Blurb carries the meaning; this line carries the caveat.
-    s += text(
-      x,
+    parts += gl(
       ty,
+      9.5,
+      400,
+      "#6d6961",
       `${Math.round(m.cover * 100)}% held · ${m.single} of ${m.turns.length} turns on one card`,
-      `font-size="9.5" fill="#6d6961"`,
     );
     if (flagship)
-      lay.prose.forEach((l, i) => {
-        s += text(x, ty + 14 + i * 12, esc(l), `font-size="10" fill="#5f594f"`);
-      });
-    return s;
+      lay.prose.forEach((l, i) => (parts += gl(ty + 14 + i * 12, 10, 400, "#5f594f", esc(l))));
+    return `<div class="gpanel" style="top:${f(lay.top)}px;width:${CFG.GUT}px;height:${f(slotH)}px">${parts}</div>`;
   }
 
   function drawPanel(m, lay, M, flagship) {
@@ -622,7 +666,7 @@
         w = Math.max(b - a, 3),
         col = colorOf(h.g);
       s +=
-        `<g><title>Hold ${esc(h.g)} ${h.a}–${h.b} · ${h.b - h.a} yr · ${h.n} cards · no gap over ${TENURE.maxGap} yr</title>` +
+        `<g data-ctry="${esc(h.g)}"><title>Hold ${esc(h.g)} ${h.a}–${h.b} · ${h.b - h.a} yr · ${h.n} cards · no gap over ${TENURE.maxGap} yr</title>` +
         rect(
           a - 2.5,
           lay.bandTop,
@@ -642,7 +686,7 @@
         lay.bandTop,
         M.post,
         M.bandH,
-        `fill="${colorOf(ctryOf(t.c))}"`,
+        `fill="${colorOf(ctryOf(t.c))}" data-ctry="${esc(ctryOf(t.c))}"`,
       );
 
     // 5 · the evidence rug — the dominant mark. Glyphs at full kind colour, each on a
@@ -685,6 +729,20 @@
       right = lx + tw(lab, M.hold) + 10;
       s += text(lx, lay.laneY - 2, esc(lab), `font-size="${M.hold}" fill="#4a453c"`);
     }
+
+    // 7 · cameo footholds — a grey tag under the mark of a single-card country the blurb names,
+    //     so "then Veldhoven" / "the web is Swiss" is findable on the chart. Flagship only (only
+    //     flagships carry a blurb). data-ctry lets the country trace dim these with the rest.
+    if (flagship)
+      for (const cm of cameoOf(m)) {
+        const cx = xOf(cm.year);
+        s += text(
+          cx,
+          lay.laneY - 2,
+          esc(cm.g),
+          `data-ctry="${esc(cm.g)}" text-anchor="middle" font-size="8" font-weight="600" fill="${CTRY_NEUTRAL}"`,
+        );
+      }
     return s;
   }
 
@@ -694,11 +752,14 @@
   function drawChart() {
     const AXH = 54;
     let body = "",
+      gut = "", // the sticky gutter column, built as HTML and pinned in MOUNT
       y = AXH + 10;
     for (const m of FLAGS) {
       const lay = layoutPanel(m, FLAG_M, y, true);
-      body += drawGutter(m, lay, FLAG_M, true) + drawPanel(m, lay, FLAG_M, true);
-      y += Math.max(lay.height, 104);
+      const slot = Math.max(lay.height, 104);
+      gut += drawGutterHTML(m, lay, true, slot);
+      body += drawPanel(m, lay, FLAG_M, true);
+      y += slot;
     }
     const divY = y + 2;
     const divider =
@@ -713,8 +774,10 @@
     y = axis2Top + AXH + 6;
     for (const m of INDEX) {
       const lay = layoutPanel(m, IDX_M, y, false);
-      body += drawGutter(m, lay, IDX_M, false) + drawPanel(m, lay, IDX_M, false);
-      y += Math.max(lay.height, 56);
+      const slot = Math.max(lay.height, 56);
+      gut += drawGutterHTML(m, lay, false, slot);
+      body += drawPanel(m, lay, IDX_M, false);
+      y += slot;
     }
     const h = y + 8;
     // Each axis owns only the band BELOW it, down to where the next one takes over. Passing
@@ -725,7 +788,7 @@
       a2 = drawAxis(axis2Top, h);
     // Gutters (in `front`) are opaque and were painted over `body`, slicing the one long
     // string that reaches past them — the index-strip heading. Divider goes in front of them.
-    return { h, svg: a1.back + a2.back + body + a1.front + a2.front + divider };
+    return { h, gut, svg: a1.back + a2.back + body + a1.front + a2.front + divider };
   }
 
   // ═══ 5 · COPY ═════════════════════════════════════════════════════════════
@@ -792,10 +855,16 @@
     `<span><svg width="26" height="11" aria-hidden="true"><rect x="0" y="0" width="26" height="11" fill="${SILENCE}"/><line x1="1" y1="5.5" x2="25" y2="5.5" stroke="${RULE}" stroke-dasharray="1 3"/></svg>silence</span>`;
   const topN = ctryRank.slice(0, CTRY_PAL.length);
   const tail = ctryRank.length - topN.length;
+  // Each named country is a trace trigger: hover or keyboard-focus lights that country's holds
+  // across every panel and dims the rest (wired in MOUNT). Focusable, with a hint in the label.
   const ctryLegendHTML = () =>
     "<span>Countries:</span>" +
     topN
-      .map(g => `<span><span class="sw" style="background:${colorOf(g)}"></span>${esc(g)}</span>`)
+      .map(
+        g =>
+          `<span class="ctryitem" tabindex="0" role="button" data-ctry="${esc(g)}" ` +
+          `aria-label="Trace ${esc(g)} across all panels"><span class="sw" style="background:${colorOf(g)}"></span>${esc(g)}</span>`,
+      )
       .join("") +
     (tail
       ? `<span><span class="sw" style="background:${CTRY_NEUTRAL}"></span>+${tail} others</span>`
@@ -819,7 +888,8 @@
         return (
           `<li title="Hold ${esc(h.g)} ${h.a}–${h.b} · ${esc(h.panel)} · ${d} yr · ${h.n} cards">` +
           `<span class="who" style="border-color:${colorOf(h.g)}">${esc(h.g)}</span>` +
-          `<span class="what">${esc(h.panel)} <i>${h.a}–${h.b}</i></span>` +
+          `<span class="what">${esc(h.panel)}</span>` +
+          `<span class="range">${h.a}–${h.b}</span>` +
           `<span class="bar"><b style="width:${((100 * d) / maxHold).toFixed(1)}%;background:${colorOf(h.g)}"></b></span>` +
           `<span class="len">${d} yr</span></li>`
         );
@@ -869,6 +939,20 @@
   svg.setAttribute("viewBox", "0 0 " + FULLW + " " + chart.h);
   svg.innerHTML = chart.svg;
 
+  // ── sticky gutter: the thread column is HTML, pinned to the left edge under horizontal
+  //    scroll. It rides the vertical scroll for free (absolute inside the scrolled #stage) and
+  //    is re-offset horizontally on scroll — the tree.js pinLabels pattern. At scrollLeft 0 no
+  //    transform is set, so the default render (and the golden capture) is untouched.
+  const scroll = document.getElementById("scroll");
+  const gutlayer = document.getElementById("gutlayer");
+  gutlayer.innerHTML = chart.gut;
+  const pinGutter = () => {
+    const x = scroll.scrollLeft;
+    gutlayer.style.transform = x ? `translateX(${x}px)` : "";
+  };
+  scroll.addEventListener("scroll", pinGutter, { passive: true });
+  pinGutter();
+
   document.getElementById("method").innerHTML = methodHTML();
   document.getElementById("axnote").innerHTML = axisNoteHTML();
   document.getElementById("kindleg").innerHTML = kindLegendHTML();
@@ -876,6 +960,42 @@
   document.getElementById("ctryleg").innerHTML = ctryLegendHTML();
   document.getElementById("ledger").innerHTML = ledgerHTML();
   document.getElementById("coda").innerHTML = codaHTML();
+
+  // ── country trace: follow one country's holds across every panel (the migration thesis).
+  //    Hover or keyboard-focus a legend country → its holds/cards/cameo tags stay lit and the
+  //    rest dim; a click (Enter/Space) locks it so the reader can scroll and keep the trace.
+  //    Presentation-only and interaction-only: nothing runs until a legend entry is engaged,
+  //    so the default capture is 0px changed. Reuses the data-ctry stamped on every mark.
+  const traceEls = svg.querySelectorAll("[data-ctry]");
+  const ctryItems = document.querySelectorAll("#ctryleg .ctryitem");
+  let lockedCtry = null;
+  const applyTrace = c => {
+    traceEls.forEach(
+      el => (el.style.opacity = !c || el.getAttribute("data-ctry") === c ? "" : "0.12"),
+    );
+    ctryItems.forEach(
+      el => (el.style.opacity = !c || el.getAttribute("data-ctry") === c ? "" : "0.4"),
+    );
+  };
+  ctryItems.forEach(el => {
+    const c = el.getAttribute("data-ctry");
+    el.addEventListener("mouseenter", () => applyTrace(c));
+    el.addEventListener("mouseleave", () => applyTrace(lockedCtry));
+    el.addEventListener("focus", () => applyTrace(c));
+    el.addEventListener("blur", () => applyTrace(lockedCtry));
+    const toggle = () => {
+      lockedCtry = lockedCtry === c ? null : c;
+      applyTrace(lockedCtry);
+      el.setAttribute("aria-pressed", lockedCtry === c ? "true" : "false");
+    };
+    el.addEventListener("click", toggle);
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggle();
+      }
+    });
+  });
 
   // "How this is measured" toggle: the method + axis note default hidden, so the header is
   // thesis + finding + chart. A native <button> already handles Enter/Space; do not add kbd().

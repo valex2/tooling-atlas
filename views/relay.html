@@ -28,8 +28,20 @@
 .legend .gly{font-size:12px}
 .legend svg{vertical-align:-1px}
 .legend .sw{display:inline-block;width:11px;height:11px;border-radius:2px;border:.5px solid rgba(0,0,0,.18)}
+/* country legend entries drive the cross-panel trace: focusable, so a keyboard reader can
+   follow one country's holds across every thread. Interactive-only — no resting pixels change. */
+.legend .ctryitem{cursor:pointer;border-radius:3px;padding:1px 2px;margin:-1px -2px}
+.legend .ctryitem:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
 .scroll{overflow:auto;border-top:.5px solid var(--line);height:calc(100vh - 130px);min-height:420px;background:#fcfbf9}
 #stage{position:relative}
+/* The sticky gutter. The thread name / meter / blurb column is HTML pinned to the left edge:
+   it scrolls VERTICALLY with the chart (absolute inside #stage, which is the scrolled content)
+   but is re-pinned HORIZONTALLY on scroll (translateX by scrollLeft, the tree.js pinLabels
+   pattern), so the reader never loses which thread a mark belongs to. Each .gpanel carries an
+   opaque background to occlude the marks that scroll under it. */
+#gutlayer{position:absolute;left:0;top:0;z-index:5;will-change:transform}
+#gutlayer .gpanel{position:absolute;left:0;background:#fcfbf9;overflow:hidden}
+#gutlayer .gpanel>.gl{position:absolute;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tip{position:fixed;pointer-events:none;background:#fff;border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:50}
 .tip .t{font-weight:600}.tip .m{color:var(--mut);font-size:10.5px;margin:2px 0 4px}.tip .s{font-size:11px;line-height:1.4}
 #chart [data-id]{cursor:pointer}
@@ -41,7 +53,9 @@
 .ledger li{display:flex;align-items:center;gap:8px;font-size:11px;line-height:1;padding:3px 0;border-bottom:.5px solid rgba(0,0,0,.07)}
 .ledger .who{flex:0 0 auto;font-weight:600;border-left:3px solid #999;padding-left:5px;white-space:nowrap}
 .ledger .what{flex:1 1 auto;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.ledger .what i{font-style:normal;color:#6d6961;font-variant-numeric:tabular-nums}
+/* The year range is the one column a reader is here for, so it never ellipsises: its own
+   fixed cell, tabular, no overflow. Only the panel name (.what) absorbs any clipping. */
+.ledger .range{flex:0 0 auto;color:#6d6961;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:2px}
 .ledger .bar{flex:0 0 74px;height:6px;background:#e9e5dd;border-radius:3px;overflow:hidden}
 .ledger .bar b{display:block;height:6px;border-radius:3px}
 .ledger .len{flex:0 0 42px;text-align:right;font-variant-numeric:tabular-nums;color:#3a352d}
@@ -78,7 +92,7 @@
 </div>
 </div>
 <div class="scroll" id="scroll" tabindex="0" role="region" aria-label="Relay canvas — scroll to pan across time and threads">
- <div id="stage"><svg id="chart" role="img" aria-label="The cards in each technology thread, the holds the record can carry, and the silence between them"></svg><div class="ledger" id="ledger"></div><div class="coda" id="coda"></div></div>
+ <div id="stage"><svg id="chart" role="img" aria-label="The cards in each technology thread, the holds the record can carry, and the silence between them"></svg><div id="gutlayer" aria-hidden="true"></div><div class="ledger" id="ledger"></div><div class="coda" id="coda"></div></div>
 </div>
 <div class="tip" id="tip"></div>
 <script src="../ta.js"></script>
