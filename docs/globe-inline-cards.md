@@ -76,3 +76,8 @@ Everything lives in `render()` and one small DOM node; no changes to `startTimer
 - **Do not put per-frame card state in the SVG string for the no-thread card.** Use the key-gated DOM overlay (`_nowId`) so rotate/zoom frames pay one integer compare, matching `#tlegend`/`#mcap`.
 - **Do not re-show the hover blurb or re-list the side index.** Drop `.s` significance (that's the `.tip`'s job) and never render toward "a list on the globe" (that's `#chips`). The cards are the *entering* tool, nothing more.
 - **Do not claim "each card" for the web state.** Be honest: the anonymous genealogy web shows one frontier card; "each card" is delivered where it can be legible — along the selected trace.
+
+---
+
+## Shipped
+Implemented as recommended: thread-scoped hop cards (≤3 riding firstMem's head — a full lead card at the newest crossing member + 1-2 opacity-tapered trail cards, emitted into the SVG string, collision-pruned against `placed`; dense-guard keeps the lead and sheds trail under collision/low-rsc) + a single corner `#nowcard` DOM overlay naming the global newest card, shown only while playing (no-thread web), data-keyed on id (never per-frame). render() stays ~4.3ms; deterministic (SELFCHECK stable); reduced-motion safe. Cold-open shows the frontier hop card on first load.

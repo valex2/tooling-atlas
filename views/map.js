@@ -125,12 +125,16 @@
   //   _eraTimer / _pendingEraMsg — debounce so a fast slider drag across several eras announces
   //                      only the last one (a play step lands its crossings seconds apart).
   //   _routeKey        — selThreads signature; the route string is rebuilt ONLY when it changes.
+  //   _nowId           — no-thread corner card: the frontier card id it currently names, so the
+  //                      #nowcard DOM node is rewritten ONLY on an id change (never per frame),
+  //                      exactly the _prevLeadCountry / _legendKey / _stepKey discipline.
   let _prevLeadCountry = null,
     _capTimer = null,
     _prevEra = null,
     _eraTimer = null,
     _pendingEraMsg = null,
-    _routeKey = null;
+    _routeKey = null,
+    _nowId = null;
   // item 8 (deep-link the moment): the hash carries the instant the globe shows — #t=<year> and
   // #rot=<lon,lat> — but it is written ONLY on gesture-END, never per render frame. render() runs
   // on every drag/scrub/play frame; writing history.replaceState there would thrash the URL. So
@@ -165,6 +169,26 @@
       p = lat * D2R,
       p0 = rotLat * D2R;
     return Math.sin(p0) * Math.sin(p) + Math.cos(p0) * Math.cos(p) * Math.cos(l) >= 0;
+  }
+  // Globe inline "hop card": a small warm panel pinned just below a thread member's dot, naming
+  // the tool as it populates. Pure string builder (≤4 nodes) concatenated into the per-frame `s`
+  // SVG string — no node binding, no animation (transience is the motion: the card is a pure
+  // function of T). `top`/`cx` are the panel's top edge and horizontal centre; `o` carries the
+  // already-computed name/sub/glyph/kind/colour/opacity/width/height so this stays a formatter.
+  const HOP_FS = 10;
+  function hopCard(cx, top, o) {
+    const x = cx - o.w / 2,
+      gx = x + 6,
+      tx = x + 18,
+      b1 = top + 6 + HOP_FS; // first-line baseline
+    let t = `<g class="hopcard" opacity="${o.op.toFixed(2)}" style="pointer-events:none">`;
+    t += `<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${o.w.toFixed(1)}" height="${o.h.toFixed(1)}" rx="6" ry="6" fill="rgba(245,243,239,.94)" stroke="rgba(0,0,0,.15)" stroke-width=".5"/>`;
+    t += `<rect x="${x.toFixed(1)}" y="${(top + 1).toFixed(1)}" width="2" height="${(o.h - 2).toFixed(1)}" fill="${o.col}"/>`;
+    t += `<text x="${gx.toFixed(1)}" y="${b1.toFixed(1)}" font-size="${HOP_FS}" font-weight="700" fill="${KC[o.kind]}">${o.glyph}</text>`;
+    t += `<text x="${tx.toFixed(1)}" y="${b1.toFixed(1)}" font-size="${HOP_FS}" font-weight="600" fill="#2a2620">${TA.esc(o.name)}</text>`;
+    if (o.sub)
+      t += `<text x="${gx.toFixed(1)}" y="${(b1 + 11.5).toFixed(1)}" font-size="8.5" fill="#6d6961">${TA.esc(o.sub)}</text>`;
+    return t + `</g>`;
   }
   function ringPath(ring) {
     let pts = [];
@@ -382,6 +406,89 @@
           }
         }
       }
+      // Inline hop cards (the hero): name each tool as it populates along the FIRST selected
+      // thread. Walk firstMem newest→older, emit up to N=3 cards — a full LEAD card at the newest
+      // crossing member plus 1–2 opacity-tapered TRAIL cards — anchored just below each member's
+      // dot. Pure function of T (no keyframes ⇒ reduced-motion-safe, scrub-cheap); ≤~15 nodes
+      // appended to the `s` string already shipped by svg.innerHTML. Collision-pruned against the
+      // shared `placed` array (emitted AFTER head-labels, BEFORE hubs: a card may evict a hub
+      // label — usually the trace's own city — but never a head-label). Dense-cluster guard: the
+      // LEAD card ALWAYS renders (it is the trace's current location); TRAIL cards are the first
+      // dropped — a trail collision, or low zoom, sheds to N=1 (lead only), never the lead.
+      if (firstMem && firstMem.length) {
+        const N = 3,
+          lowZoom = rsc < 0.8,
+          hcol = threadColor(selThreads[0]),
+          cands = [];
+        // collect up to N visible, front-hemisphere members newest→older; collapse consecutive
+        // co-located members (the loop's own `same` threshold) into one card with a ×count.
+        for (let i = firstMem.length - 1; i >= 0 && cands.length < N; i--) {
+          const hd = firstMem[i];
+          if (!vis(hd.lon, hd.lat)) continue;
+          const P = proj(hd.lon, hd.lat);
+          if (P[2] < 0) continue;
+          const prev = cands[cands.length - 1];
+          if (prev && Math.abs(prev.hd.lat - hd.lat) < 0.2 && Math.abs(prev.hd.lon - hd.lon) < 0.2) {
+            prev.count++;
+            continue;
+          }
+          cands.push({ hd, P, i, count: 1 });
+        }
+        let trailBlocked = lowZoom;
+        cands.forEach((cd, idx) => {
+          const isLead = idx === 0,
+            hd = cd.hd,
+            P = cd.P,
+            xn = cd.count > 1 ? ` ×${cd.count}` : "";
+          const name = hd.name.length > 22 ? hd.name.slice(0, 21) + "…" : hd.name;
+          const sub = isLead ? `${centerOf(hd)} · ${hd.year}${xn}` : `${hd.year}${xn}`;
+          // recency taper (the arc loop's own rec), floored a touch higher for card legibility
+          const rec =
+            firstMem.length > 1 ? Math.max(0.35, cd.i / (firstMem.length - 1)) : 1;
+          const op = isLead ? 1 : Math.max(0.5, rec);
+          // width fits max(glyph+name, sub); lead is two lines, trail one
+          const nameW = 18 + name.length * HOP_FS * 0.56;
+          const subW = 6 + sub.length * 8.5 * 0.54;
+          const w = Math.max(nameW, isLead ? subW : 0) + 10;
+          const h = isLead ? 2 * 6 + HOP_FS + 11.5 : 2 * 6 + HOP_FS - 2;
+          const top = P[1] + 8 * rsc,
+            cyc = top + h / 2;
+          const collide = placed.some(
+            q => Math.abs(q.x - P[0]) < (q.w + w) / 2 + 2 && Math.abs(q.y - cyc) < h / 2 + HOP_FS / 2 + 3,
+          );
+          if (!isLead && (trailBlocked || collide)) {
+            trailBlocked = true; // shed this trail card and every older one — never the lead
+            return;
+          }
+          placed.push({ x: P[0], y: cyc, w });
+          s += hopCard(P[0], top, {
+            name,
+            sub,
+            glyph: KGLY[hd.kind] || "",
+            kind: hd.kind,
+            col: hcol,
+            op,
+            w,
+            h,
+          });
+        });
+      }
+    }
+    // Frontier: the GLOBAL newest located card with year ≤ T (max-year, tie-break id). ONE
+    // O(283) scan that yields BOTH the #hint count and the frontier card — it replaces the old
+    // count-only `#hint` filter, so it is net-zero added work. Drives the no-thread corner card
+    // (#nowcard) and its halo, and the #hint text below.
+    let hintN = 0,
+      frontier = null;
+    for (const c of CARDS) {
+      if (c.lat == null || c.year > T) continue;
+      hintN++;
+      if (
+        !frontier ||
+        c.year > frontier.year ||
+        (c.year === frontier.year && c.id.localeCompare(frontier.id) > 0)
+      )
+        frontier = c;
     }
     // dots — depth-sorted so front-of-globe dots draw over back ones (one sort over ≤283
     // per frame is cheap). Emitted after the arcs, so every dot sits above the web.
@@ -411,6 +518,15 @@
           ? ` stroke="${threadColor(onT)}" stroke-width="2"`
           : "";
       s += `<circle class="dot" data-id="${encodeURIComponent(c.id)}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r.toFixed(1)}" fill="${KC[c.kind]}" fill-opacity="${fo}"${ring}/>`;
+    }
+    // No-thread web: ring the global frontier dot, generalising the item-3 halo to the playhead
+    // of the anonymous genealogy web. Only while playing, so the settled web is pixel-identical.
+    if (!selThreads.length && playing && frontier && vis(frontier.lon, frontier.lat)) {
+      const P = proj(frontier.lon, frontier.lat);
+      if (P[2] >= 0) {
+        const hr = (9 * rsc).toFixed(1);
+        s += `<circle cx="${P[0].toFixed(1)}" cy="${P[1].toFixed(1)}" r="${hr}" fill="none" stroke="${KC[frontier.kind]}" stroke-width="1.5" stroke-opacity=".9"/>`;
+      }
     }
     // region labels (density clusters), sized by card count, collision-pruned (densest placed
     // first). Shares `placed` with the thread head-labels above — those were emitted first, so
@@ -488,7 +604,36 @@
     // dots/countries are handled by one set of delegated listeners on the svg (set up once,
     // below) — no per-frame re-binding of hundreds of nodes while dragging/playing.
     document.getElementById("hint").textContent =
-      `${CARDS.filter(c => c.lat != null && c.year <= T).length} of ${CARDS.length} tools through ${T}`;
+      `${hintN} of ${CARDS.length} tools through ${T}`;
+    // No-thread corner focus card (#nowcard): the anonymous genealogy web has no single geographic
+    // frontier to pin per-dot cards to, so name just the ONE global frontier tool in the corner.
+    // A DOM node OUTSIDE the svg, rewritten ONLY when its card id changes (the _nowId closure,
+    // same discipline as #mcap / _legendKey / _stepKey) — so drag/rotate/zoom frames pay one id
+    // compare, never a DOM write. Shown only while playing (matching the halo above) so the
+    // settled web is pixel-identical; #nowcard:empty ⇒ display:none, no layout shift at rest.
+    const now = document.getElementById("nowcard");
+    if (now) {
+      if (!selThreads.length && playing && frontier) {
+        if (frontier.id !== _nowId) {
+          _nowId = frontier.id;
+          now.style.borderLeftColor = KC[frontier.kind];
+          now.innerHTML =
+            `<span class="nc-g" style="color:${KINK[frontier.kind]}">${KGLY[frontier.kind]}</span>` +
+            `<span class="nc-n">${TA.esc(frontier.name)}</span>` +
+            `<span class="nc-s">${frontier.kind} · ${TA.esc(centerOf(frontier))} · ${frontier.year}</span>`;
+          const reduce =
+            window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (!reduce) {
+            now.classList.remove("pulse");
+            void now.offsetWidth; // restart the keyframe
+            now.classList.add("pulse");
+          }
+        }
+      } else if (_nowId !== null) {
+        _nowId = null;
+        now.innerHTML = ""; // :empty ⇒ display:none, settled/thread states unchanged
+      }
+    }
     // Item 3: live migration caption (single-thread only; hidden for none/multi). Pure text off
     // firstMem — a cheap textContent write, no per-node cost, on a STATIC node updated in place.
     const cap = document.getElementById("mcap");

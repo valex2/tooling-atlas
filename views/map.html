@@ -82,6 +82,21 @@ svg.drag{cursor:grabbing}
 .mcap:empty{display:none}
 @keyframes mcap-pulse{from{color:var(--ink)}to{color:#5a544c}}
 .mcap.pulse{animation:mcap-pulse .9s ease-out}
+/* Globe inline card — no-thread corner focus card naming the global frontier tool as it
+   populates during play. A DOM overlay (NOT in the svg), key-gated by _nowId in map.js, so
+   drag/zoom frames never rewrite it. :empty ⇒ display:none, so the settled web has no card and
+   no layout shift. Pinned bottom-left of the globe, clear of #tlegend/#centerlist (top-left).
+   The left border colour is set inline to the frontier kind (KCOL). */
+.nowcard{position:absolute;left:12px;bottom:32px;z-index:22;pointer-events:none;max-width:230px;
+  background:rgba(245,243,239,.94);border:.5px solid rgba(0,0,0,.15);border-left:3px solid #999;
+  border-radius:7px;padding:5px 9px;box-shadow:0 2px 8px rgba(0,0,0,.14);
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;line-height:1.25}
+.nowcard:empty{display:none}
+.nowcard .nc-g{font-size:12px;font-weight:700;flex:0 0 auto}
+.nowcard .nc-n{font-size:12px;font-weight:600;color:#2a2620}
+.nowcard .nc-s{flex:0 0 100%;font-size:10.5px;color:#6d6961}
+@keyframes nowcard-pulse{from{background:rgba(255,252,246,.99)}to{background:rgba(245,243,239,.94)}}
+.nowcard.pulse{animation:nowcard-pulse .9s ease-out}
 /* item 10: era ticks on the #yr slider. The slider wraps in .yrwrap (a flex column: the range on
    top, a thin era strip below) so the strip never intercepts the thumb's own pointer. Each .etk is
    a keyboard-reachable button spanning its era's segment, with a 1px boundary tick at its left; a
@@ -173,7 +188,7 @@ svg.drag{cursor:grabbing}
 </div>
 <!-- BALANCE PASS: the content region. flex:1 under the header, position:relative — the globe and
      the era sidebar are inset:0 absolutes inside it, so they always begin below the real header. -->
-<div id="content"><div id="wrap"><svg id="g" role="img" tabindex="0" aria-label="Interactive globe of where each tool was invented. Drag or arrow keys to spin; scroll, pinch, or the plus and minus keys to zoom; double-tap to focus."></svg></div><div id="chips"></div></div>
+<div id="content"><div id="wrap"><svg id="g" role="img" tabindex="0" aria-label="Interactive globe of where each tool was invented. Drag or arrow keys to spin; scroll, pinch, or the plus and minus keys to zoom; double-tap to focus."></svg><div class="nowcard" id="nowcard" aria-hidden="true"></div></div><div id="chips"></div></div>
 <div class="tip" id="tip"></div>
 <div class="hint" id="hint"></div>
 <div class="sr-only" id="mlive" aria-live="polite" aria-atomic="true"></div>
