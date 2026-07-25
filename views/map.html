@@ -34,6 +34,23 @@ svg.drag{cursor:grabbing}
 .mrow{cursor:pointer;padding:4px 6px;border-radius:6px}
 .mrow[aria-selected=true]{background:#efece6}
 #mresults:empty{display:none}
+/* R3: SCOPE + LOCATE — the second toolbar row read as two coherent clusters, echoing the R2
+   transport surface. LOCATE (find-a-tool) is a single control that sits left after reset; SCOPE
+   (the "Histories" bar + the threads picker) groups into one subtle warm pill to its right,
+   since both scope what's shown/traced. The pill stays left-packed (NOT floated to the far
+   edge) so the cluster never slides under the #chips sidebar, which overlaps the right end of
+   this row — matching where the pre-R3 controls already sat. .anchor is the position:relative
+   wrapper that keeps #mresults / #threadpanel positioning ABSOLUTE under their own triggers,
+   desktop and phone. Presentational only: every id / aria / handler is unchanged, and #mresults
+   & #threadpanel keep their inline display:none because map.js toggles them by reading
+   .style.display. The inline styles that used to live on these four elements now live here. */
+.anchor{position:relative;display:inline-block}
+.scope{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  background:#faf8f4;border:.5px solid var(--line);border-radius:16px;padding:2px 10px}
+.scope .histbar{margin:0}          /* neutralise the shared 6px top margin inside the pill */
+#msearch{border:.5px solid var(--line);border-radius:13px;padding:4px 11px;font-size:12px;width:150px}
+#mresults{position:absolute;top:32px;left:0;z-index:60;background:#fff;border:.5px solid var(--line);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.16);width:240px;max-width:80vw;max-height:320px;overflow:auto;padding:4px}
+#threadpanel{position:absolute;top:34px;right:0;z-index:60;background:#fff;border:.5px solid var(--line);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.16);width:236px;max-height:360px;overflow:auto;padding:6px}
 .tip{position:fixed;pointer-events:none;background:var(--card);border:.5px solid var(--line);border-left:4px solid #999;border-radius:8px;padding:8px 10px;font-size:12px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.16);display:none;z-index:50}
 .tip .t{font-weight:600}.tip .m{color:var(--mut);font-size:10.5px;margin:2px 0 4px}.tip .s{font-size:11px;line-height:1.4}
 .hint{position:absolute;left:16px;bottom:8px;font-size:11px;color:#6d6961}
@@ -115,7 +132,13 @@ svg.drag{cursor:grabbing}
     <span class="yrwrap"><input type="range" id="yr" min="0" max="1000" value="1000" aria-label="Year"><span class="eratk" id="eratk" role="group" aria-label="Jump to a historical era"></span></span>
     <span class="mcap" id="mcap" aria-hidden="true"></span>
   </div>
-  <button class="btn" id="reset">reset view</button><span style="position:relative;display:inline-block"><input id="msearch" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="mresults" aria-label="Find a tool" autocomplete="off" placeholder="find a tool…" style="border:.5px solid var(--line);border-radius:13px;padding:4px 11px;font-size:12px;width:150px"><div id="mresults" role="listbox" aria-label="Search results" style="display:none;position:absolute;top:32px;left:0;z-index:60;background:#fff;border:.5px solid var(--line);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.16);width:240px;max-width:80vw;max-height:320px;overflow:auto;padding:4px"></div></span><div class="histbar" id="histbar"></div><span style="position:relative;display:inline-block"><button class="btn" id="threadbtn" aria-expanded="false" aria-controls="threadpanel">threads ▾</button><div id="threadpanel" style="display:none;position:absolute;top:34px;right:0;z-index:60;background:#fff;border:.5px solid var(--line);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.16);width:236px;max-height:360px;overflow:auto;padding:6px"></div></span>
+  <button class="btn" id="reset">reset view</button>
+  <!-- R3: LOCATE — find-a-tool. A single control; the .anchor wrapper keeps #mresults absolute
+       under the input. -->
+  <span class="anchor"><input id="msearch" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="mresults" aria-label="Find a tool" autocomplete="off" placeholder="find a tool…"><div id="mresults" role="listbox" aria-label="Search results" style="display:none"></div></span>
+  <!-- R3: SCOPE — histories + the threads picker, grouped into one subtle pill (both scope what's
+       shown/traced). The threads .anchor keeps #threadpanel absolute under its button. -->
+  <div class="scope"><div class="histbar" id="histbar"></div><span class="anchor"><button class="btn" id="threadbtn" aria-expanded="false" aria-controls="threadpanel">threads ▾</button><div id="threadpanel" style="display:none"></div></span></div>
 </div>
 <!-- glyphs are filled from KGLY in shared.js by map.js: kind must survive colour-blindness and B/W printing -->
 <div class="legend"><span><i style="background:var(--Measure)"></i><span class="gly" data-k="Measure" aria-hidden="true"></span> Measure</span><span aria-hidden="true" style="color:#b9b4ab;margin:0 -6px">→</span><span><i style="background:var(--Model)"></i><span class="gly" data-k="Model" aria-hidden="true"></span> Model</span><span aria-hidden="true" style="color:#b9b4ab;margin:0 -6px">→</span><span><i style="background:var(--Make)"></i><span class="gly" data-k="Make" aria-hidden="true"></span> Make</span><span aria-hidden="true" style="color:#b9b4ab;margin:0 -6px">→</span><span><i style="background:var(--Manufacture)"></i><span class="gly" data-k="Manufacture" aria-hidden="true"></span> Manufacture</span><span>drag or arrow-keys to spin · scroll or pinch to zoom · double-tap to focus · colour = job, opacity = recency · pick threads to trace their migration over time (press play)</span></div>
