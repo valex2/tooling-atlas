@@ -1286,6 +1286,38 @@
       render();
     }
   });
+  // ===================================================================================
+  // CONTROLS — INVENTORY (R1 audit). Each control -> DOM id(s) -> handler(s) -> state it
+  // reads (R) / writes (W). Module-level closures the handlers share live above this seam
+  // (rotLon/rotLat/scale, T, playing/timer, selThreads, curHist, foundId, threadSlot,
+  // repaintThreads, _ready, W/H, and the helpers render()/renderChips()/flyTo()/stop() ...).
+  //
+  // TRANSPORT (playback + time)
+  //   #yr + #ylab   yr.oninput                 W:T,ylab; stop(),clearInvite(),render,renderChips
+  //   #play         .onclick                   R/W:playing,timer,playV; W:T,yr.value,ylab; startTimer/stop
+  //   #speed        speedBtn.onclick           R/W:playSpeed; re-arms startTimer while playing
+  //   #stepprev/#stepnext .onclick->step(dir)  R:selThreads,T,threadYears; W:T,yr.value,ylab (disabled set in render via _stepKey)
+  //   #migrate      migrateBtn.onclick         W:selThreads,T,yr.value,ylab; setThreads,repaintThreads,then #play.click
+  //   #eratk        buildEraTicks + .etk.onclick  R:YS,ERAS,yearSlider; W:T,yr.value,ylab; stop(),clearInvite()
+  //   helpers: clearInvite(), yearSlider(), stop(), startTimer(), threadYears(), step()
+  // SCOPE (filter the corpus)
+  //   #threadbtn/#threadpanel  IIFE paint()    R/W:selThreads,threadSlot; W:repaintThreads; setThreads,announceRoutes,render
+  //   #histbar      historyBar(onPick)         W:curHist; repaintThreads(),render
+  // LOCATE (find / fly to a place)
+  //   #msearch/#mresults  IIFE (input/keydown/doc-click)  W:foundId,rotLon,rotLat,scale; render,showDetail
+  //   .xnav         document click             R:byId; flyTo()  (builds-on/enables geographic hop)
+  //   #centerlist   buildCenterList + .clbtn.onclick  R:CENTERS,anchored; showCenter()->flyTo+panel
+  // VIEW (rotate / zoom / reset)
+  //   #reset        .onclick                   W:rotLon,rotLat,scale; render
+  //   window resize -> render ; svg mousemove/mouseleave -> tooltip (showTip)
+  //   NB: the pointer/touch/wheel/keyboard rotate-zoom handlers + focusZoom()/openAt() stay
+  //       ABOVE this seam (large, already contiguous, adjacent) — deliberately NOT moved (see foot).
+  // REFERENCE (read-only readouts) — no discrete listener; driven inside render()/announceRoutes():
+  //   #mcap live migration caption · #mlive aria-live route/era announcements · #hint count
+  // BOOT / hydrate / cold-open run LAST, in their exact original order (see the BOOT band below).
+  // ===================================================================================
+  // ===== CONTROLS =====
+  // ----- Transport -----
   const yr = document.getElementById("yr"),
     ylab = document.getElementById("ylab");
   // The cold-open (item 2) pulses #play to invite a replay; ANY playback engagement fulfils
@@ -1422,12 +1454,6 @@
     stepNext = document.getElementById("stepnext");
   if (stepPrev) stepPrev.onclick = () => step(-1);
   if (stepNext) stepNext.onclick = () => step(1);
-  document.getElementById("reset").onclick = () => {
-    rotLon = cLon;
-    rotLat = Math.min(55, cLat + 6);
-    scale = Math.min(W, H) * 0.46;
-    render();
-  };
   // item 5: "watch the lead migrate" — the whole argument in one click, for a returning user who
   // cleared the thread. Select the canonical thread, rewind T to its FIRST member year, and start
   // the existing play handler (which itself honours reduced-motion by jumping to the final state).
@@ -1449,6 +1475,168 @@
       renderChips();
       if (!playing) document.getElementById("play").click();
     };
+  // item 10: era ticks on the #yr slider + click-an-era to jump. The slider is quantile-mapped
+  // (qYear/yearSlider), so it has no temporal orientation on its own. Mark each ERAS boundary at
+  // yearSlider(startYear) — the SAME mapping the thumb uses — so a tick lines up with where the
+  // thumb sits at that year, and make each era a keyboard-reachable button that JUMPS T to that
+  // era's start. --thr/--thd (thumb radius / width, in map.html) inset the tick track by the
+  // native thumb geometry so the mark under value V matches the thumb centre at value V. Built
+  // ONCE: positions are fixed functions of the YS quantiles, never recomputed per frame.
+  (function buildEraTicks() {
+    const host = document.getElementById("eratk");
+    if (!host) return;
+    const min = YS[0],
+      max = YS[YS.length - 1];
+    // only eras that overlap the data span get a tick (earlier eras would pile up at slider 0)
+    const bounds = ERAS.filter(e => e[2] > min && e[1] <= max);
+    host.innerHTML = bounds
+      .map((e, i) => {
+        const name = e[0],
+          start = e[1];
+        const f = Math.min(1, Math.max(0, yearSlider(start) / 1000));
+        const nf = i < bounds.length - 1 ? Math.min(1, Math.max(0, yearSlider(bounds[i + 1][1]) / 1000)) : 1;
+        // left = thumb-centre position for this year; width spans to the next boundary so the whole
+        // era segment is a click target (a 1px tick alone is unhittable). Both use (100% - --thd)
+        // and the --thr offset, matching the thumb's own travel.
+        const left = `calc(var(--thr) + ${f.toFixed(4)} * (100% - var(--thd)))`;
+        const width = `calc(${Math.max(0, nf - f).toFixed(4)} * (100% - var(--thd)))`;
+        return `<button type="button" class="etk" data-y="${start}" style="left:${left};width:${width}" aria-label="Jump to the ${TA.esc(name)} era, from ${start}" title="${TA.esc(name)} · ${start}"></button>`;
+      })
+      .join("");
+    host.querySelectorAll(".etk").forEach(b => {
+      b.onclick = () => {
+        stop();
+        clearInvite();
+        const y = +b.dataset.y;
+        // jump T to the era's start year; the thumb follows via the same yearSlider() mapping the
+        // tick is positioned with, so thumb and tick coincide. render()+renderChips() keep the
+        // globe, caption and tools list in step (and, being a gesture, schedule the #t hash write).
+        T = y;
+        yr.value = yearSlider(y);
+        ylab.textContent = T;
+        render();
+        renderChips();
+      };
+    });
+  })();
+  // ----- Scope -----
+  // multi-select thread picker — each selected thread traces its migration path in its own colour
+  (function () {
+    const btn = document.getElementById("threadbtn"),
+      pan = document.getElementById("threadpanel");
+    if (!btn || !pan) return;
+    const counts = {};
+    CARDS.forEach(c => c.threads.forEach(t => (counts[t] = (counts[t] || 0) + 1)));
+    const allThs = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    // When a history is active the popover shows only that history's threads (spec §5,
+    // step 1); All shows every thread as before. selThreads is left intact — history and
+    // thread are independent hash params, so a trace can survive a history scope change.
+    const ths = () =>
+      curHist && window.threadsIn
+        ? allThs.filter(t => window.threadsIn(curHist).indexOf(t) >= 0)
+        : allThs;
+    function paint() {
+      window.threadSlots(threadSlot, selThreads);
+      // .trow rows and #tclr are keyboard-operable now, but this rebuilds pan.innerHTML
+      // wholesale — so activating a row destroyed the focused element and dropped focus
+      // to <body>, making the list untraversable by keyboard. Remember and restore.
+      const act = document.activeElement,
+        keep =
+          act && act.closest && act.closest("#threadpanel")
+            ? act.id === "tclr"
+              ? "#tclr"
+              : act.classList.contains("trow")
+                ? `.trow[data-t="${act.dataset.t}"]`
+                : null
+            : null;
+      pan.innerHTML =
+        ths()
+          .map(t => {
+            const on = selThreads.includes(t);
+            const col = on ? threadColor(t) : "#ccc";
+            const row = `<div class="trow" data-t="${encodeURIComponent(t)}" style="display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:6px;cursor:pointer;font-size:12px;${on ? "background:#f3efe9" : ""}"><span style="width:10px;height:10px;border-radius:50%;background:${col};flex:0 0 auto;border:.5px solid rgba(0,0,0,.2)"></span><span style="flex:1">${t}</span><span style="color:#6d6961;font-size:10.5px">${counts[t]}</span></div>`;
+            // Item 4: the same ordered migration the arc encodes, as text under each selected
+            // row — so colour-blind / low-vision sighted users get the route too, not just AT.
+            const route = on
+              ? `<div class="troute" style="font-size:10px;color:#6d6961;line-height:1.35;margin:-1px 0 4px 24px;white-space:normal">${TA.esc(routeString(t))}</div>`
+              : "";
+            return row + route;
+          })
+          .join("") +
+        (selThreads.length
+          ? `<div id="tclr" style="text-align:center;color:#5a544c;cursor:pointer;font-size:11.5px;padding:6px 0 2px;border-top:.5px solid #eee;margin-top:4px">clear all</div>`
+          : "");
+      btn.textContent =
+        (selThreads.length
+          ? selThreads.length + (selThreads.length > 1 ? " threads" : " thread")
+          : "threads") + " ▾";
+      pan.querySelectorAll(".trow").forEach(r => {
+        const t = decodeURIComponent(r.dataset.t);
+        r.onclick = () => {
+          const i = selThreads.indexOf(t);
+          if (i >= 0) selThreads.splice(i, 1);
+          else selThreads.push(t);
+          try {
+            setThreads(selThreads);
+          } catch (e) {}
+          paint();
+          render();
+        };
+        const verb = selThreads.includes(t) ? "Deselect thread " : "Select thread ";
+        kbd(r, () => r.onclick(), verb + t + " (" + counts[t] + " tools)");
+      });
+      const clr = document.getElementById("tclr");
+      if (clr) {
+        clr.onclick = () => {
+          selThreads = [];
+          try {
+            setThreads([]);
+          } catch (e) {}
+          paint();
+          render();
+        };
+        kbd(clr, () => clr.onclick(), "Clear all selected threads");
+      }
+      if (keep) {
+        const back = pan.querySelector(keep);
+        if (back) back.focus();
+      }
+      // Route string to the aria-live region — self-guarded, so it announces only when the
+      // set of selected threads actually changed (not on a history-scope repaint).
+      announceRoutes();
+    }
+    // aria-expanded on the button is the only thing that tells AT whether the panel is
+    // open — the label ("3 threads") is identical in both states.
+    function setOpen(open, refocus) {
+      pan.style.display = open ? "block" : "none";
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (!open && refocus) btn.focus();
+    }
+    btn.onclick = ev => {
+      ev.stopPropagation();
+      setOpen(pan.style.display === "none");
+    };
+    pan.addEventListener("click", ev => ev.stopPropagation());
+    document.addEventListener("click", () => setOpen(false));
+    // Escape closes and hands focus back to the button, so keyboard users are not
+    // stranded inside a panel they can only leave by tabbing past every thread.
+    document.addEventListener("keydown", ev => {
+      if (ev.key === "Escape" && pan.style.display !== "none") setOpen(false, true);
+    });
+    repaintThreads = paint;
+    paint();
+  })();
+  // History selector — the shared historyBar renders the pills (one source of markup);
+  // picking a history scopes the thread popover and dims off-history dots. Incoming
+  // #hist= is already honoured at load via curHist (read above) feeding paint()/render().
+  if (window.historyBar) {
+    window.historyBar(document.getElementById("histbar"), function (hk) {
+      curHist = hk || "";
+      if (repaintThreads) repaintThreads();
+      render();
+    });
+  }
+  // ----- Locate -----
   // "find a tool" — a results dropdown under the search box. Typing shows up to 8 name
   // matches (exact/prefix/word-start ranked first); hovering or arrowing a row PREVIEWS it
   // (spin-to + highlight ring, the old behaviour); clicking a row or pressing Enter also
@@ -1594,131 +1782,6 @@
       if (box.style.display !== "none") close(true);
     });
   })();
-  // multi-select thread picker — each selected thread traces its migration path in its own colour
-  (function () {
-    const btn = document.getElementById("threadbtn"),
-      pan = document.getElementById("threadpanel");
-    if (!btn || !pan) return;
-    const counts = {};
-    CARDS.forEach(c => c.threads.forEach(t => (counts[t] = (counts[t] || 0) + 1)));
-    const allThs = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-    // When a history is active the popover shows only that history's threads (spec §5,
-    // step 1); All shows every thread as before. selThreads is left intact — history and
-    // thread are independent hash params, so a trace can survive a history scope change.
-    const ths = () =>
-      curHist && window.threadsIn
-        ? allThs.filter(t => window.threadsIn(curHist).indexOf(t) >= 0)
-        : allThs;
-    function paint() {
-      window.threadSlots(threadSlot, selThreads);
-      // .trow rows and #tclr are keyboard-operable now, but this rebuilds pan.innerHTML
-      // wholesale — so activating a row destroyed the focused element and dropped focus
-      // to <body>, making the list untraversable by keyboard. Remember and restore.
-      const act = document.activeElement,
-        keep =
-          act && act.closest && act.closest("#threadpanel")
-            ? act.id === "tclr"
-              ? "#tclr"
-              : act.classList.contains("trow")
-                ? `.trow[data-t="${act.dataset.t}"]`
-                : null
-            : null;
-      pan.innerHTML =
-        ths()
-          .map(t => {
-            const on = selThreads.includes(t);
-            const col = on ? threadColor(t) : "#ccc";
-            const row = `<div class="trow" data-t="${encodeURIComponent(t)}" style="display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:6px;cursor:pointer;font-size:12px;${on ? "background:#f3efe9" : ""}"><span style="width:10px;height:10px;border-radius:50%;background:${col};flex:0 0 auto;border:.5px solid rgba(0,0,0,.2)"></span><span style="flex:1">${t}</span><span style="color:#6d6961;font-size:10.5px">${counts[t]}</span></div>`;
-            // Item 4: the same ordered migration the arc encodes, as text under each selected
-            // row — so colour-blind / low-vision sighted users get the route too, not just AT.
-            const route = on
-              ? `<div class="troute" style="font-size:10px;color:#6d6961;line-height:1.35;margin:-1px 0 4px 24px;white-space:normal">${TA.esc(routeString(t))}</div>`
-              : "";
-            return row + route;
-          })
-          .join("") +
-        (selThreads.length
-          ? `<div id="tclr" style="text-align:center;color:#5a544c;cursor:pointer;font-size:11.5px;padding:6px 0 2px;border-top:.5px solid #eee;margin-top:4px">clear all</div>`
-          : "");
-      btn.textContent =
-        (selThreads.length
-          ? selThreads.length + (selThreads.length > 1 ? " threads" : " thread")
-          : "threads") + " ▾";
-      pan.querySelectorAll(".trow").forEach(r => {
-        const t = decodeURIComponent(r.dataset.t);
-        r.onclick = () => {
-          const i = selThreads.indexOf(t);
-          if (i >= 0) selThreads.splice(i, 1);
-          else selThreads.push(t);
-          try {
-            setThreads(selThreads);
-          } catch (e) {}
-          paint();
-          render();
-        };
-        const verb = selThreads.includes(t) ? "Deselect thread " : "Select thread ";
-        kbd(r, () => r.onclick(), verb + t + " (" + counts[t] + " tools)");
-      });
-      const clr = document.getElementById("tclr");
-      if (clr) {
-        clr.onclick = () => {
-          selThreads = [];
-          try {
-            setThreads([]);
-          } catch (e) {}
-          paint();
-          render();
-        };
-        kbd(clr, () => clr.onclick(), "Clear all selected threads");
-      }
-      if (keep) {
-        const back = pan.querySelector(keep);
-        if (back) back.focus();
-      }
-      // Route string to the aria-live region — self-guarded, so it announces only when the
-      // set of selected threads actually changed (not on a history-scope repaint).
-      announceRoutes();
-    }
-    // aria-expanded on the button is the only thing that tells AT whether the panel is
-    // open — the label ("3 threads") is identical in both states.
-    function setOpen(open, refocus) {
-      pan.style.display = open ? "block" : "none";
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-      if (!open && refocus) btn.focus();
-    }
-    btn.onclick = ev => {
-      ev.stopPropagation();
-      setOpen(pan.style.display === "none");
-    };
-    pan.addEventListener("click", ev => ev.stopPropagation());
-    document.addEventListener("click", () => setOpen(false));
-    // Escape closes and hands focus back to the button, so keyboard users are not
-    // stranded inside a panel they can only leave by tabbing past every thread.
-    document.addEventListener("keydown", ev => {
-      if (ev.key === "Escape" && pan.style.display !== "none") setOpen(false, true);
-    });
-    repaintThreads = paint;
-    paint();
-  })();
-  // History selector — the shared historyBar renders the pills (one source of markup);
-  // picking a history scopes the thread popover and dims off-history dots. Incoming
-  // #hist= is already honoured at load via curHist (read above) feeding paint()/render().
-  if (window.historyBar) {
-    window.historyBar(document.getElementById("histbar"), function (hk) {
-      curHist = hk || "";
-      if (repaintThreads) repaintThreads();
-      render();
-    });
-  }
-  window.addEventListener("resize", render);
-  // Delegated interaction (bound once): tooltip on dot hover, open card on dot click,
-  // open country panel on country click (unless the gesture was a drag).
-  svg.addEventListener("mousemove", e => {
-    const d = e.target.closest(".dot");
-    if (d) showTip(decodeURIComponent(d.dataset.id), e);
-    else tip.style.display = "none";
-  });
-  svg.addEventListener("mouseleave", () => (tip.style.display = "none"));
   // Opening a dot/country is handled by the pointer flow above (openAt on a clean tap), so a
   // drag never opens anything and a synthesized click is not relied on. No click listener here.
   // item 9: follow a builds-on / enables link as a GEOGRAPHIC hop. shared.js showDetail wires each
@@ -1761,50 +1824,28 @@
       b.onclick = () => showCenter(decodeURIComponent(b.dataset.center));
     });
   })();
-  // item 10: era ticks on the #yr slider + click-an-era to jump. The slider is quantile-mapped
-  // (qYear/yearSlider), so it has no temporal orientation on its own. Mark each ERAS boundary at
-  // yearSlider(startYear) — the SAME mapping the thumb uses — so a tick lines up with where the
-  // thumb sits at that year, and make each era a keyboard-reachable button that JUMPS T to that
-  // era's start. --thr/--thd (thumb radius / width, in map.html) inset the tick track by the
-  // native thumb geometry so the mark under value V matches the thumb centre at value V. Built
-  // ONCE: positions are fixed functions of the YS quantiles, never recomputed per frame.
-  (function buildEraTicks() {
-    const host = document.getElementById("eratk");
-    if (!host) return;
-    const min = YS[0],
-      max = YS[YS.length - 1];
-    // only eras that overlap the data span get a tick (earlier eras would pile up at slider 0)
-    const bounds = ERAS.filter(e => e[2] > min && e[1] <= max);
-    host.innerHTML = bounds
-      .map((e, i) => {
-        const name = e[0],
-          start = e[1];
-        const f = Math.min(1, Math.max(0, yearSlider(start) / 1000));
-        const nf = i < bounds.length - 1 ? Math.min(1, Math.max(0, yearSlider(bounds[i + 1][1]) / 1000)) : 1;
-        // left = thumb-centre position for this year; width spans to the next boundary so the whole
-        // era segment is a click target (a 1px tick alone is unhittable). Both use (100% - --thd)
-        // and the --thr offset, matching the thumb's own travel.
-        const left = `calc(var(--thr) + ${f.toFixed(4)} * (100% - var(--thd)))`;
-        const width = `calc(${Math.max(0, nf - f).toFixed(4)} * (100% - var(--thd)))`;
-        return `<button type="button" class="etk" data-y="${start}" style="left:${left};width:${width}" aria-label="Jump to the ${TA.esc(name)} era, from ${start}" title="${TA.esc(name)} · ${start}"></button>`;
-      })
-      .join("");
-    host.querySelectorAll(".etk").forEach(b => {
-      b.onclick = () => {
-        stop();
-        clearInvite();
-        const y = +b.dataset.y;
-        // jump T to the era's start year; the thumb follows via the same yearSlider() mapping the
-        // tick is positioned with, so thumb and tick coincide. render()+renderChips() keep the
-        // globe, caption and tools list in step (and, being a gesture, schedule the #t hash write).
-        T = y;
-        yr.value = yearSlider(y);
-        ylab.textContent = T;
-        render();
-        renderChips();
-      };
-    });
-  })();
+  // ----- View -----
+  // (rotate/zoom via the pointer/touch/wheel/keyboard handlers + focusZoom/openAt above; only
+  //  #reset, the resize repaint, and the hover-tooltip are wired here.)
+  document.getElementById("reset").onclick = () => {
+    rotLon = cLon;
+    rotLat = Math.min(55, cLat + 6);
+    scale = Math.min(W, H) * 0.46;
+    render();
+  };
+  window.addEventListener("resize", render);
+  // Delegated interaction (bound once): tooltip on dot hover, open card on dot click,
+  // open country panel on country click (unless the gesture was a drag).
+  svg.addEventListener("mousemove", e => {
+    const d = e.target.closest(".dot");
+    if (d) showTip(decodeURIComponent(d.dataset.id), e);
+    else tip.style.display = "none";
+  });
+  svg.addEventListener("mouseleave", () => (tip.style.display = "none"));
+  // ----- Reference -----
+  // #mcap (migration caption), #mlive (aria-live routes/era crossings) and #hint are updated
+  // INSIDE render()/announceRoutes() above — no standalone control wiring to place in this seam.
+  // ===== BOOT (mount · #card / #t,#rot hydrate · cold-open) =====
   T = qYear(1);
   document.getElementById("ylab").textContent = T;
   render();

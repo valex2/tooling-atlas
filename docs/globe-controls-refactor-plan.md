@@ -35,7 +35,7 @@ Refactor **one cluster per iteration**, never the whole bar at once, so nothing 
 ## Iteration order (safest → most visible)
 | Iter | Cluster | Focus | Status |
 |------|---------|-------|--------|
-| R1 | Back-end audit + seams | Map every control's DOM/handler/state; extract a single `controls` init section; NO visual change (0px) — pure code reorganization, prove it | pending |
+| R1 | Back-end audit + seams | Map every control's DOM/handler/state; extract a single `controls` init section; NO visual change (0px) — pure code reorganization, prove it | **done** |
 | R2 | Transport | Group play/migrate/stepper/speed/slider/caption into one transport surface; unify their wiring; the time story reads as one control | pending |
 | R3 | Scope + Locate | Tidy the histories bar + thread picker + find-a-tool grouping and spacing | pending |
 | R4 | View + Reference | Reset/zoom grouped; demote the legend to a clean reference key; final toolbar balance pass | pending |
@@ -51,3 +51,4 @@ the batch A–G globe features — reorganize their controls, don't change what 
 
 ## Shipped log
 - (iterations append here)
+- R1: extracted a sectioned `// ===== CONTROLS =====` seam (Transport / Scope / Locate / View / Reference sub-sections) + a `// ===== BOOT =====` band, with an audit inventory (control→id→handler→state) at the head. PROVEN a pure move+comment reorg: the sorted non-comment code-line multiset is byte-identical before/after (0 code lines added/removed/changed), globe 0px (4 runs), 45/45 functional-sweep assertions pass. Gives R2-R4 one sub-section each to edit.
