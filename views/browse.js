@@ -19,6 +19,10 @@
   const ERAS = window.ERAS;
   const allThreads = [...new Set(DATA.flatMap(c => c.threads))].sort();
   const byName = Object.fromEntries(DATA.map(c => [c.name, c]));
+  // Display-only shortening of the one over-long country label. This is NOT a geography
+  // re-derivation (region/regionGroup are DATA) — just a shorter render of c.country, which
+  // stays the filter/sort/search key untouched.
+  const ctryLabel = c => (c === "United States of America" ? "United States" : c || "");
 
   const MODES = ["cards", "table", "coverage"];
   const SUBS = {
@@ -35,6 +39,7 @@
     selT = [],
     goal = "",
     decade = "",
+    country = "",
     hist = "",
     sortK = "year", // Table-only; kept as a module var (NOT hashed — no URL pollution)
     sortDir = 1;
@@ -46,6 +51,7 @@
     if (st.q) q = st.q;
     if (st.goal) goal = st.goal;
     if (st.decade) decade = st.decade;
+    if (st.country) country = st.country; // carries #country= in (Coverage → Table drill)
     if (st.hist && historyByKey(st.hist)) hist = st.hist; // carries #hist= in
     const m = validMode(st.mode);
     if (m) mode = m;
@@ -77,6 +83,7 @@
         q: q || "",
         goal: goal || "",
         decade: decade || "",
+        country: country || "",
         hist: hist || "",
       });
     } catch (e) {}
@@ -142,6 +149,7 @@
     selT = [];
     goal = "";
     decade = "";
+    country = "";
     hist = "";
     try {
       setHistory("");
@@ -172,6 +180,7 @@
       .map(t => ` · <span class="tpill" data-t="${encodeURIComponent(t)}">${t} ✕</span>`)
       .join("");
     if (decade) html += ` · <span class="tpill" id="cdec">${decade}s ✕</span>`;
+    if (country) html += ` · <span class="tpill" id="cctry">${ctryLabel(country)} ✕</span>`;
     countEl.innerHTML = html;
     const cd = document.getElementById("cdec");
     if (cd) {
@@ -183,6 +192,16 @@
       // A removable filter pill acts as a button — make it Tab-reachable + Enter/Space (kbd),
       // else a keyboard user has no way to drop one filter (the reset button clears them all).
       kbd(cd, () => cd.onclick(), "Remove decade filter " + decade + "s");
+    }
+    const cc = document.getElementById("cctry");
+    if (cc) {
+      const label = ctryLabel(country);
+      cc.onclick = () => {
+        country = "";
+        syncHash();
+        renderActive();
+      };
+      kbd(cc, () => cc.onclick(), "Remove country filter " + label);
     }
     countEl.querySelectorAll(".tpill[data-t]").forEach(el => {
       el.onclick = () => {
@@ -204,6 +223,7 @@
       if (selT.length && !threadMatch(c, selT)) return false;
       if (goal && c.goal !== goal) return false;
       if (decade && Math.floor(c.year / 10) * 10 !== +decade) return false;
+      if (country && c.country !== country) return false;
       if (q) {
         const hay = (
           c.name +
@@ -211,6 +231,8 @@
           (c.person || "") +
           " " +
           (c.place || "") +
+          " " +
+          (c.country || "") +
           " " +
           c.threads.join(" ") +
           " " +
@@ -220,6 +242,25 @@
       }
       return true;
     });
+  }
+
+  // Shared zero-results state (Cards + Table). When search/filters over-filter to nothing, both
+  // modes otherwise show a blank canvas + the stale boilerplate hint; this states it plainly and
+  // gives a one-click way out (reusing the reset path so the URL/pills/history clear together).
+  function zeroStateHTML() {
+    return (
+      '<div class="zero" role="status">' +
+      '<div class="zh">No tools match</div>' +
+      "<p class=\"zp\">Nothing in the atlas fits the current search and filters. Widen the search or clear them to see all " +
+      DATA.length +
+      " tools.</p>" +
+      '<button class="chip" id="zeroclear" type="button">Clear filters</button>' +
+      "</div>"
+    );
+  }
+  function wireZeroClear() {
+    const b = document.getElementById("zeroclear");
+    if (b) b.onclick = () => resetEl.onclick();
   }
 
   // ===================== CARDS MODE (from deck.html) =====================
@@ -292,6 +333,13 @@
     const v = filtered().sort((a, b) => a.year - b.year);
     rail();
     renderCount(v.length, "cards");
+    if (v.length === 0) {
+      railEl.className = "";
+      railEl.innerHTML = "";
+      modebody.innerHTML = zeroStateHTML();
+      wireZeroClear();
+      return;
+    }
     modebody.innerHTML =
       '<div class="grid" id="grid"></div><p class="hint">Generated from the live card notes. Curator notes are intentionally omitted — the deck shows only what a reader sees.</p>';
     document.getElementById("grid").innerHTML = v.map(cardHTML).join("");
@@ -338,6 +386,7 @@
     ["kind", "Kind"],
     ["year", "Year"],
     ["place", "Place"],
+    ["country", "Country"],
     ["threads", "Threads"],
     ["links", "Links"],
     ["sig", "Significance"],
@@ -394,6 +443,12 @@
     return r;
   }
   function renderTable() {
+    if (filtered().length === 0) {
+      renderCount(0, "tools");
+      modebody.innerHTML = zeroStateHTML();
+      wireZeroClear();
+      return;
+    }
     if (!document.getElementById("head"))
       modebody.innerHTML =
         '<table id="tbl"><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table>';
@@ -405,6 +460,7 @@
   <td><b>${c.name}</b><div class="thr">${c.person || ""}</div></td>
   <td><span class="kpill" style="background:${KCOL[c.kind]}1f;color:${KINK[c.kind]}"><span aria-hidden="true">${KGLY[c.kind]}</span> ${c.kind}</span></td>
   <td>${c.year}</td><td>${c.place || ""}</td>
+  <td>${ctryLabel(c.country)}</td>
   <td class="thr">${c.threads.join(", ")}</td>
   <td title="builds on ${c.bo.length}, enables ${c.en.length}">${c.bo.length}→${c.en.length}</td>
   <td class="sig">${c.sig || ""}</td></tr>`,
@@ -463,10 +519,13 @@
       ).join('<span aria-hidden="true" class="lsep">→</span>') +
       "</div>" +
       '<div class="grid">' +
-      '<div class="card"><h2>By kind</h2><div id="cov-kind"></div></div>' +
-      '<div class="card"><h2>By decade</h2><div id="cov-decade"></div></div>' +
-      '<div class="card full"><h2>Threads by size</h2><div id="cov-thread"></div></div>' +
+      // Matrix leads: it is the coverage argument (red = gap, nothing written yet).
       '<div class="card full"><h2>Coverage — era × kind <span style="font-weight:400;color:var(--mut)">(red = gap, nothing written yet)</span></h2><div id="cov-matrix"></div></div>' +
+      // The two short bar panels sit side by side so neither stretches to the tall lists' height.
+      '<div class="card"><h2>By kind</h2><div id="cov-kind"></div></div>' +
+      '<div class="card"><h2>By country <span style="font-weight:400;color:var(--mut)">(top 12 · bar = kind mix, % = made here)</span></h2><div id="cov-country"></div></div>' +
+      '<div class="card full"><h2>Threads by size</h2><div id="cov-thread"></div></div>' +
+      '<div class="card full"><h2>By decade</h2><div id="cov-decade"></div></div>' +
       "</div></div>";
     // Coverage is scoped by History ONLY (the per-tool bar is hidden). Letting kind/q/thread filter
     // it would empty columns and turn every red gap cell into "nothing matching your filter" — a
@@ -490,6 +549,28 @@
       k => KCOL[k] || "#999",
       k => "#mode=table&kind=" + encodeURIComponent(k),
     );
+    // by country (top 12, sorted desc) — the essay's central axis. The bar is stacked by kind so
+    // the making mix (Make + Manufacture, the thesis) reads at a glance; the % suffix states the
+    // making share outright. Counts are a live recount of scope's c.country; each row drills to
+    // the country-filtered Table.
+    const cByC = {};
+    scope.forEach(c => {
+      if (!c.country) return;
+      (cByC[c.country] = cByC[c.country] || []).push(c);
+    });
+    const ctrys = Object.keys(cByC).sort((a, b) => cByC[b].length - cByC[a].length);
+    const cmax = Math.max(1, ...ctrys.map(k => cByC[k].length));
+    document.getElementById("cov-country").innerHTML = ctrys
+      .slice(0, 12)
+      .map(k => {
+        const list = cByC[k],
+          n = list.length,
+          e = encodeURIComponent(k);
+        const made = list.filter(c => c.kind === "Make" || c.kind === "Manufacture").length;
+        const pctMade = Math.round((made / n) * 100);
+        return `<a class="row" href="#mode=table&country=${e}" style="text-decoration:none;color:inherit"><span class="lab" title="${k}">${ctryLabel(k)}</span>${segBar(perKind(list), n, cmax, 220)}<span class="n">${n}</span><span class="n" style="color:var(--accent)" title="Made here: ${made} of ${n} are Make or Manufacture">${pctMade}%</span></a>`;
+      })
+      .join("");
     // by decade (stacked by kind)
     const decCards = {};
     scope.forEach(c => {
@@ -686,6 +767,7 @@
       q = st.q || "";
       goal = st.goal || "";
       decade = st.decade || "";
+      country = st.country || "";
       hist = st.hist && historyByKey(st.hist) ? st.hist : "";
       qEl.value = q;
       goalEl.value = goal;
