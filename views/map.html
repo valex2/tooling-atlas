@@ -9,7 +9,14 @@
 :root{--ink:#1c1c1c;--mut:#6f6f6f;--line:rgba(0,0,0,.12);--bg:#f5f3ef;--card:#fff;
 --Measure:#3266ad;--Model:#8a4fb3;--Make:#b06a1e;--Manufacture:#2f8f6b;}
 *{box-sizing:border-box}html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+/* BALANCE PASS (R4): the body is a flex COLUMN — a natural-height header (masthead + the R2/R3
+   toolbar rows + the reference key) stacked over a content region that flexes to fill the rest.
+   The globe + sidebar live INSIDE that region as inset:0 absolutes, so the content offset is
+   whatever the header actually measures — no hardcoded 120px that a taller toolbar overruns. */
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;flex-direction:column}
+#appnav{flex:0 0 auto}
+.top{flex:0 0 auto}                 /* header: natural height, never compressed by the globe */
+#content{position:relative;flex:1 1 auto;min-height:0}   /* content region: fills the rest, positioning context for #wrap/#chips */
 .top{padding:12px 16px 6px}h1{font-size:18px;font-weight:600;margin:0 0 4px}
 .sub{color:var(--mut);font-size:12.5px;line-height:1.4;margin:0 0 6px;max-width:660px}
 .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:12px}
@@ -24,10 +31,17 @@ body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 -apple-system,
 .btn:hover{background:#eceae4}.btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 input[type=range]{flex:1;min-width:160px;accent-color:var(--ink)}
 .ylab{font-weight:600;font-size:15px;min-width:48px}
-.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--mut);margin-top:4px}
-.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:-1px;margin-right:4px}
-#wrap{position:absolute;inset:120px 292px 0 0}
-#chips{position:absolute;top:120px;right:0;width:292px;bottom:0;overflow:auto;border-left:.5px solid var(--line);background:#fbfaf8;padding:8px 10px}
+/* (b) REFERENCE KEY (R4): the kinds sequence + the gesture hint are a KEY, not a control. A thin
+   rule above and a quieter, warmer, smaller treatment set it apart from the toolbar it used to sit
+   flush against — it now reads as a legend you consult, not a row you operate. Content unchanged. */
+.legend{display:flex;gap:9px 14px;flex-wrap:wrap;align-items:center;font-size:11px;color:#8a857c;
+  margin-top:8px;padding-top:7px;border-top:.5px solid var(--line);line-height:1.45}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;margin-right:4px;opacity:.85}
+.legend>span:last-child{font-style:italic;color:#9a958c}   /* the gesture hint sits quietest of all */
+/* BALANCE PASS: #wrap/#chips are inset:0 within #content — the fixed 120px top offset is gone, so
+   the globe always begins exactly below the header no matter how tall the toolbar wraps. */
+#wrap{position:absolute;inset:0 292px 0 0}
+#chips{position:absolute;top:0;right:0;width:292px;bottom:0;overflow:auto;border-left:.5px solid var(--line);background:#fbfaf8;padding:8px 10px}
 svg{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
 svg.drag{cursor:grabbing}
 #g .dot,#g .cty{cursor:pointer}
@@ -45,6 +59,11 @@ svg.drag{cursor:grabbing}
    & #threadpanel keep their inline display:none because map.js toggles them by reading
    .style.display. The inline styles that used to live on these four elements now live here. */
 .anchor{position:relative;display:inline-block}
+/* (a) VIEW cluster (R4): reset-view is spatial framing, so it gets the same subtle warm pill the
+   R2 transport / R3 scope clusters use — a coherent grouped control rather than a bare button
+   floating at the head of row 2. One control today; the pill marks it as the "View" group. */
+.viewgrp{display:inline-flex;align-items:center;gap:8px;
+  background:#faf8f4;border:.5px solid var(--line);border-radius:16px;padding:2px 8px}
 .scope{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
   background:#faf8f4;border:.5px solid var(--line);border-radius:16px;padding:2px 10px}
 .scope .histbar{margin:0}          /* neutralise the shared 6px top margin inside the pill */
@@ -103,9 +122,16 @@ svg.drag{cursor:grabbing}
 #centerlist .clbtn:hover,#centerlist .clbtn:focus{background:#f3efe9;outline:2px solid rgba(28,28,28,.35);outline-offset:-2px}
 #centerlist .cl-t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #centerlist .cl-n{color:#6d6961;font-size:10.5px;flex:0 0 auto}
-/* phone: the 292px era rail can't share a narrow screen with the globe — stack them */
+/* phone: the 292px era rail can't share a narrow screen with the globe — stack them. The
+   flex-column body + #content region are a DESKTOP device: on phone the header and globe
+   already stack in normal flow, so we return to the original block layout (body:block,
+   #content:contents ⇒ #wrap/#chips flow as direct body children). This keeps the phone
+   render byte-for-byte what it was — the flex path's sub-pixel globe placement otherwise
+   trips a compositing-layer race that makes the mobile globe rasterise nondeterministically. */
 @media (max-width:760px){
  html,body{height:auto}
+ body{display:block}
+ #content{display:contents}
  #wrap{position:relative;inset:auto;width:100%;height:62vh}
  #chips{position:relative;top:auto;right:auto;width:auto;bottom:auto;height:auto;max-height:46vh;
    border-left:0;border-top:.5px solid var(--line)}
@@ -132,7 +158,9 @@ svg.drag{cursor:grabbing}
     <span class="yrwrap"><input type="range" id="yr" min="0" max="1000" value="1000" aria-label="Year"><span class="eratk" id="eratk" role="group" aria-label="Jump to a historical era"></span></span>
     <span class="mcap" id="mcap" aria-hidden="true"></span>
   </div>
-  <button class="btn" id="reset">reset view</button>
+  <!-- R4 (a): VIEW cluster — spatial framing (reset the rotation/zoom). Grouped into the same
+       subtle pill as the transport / scope clusters so it no longer reads as a stray button. -->
+  <div class="viewgrp" role="group" aria-label="View"><button class="btn" id="reset">reset view</button></div>
   <!-- R3: LOCATE — find-a-tool. A single control; the .anchor wrapper keeps #mresults absolute
        under the input. -->
   <span class="anchor"><input id="msearch" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="mresults" aria-label="Find a tool" autocomplete="off" placeholder="find a tool…"><div id="mresults" role="listbox" aria-label="Search results" style="display:none"></div></span>
@@ -143,7 +171,9 @@ svg.drag{cursor:grabbing}
 <!-- glyphs are filled from KGLY in shared.js by map.js: kind must survive colour-blindness and B/W printing -->
 <div class="legend"><span><i style="background:var(--Measure)"></i><span class="gly" data-k="Measure" aria-hidden="true"></span> Measure</span><span aria-hidden="true" style="color:#b9b4ab;margin:0 -6px">→</span><span><i style="background:var(--Model)"></i><span class="gly" data-k="Model" aria-hidden="true"></span> Model</span><span aria-hidden="true" style="color:#b9b4ab;margin:0 -6px">→</span><span><i style="background:var(--Make)"></i><span class="gly" data-k="Make" aria-hidden="true"></span> Make</span><span aria-hidden="true" style="color:#b9b4ab;margin:0 -6px">→</span><span><i style="background:var(--Manufacture)"></i><span class="gly" data-k="Manufacture" aria-hidden="true"></span> Manufacture</span><span>drag or arrow-keys to spin · scroll or pinch to zoom · double-tap to focus · colour = job, opacity = recency · pick threads to trace their migration over time (press play)</span></div>
 </div>
-<div id="wrap"><svg id="g" role="img" tabindex="0" aria-label="Interactive globe of where each tool was invented. Drag or arrow keys to spin; scroll, pinch, or the plus and minus keys to zoom; double-tap to focus."></svg></div><div id="chips"></div>
+<!-- BALANCE PASS: the content region. flex:1 under the header, position:relative — the globe and
+     the era sidebar are inset:0 absolutes inside it, so they always begin below the real header. -->
+<div id="content"><div id="wrap"><svg id="g" role="img" tabindex="0" aria-label="Interactive globe of where each tool was invented. Drag or arrow keys to spin; scroll, pinch, or the plus and minus keys to zoom; double-tap to focus."></svg></div><div id="chips"></div></div>
 <div class="tip" id="tip"></div>
 <div class="hint" id="hint"></div>
 <div class="sr-only" id="mlive" aria-live="polite" aria-atomic="true"></div>
