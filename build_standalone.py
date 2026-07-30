@@ -151,12 +151,15 @@ shell = """<!doctype html><html lang="en"><head><meta charset="utf-8">
  @media (max-width:620px){h1{font-size:36px}.lede{font-size:16px}.views{grid-template-columns:1fr}
   .gauge{min-width:50%;flex-basis:50%}
   .m{grid-template-columns:28px 20px 1fr;grid-auto-flow:row}.m .md{grid-column:1/-1}}
+ .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--ink,#1c1c1c);color:#fff;padding:8px 14px;border-radius:0 0 8px 0;text-decoration:none;font-size:13px}
+ .skip:focus{left:0}
 </style></head><body>
+<a class="skip" href="#shellmain">Skip to main content</a>
 <header>
  <span class="brand" data-k="Home"><span class="dot"></span>Tooling Atlas</span>
  <nav id="tabs"></nav>
 </header>
-<main>__HOME__<iframe id="frame" title="Tooling Atlas view" hidden></iframe></main>
+<main id="shellmain" role="main" tabindex="-1">__HOME__<iframe id="frame" title="Tooling Atlas view" hidden></iframe></main>
 <script>
 const VIEWS=__DATA__, ORDER=__ORDER__, TABS=["Home"].concat(ORDER);
 const tabs=document.getElementById('tabs'),frame=document.getElementById('frame'),home=document.getElementById('home');

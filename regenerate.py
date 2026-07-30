@@ -252,7 +252,7 @@ COUNTRY_LANE={"Netherlands":"Netherlands","United Kingdom":"Britain","France":"F
  "Taiwan":"Taiwan","China":"China","South Korea":"South Korea"}
 USSUB=[("US Northeast",["New Jersey","Murray Hill","Massachusetts","Cambridge, USA","Bedford",
   "Connecticut","New York","Princeton","Pennsylvania","Schenectady","Derby, USA","Maryland",
-  "Bell Labs","Armonk","Yorktown"]),
+  "Rhode Island","Bell Labs","Armonk","Yorktown"]),
  ("US Midwest",["Detroit","Midwest","Michigan","Ohio","Cincinnati","Chicago","Illinois",
   "Wisconsin","Indiana"]),
  ("Silicon Valley / California",["California","Silicon Valley","Santa Clara","Stanford",
